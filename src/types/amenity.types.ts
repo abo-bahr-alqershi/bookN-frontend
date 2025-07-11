@@ -52,22 +52,6 @@ export interface PropertyAmenityDto {
   description?: string;
 }
 
-// نتائج العمليات العامة
-export interface ResultDto<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  errors?: string[];
-  errorCode?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-}
 
 /**
  * استعلام جلب جميع المرافق مع صفحات

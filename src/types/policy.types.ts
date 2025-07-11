@@ -5,31 +5,32 @@
  * بيانات سياسة العقار الأساسية
  */
 export interface PolicyDto {
-  /** معرف السياسة */
   id: string;
-  /** معرف العقار */
   propertyId: string;
-  /** نوع السياسة */
-  policyType: string;
-  /** وصف السياسة */
+  policyType: PolicyType;
   description: string;
-  /** قواعد السياسة (JSON) */
   rules: string;
+}
+
+export enum PolicyType {
+  Cancellation = 0,
+  CheckIn = 1,
+  CheckOut = 2,
+  Payment = 3,
+  Smoking = 4,
+  Pets = 5,
+  Damage = 6,
+  Other = 7,
 }
 
 /**
  * نوع بيانات تفاصيل السياسة
  */
 export interface PolicyDetailsDto {
-  /** معرف السياسة */
   id: string;
-  /** معرف العقار */
   propertyId: string;
-  /** نوع السياسة */
-  policyType: string;
-  /** وصف السياسة */
+  policyType: PolicyType;
   description: string;
-  /** قواعد السياسة (JSON) */
   rules: string;
 }
 

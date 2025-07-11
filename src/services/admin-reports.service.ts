@@ -1,7 +1,7 @@
-// خدمات التقارير (Reports Service)
+// خدمات البلاغات (Reports Service)
 // جميع الدوال موثقة بالعربي وتدعم العمليات الأساسية
 import axios from 'axios';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 import type {
   ReportDto,
   CreateReportCommand,
@@ -14,7 +14,7 @@ import type {
 } from '../types/report.types';
 
 /**
- * دوال التعامل مع التقارير عبر API
+ * دوال التعامل مع البلاغات عبر API
  */
 export class AdminReportsService {
   // المسار الأساسي لتعاملات البلاغات للمدراء

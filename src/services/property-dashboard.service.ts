@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { OwnerDashboardDto, GetOwnerDashboardQuery } from '../types/dashboard.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // Base URL for property owner dashboard endpoints
 const API_BASE = '/api/property/dashboard';

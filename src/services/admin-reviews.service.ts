@@ -10,7 +10,7 @@ import type {
   GetPendingReviewsQuery
 } from '../types/review.types';
 import axios from 'axios';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 /**
  * دوال التعامل مع التقييمات عبر API

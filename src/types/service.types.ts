@@ -6,6 +6,20 @@ import type { MoneyDto } from './amenity.types';
  * بيانات الخدمة الأساسية
  */
 export interface ServiceDto {
+  id: string;
+  propertyId: string;
+  propertyName: string;
+  name: string;
+  price: MoneyDto;
+  pricingModel: PricingModel;
+}
+
+export enum PricingModel {
+  PerBooking = 0,
+  PerDay = 1,
+  PerPerson = 2,
+  PerUnit = 3,
+}
   /** معرف الخدمة */
   id: string;
   /** اسم الخدمة */
@@ -96,6 +110,13 @@ export interface DeletePropertyServiceCommand {
  * تفاصيل الخدمة
  */
 export interface ServiceDetailsDto {
+  id: string;
+  propertyId: string;
+  propertyName: string;
+  name: string;
+  price: MoneyDto;
+  pricingModel: PricingModel;
+}
   /** معرف الخدمة */
   id: string;
   /** معرف العقار */

@@ -6,7 +6,7 @@ export interface UserDto {
   email: string;
   phone: string;
   profileImage: string;
-  createdAt: string; // ISO date
+  createdAt: string;
   isActive: boolean;
 }
 
@@ -68,7 +68,6 @@ export interface SearchUsersQuery {
  * استعلام جلب بيانات مستخدم بواسطة المعرف
  */
 export interface GetUserByIdQuery {
-  /** معرف المستخدم */
   userId: string;
 }
 
@@ -86,11 +85,8 @@ export interface AssignUserRoleCommand {
  * استعلام جلب المستخدمين حسب الدور
  */
 export interface GetUsersByRoleQuery {
-  /** اسم الدور */
   roleName: string;
-  /** رقم الصفحة */
   pageNumber?: number;
-  /** حجم الصفحة */
   pageSize?: number;
 }
 
@@ -139,9 +135,16 @@ export interface GetUserNotificationsQuery {
 /**
  * استعلام إرجاع أدوار المستخدم
  */
+export interface UserLifetimeStatsDto {
+  totalNightsStayed: number;
+  totalMoneySpent: number;
+  favoriteCity: string;
+}
+
 export interface GetUserRolesQuery {
-  /** معرف المستخدم */
   userId: string;
+  pageNumber?: number;
+  pageSize?: number;
 }
 
 /**
@@ -149,3 +152,27 @@ export interface GetUserRolesQuery {
  * Query to get current logged-in user data
  */
 export interface GetCurrentUserQuery {}
+
+export interface UpdateUserFavoritesCommand {
+  favoritesJson: string;
+}
+
+export interface UpdateUserProfilePictureCommand {
+  userId: string;
+  profileImageUrl: string;
+}
+
+export interface UpdateUserSettingsCommand {
+  settingsJson: string;
+}
+
+export interface LoyaltyProgressDto {
+  currentTier: string;
+  nextTier: string;
+  amountNeededForNextTier: number;
+}
+
+export interface OwnerRegistrationResultDto {
+  userId: string;
+  propertyId: string;
+}

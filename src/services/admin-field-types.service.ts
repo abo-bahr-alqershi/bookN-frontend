@@ -9,7 +9,7 @@ import type {
   GetAllFieldTypesQuery,
   SearchFieldTypesQuery,
 } from '../types/field-type.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 /**
  * خدمات أنواع الحقول للمشرف (Field Types Service)

@@ -1,6 +1,6 @@
 import type { PaginatedResult } from './amenity.types';
 import type { MoneyDto, PaymentDto } from './payment.types';
-import type { ServiceDto } from './service.types';
+import type { export ServiceDto } from './service.types';
 
 /**
  * حالات الحجز
@@ -43,9 +43,7 @@ export interface BookingDto {
  * تفاصيل الحجز (تشمل المدفوعات والخدمات)
  */
 export interface BookingDetailsDto extends BookingDto {
-  /** المدفوعات المرتبطة */
   payments: PaymentDto[];
-  /** الخدمات المرتبطة */
   services: ServiceDto[];
 }
 
@@ -311,9 +309,7 @@ export interface GetBookingWindowAnalysisQuery {
  * عنصر تقرير الحجوزات اليومية
  */
 export interface BookingReportItemDto {
-  /** التاريخ */
   date: string;
-  /** عدد الحجوزات في ذلك اليوم */
   count: number;
 }
 
@@ -321,7 +317,6 @@ export interface BookingReportItemDto {
  * تقرير الحجوزات اليومية
  */
 export interface BookingReportDto {
-  /** عناصر التقرير */
   items: BookingReportItemDto[];
 }
 
@@ -339,9 +334,7 @@ export interface TimeSeriesDataDto {
  * بيانات تحليل نافذة الحجز
  */
 export interface BookingWindowDto {
-  /** متوسط فترة الحجز بالأيام */
   averageLeadTimeInDays: number;
-  /** عدد الحجوزات في اللحظة الأخيرة */
   bookingsLastMinute: number;
 }
 

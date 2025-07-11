@@ -7,7 +7,7 @@ import type {
   DeleteUnitCommand,
   GetUnitByIdQuery,
 } from '../types/unit.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // المسار الأساسي لتعاملات الوحدات للمدراء
 const API_BASE = '/api/admin/Units';

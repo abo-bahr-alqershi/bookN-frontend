@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 import type { ServiceDto } from '../types/service.types';
 import type {
   BookingDto,

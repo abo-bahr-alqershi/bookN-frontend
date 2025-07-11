@@ -5,7 +5,7 @@ import type {
   GetSystemNotificationsQuery,
   GetUserNotificationsQuery,
 } from '../types/notification.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // خدمات الإشعارات (Notifications Service)
 export const AdminNotificationsService = {

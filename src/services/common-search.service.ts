@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 import type { PropertyDto } from '../types/property.types';
 import type { UnitDto } from '../types/unit.types';
 import type { SearchPropertiesCommand } from '../types/property-search.types';

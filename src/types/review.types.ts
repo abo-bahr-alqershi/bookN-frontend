@@ -5,49 +5,38 @@
  * صورة التقييم
  */
 export interface ReviewImageDto {
-  /** معرف الصورة */
   id: string;
-  /** معرف التقييم */
   reviewId: string;
-  /** اسم الملف */
   name: string;
-  /** رابط الصورة */
   url: string;
-  /** حجم الصورة بالبايت */
   sizeBytes: number;
-  /** نوع المحتوى */
   type: string;
-  /** فئة الصورة */
-  category: string;
-  /** تعليق توضيحي للصورة */
+  category: ImageCategory;
   caption: string;
-  /** نص بديل للصورة */
   altText: string;
-  /** تاريخ الرفع */
   uploadedAt: string;
+}
+
+export enum ImageCategory {
+  Review = 0,
+  Property = 1,
+  Unit = 2,
+  Profile = 3,
+  Other = 4,
 }
 
 /**
  * بيانات التقييم الأساسية
  */
 export interface ReviewDto {
-  /** معرف المراجعة */
   id: string;
-  /** معرف الحجز */
   bookingId: string;
-  /** تقييم النظافة */
   cleanliness: number;
-  /** تقييم الخدمة */
   service: number;
-  /** تقييم الموقع */
   location: number;
-  /** تقييم القيمة */
   value: number;
-  /** تعليق المراجعة */
   comment: string;
-  /** تاريخ إنشاء المراجعة */
   createdAt: string;
-  /** صور التقييم */
   images: ReviewImageDto[];
 }
 

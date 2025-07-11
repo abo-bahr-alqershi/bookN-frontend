@@ -35,20 +35,21 @@ export type PaymentStatus =
  * بيانات الدفعة الأساسية
  */
 export interface PaymentDto {
-  /** معرف الدفعة */
   id: string;
-  /** معرف الحجز */
   bookingId: string;
-  /** المبلغ المدفوع */
   amount: MoneyDto;
-  /** رقم المعاملة */
   transactionId: string;
-  /** طريقة الدفع */
   method: PaymentMethod;
-  /** حالة الدفع */
   status: PaymentStatus;
-  /** تاريخ الدفع */
   paymentDate: string;
+}
+
+export enum PaymentMethod {
+  CreditCard = 0,
+  PayPal = 1,
+  BankTransfer = 2,
+  Cash = 3,
+  Other = 4,
 }
 
 /**
@@ -147,4 +148,8 @@ export interface GetPaymentsByMethodQuery {
   pageNumber?: number;
   /** حجم الصفحة */
   pageSize?: number;
+}
+
+export interface PaymentDetailsDto {
+  payment: PaymentDto;
 }

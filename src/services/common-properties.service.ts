@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PaginatedResult } from '../types/amenity.types';
+import type { PaginatedResult } from '../types/common.types';
 import type { PropertyDto, SearchPropertiesQuery } from '../types/property.types';
 
 // المسار الأساسي لتعاملات العقارات المشتركة

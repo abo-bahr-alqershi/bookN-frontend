@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { PaymentDto, RefundPaymentCommand, VoidPaymentCommand, UpdatePaymentStatusCommand, GetPaymentsByBookingQuery, GetPaymentsByMethodQuery, GetPaymentsByStatusQuery, GetPaymentsByUserQuery } from '../types/payment.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // خدمات المدفوعات (Payments Service) للإدارة
 export const AdminPaymentsService = {

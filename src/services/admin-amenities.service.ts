@@ -1,5 +1,6 @@
 import axios from 'axios';
-import type { GetAllAmenitiesQuery, GetAmenitiesByPropertyQuery, GetAmenitiesByPropertyTypeQuery, AmenityDto, CreateAmenityCommand, UpdateAmenityCommand, AssignAmenityToPropertyCommand, AssignAmenityToPropertyTypeCommand, UpdatePropertyAmenityCommand, ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
+import type { GetAllAmenitiesQuery, GetAmenitiesByPropertyQuery, GetAmenitiesByPropertyTypeQuery, AmenityDto, CreateAmenityCommand, UpdateAmenityCommand, AssignAmenityToPropertyCommand, AssignAmenityToPropertyTypeCommand, UpdatePropertyAmenityCommand } from '../types/amenity.types';
 
 const API_BASE = '/api/admin/amenities';
 

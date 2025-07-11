@@ -10,7 +10,7 @@ import type {
   GetUnitFieldValuesGroupedQuery,
   FieldGroupWithValuesDto,
 } from '../types/unit-field-value.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // خدمات قيم الحقول للوحدات (Unit Field Values Service) للمدراء
 export const AdminUnitFieldValuesService = {

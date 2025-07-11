@@ -57,4 +57,12 @@ export interface UploadedFileDto {
   duration?: string;
   description?: string;
   tags?: string;
+}
+
+export interface ProcessedImageResult {
+  processedUrl: string;
+  thumbnailUrl: string;
+  fileSize: number;
+  dimensions: string;
+  mimeType: string;
 } 

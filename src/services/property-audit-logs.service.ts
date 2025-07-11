@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PaginatedResult } from '../types/amenity.types';
+import type { PaginatedResult } from '../types/common.types';
 import type { AuditLogDto, AuditLogsQuery } from '../types/audit-log.types';
 
 // المسار الأساسي لنقاط نهاية سجلات التدقيق لأصحاب العقارات

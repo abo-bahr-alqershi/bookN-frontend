@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // المسار الأساسي لتعاملات الإشعارات المشتركة
 const API_BASE = '/api/common/notifications';

@@ -6,23 +6,14 @@ import type { UnitTypeFieldDto } from './unit-type.types';
  * بيانات قيمة حقل للوحدة
  */
 export interface UnitFieldValueDto {
-  /** معرف القيمة */
   valueId: string;
-  /** معرف الوحدة */
   unitId: string;
-  /** معرف الحقل */
   fieldId: string;
-  /** اسم الحقل */
   fieldName: string;
-  /** الاسم المعروض للحقل */
   displayName: string;
-  /** قيمة الحقل */
   fieldValue: string;
-  /** معلومات الحقل الديناميكي */
   field: UnitTypeFieldDto;
-  /** تاريخ الإنشاء */
   createdAt: string;
-  /** تاريخ التحديث */
   updatedAt: string;
 }
 
@@ -32,7 +23,7 @@ export interface UnitFieldValueDto {
 export interface CreateUnitFieldValueCommand {
   unitId: string;
   fieldId: string;
-  fieldValue?: string;
+  fieldValue: string;
 }
 
 /**
@@ -40,7 +31,7 @@ export interface CreateUnitFieldValueCommand {
  */
 export interface UpdateUnitFieldValueCommand {
   valueId: string;
-  newFieldValue?: string;
+  fieldValue: string;
 }
 
 /**
@@ -69,9 +60,7 @@ export interface GetUnitFieldValuesQuery {
  * واجهة لقيمة الحقل الأساسية
  */
 export interface FieldValueDto {
-  /** معرف الحقل */
   fieldId: string;
-  /** قيمة الحقل */
   fieldValue: string;
 }
 
@@ -99,15 +88,10 @@ export interface GetUnitFieldValuesGroupedQuery {
  * واجهة لحقل مع قيمته
  */
 export interface FieldWithValueDto {
-  /** معرف القيمة */
   valueId: string;
-  /** معرف الحقل */
   fieldId: string;
-  /** اسم الحقل */
   fieldName: string;
-  /** الاسم المعروض للحقل */
   displayName: string;
-  /** قيمة الحقل */
   value: string;
 }
 
@@ -115,14 +99,9 @@ export interface FieldWithValueDto {
  * مجموعة الحقول مع قيمها
  */
 export interface FieldGroupWithValuesDto {
-  /** معرف المجموعة */
   groupId: string;
-  /** اسم المجموعة */
   groupName: string;
-  /** الاسم المعروض للمجموعة */
   displayName: string;
-  /** وصف المجموعة */
   description: string;
-  /** قائمة قيم الحقول */
   fieldValues: FieldWithValueDto[];
 }

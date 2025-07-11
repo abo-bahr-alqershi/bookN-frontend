@@ -4,19 +4,12 @@ import type { PaginatedResult } from './amenity.types';
  * تمثيل سجل النشاط
  */
 export interface AuditLogDto {
-  /** معرف السجل */
   id: string;
-  /** اسم الجدول */
   tableName: string;
-  /** نوع الإجراء */
   action: string;
-  /** معرف السجل المتأثر */
   recordId: string;
-  /** معرف المستخدم */
   userId: string;
-  /** التغييرات الموثقة */
   changes: string;
-  /** الطابع الزمني */
   timestamp: string;
 }
 

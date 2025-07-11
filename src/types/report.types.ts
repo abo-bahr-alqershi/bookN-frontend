@@ -5,25 +5,15 @@
  * بيانات التقرير الأساسية
  */
 export interface ReportDto {
-  /** معرف البلاغ */
   id: string;
-  /** معرف المستخدم المبلغ */
   reporterUserId: string;
-  /** اسم المستخدم المبلغ */
   reporterUserName: string;
-  /** معرف المستخدم المبلغ عنه (اختياري) */
   reportedUserId?: string;
-  /** اسم المستخدم المبلغ عنه (اختياري) */
   reportedUserName?: string;
-  /** معرف العقار المبلغ عنه (اختياري) */
   reportedPropertyId?: string;
-  /** اسم العقار المبلغ عنه (اختياري) */
   reportedPropertyName?: string;
-  /** سبب البلاغ */
   reason: string;
-  /** تفاصيل البلاغ */
   description: string;
-  /** تاريخ إنشاء البلاغ */
   createdAt: string;
 }
 

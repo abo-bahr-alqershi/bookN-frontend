@@ -9,7 +9,7 @@ import type {
   GetPropertyImagesQuery,
   PropertyImageStatsDto,
 } from '../types/property-image.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // خدمات صور العقارات والوحدات لأصحاب العقارات
 export const PropertyImagesService = {

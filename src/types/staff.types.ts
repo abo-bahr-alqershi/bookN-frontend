@@ -7,8 +7,16 @@ export interface StaffDto {
   userName: string;
   propertyId: string;
   propertyName: string;
-  position: string;
+  position: StaffPosition;
   permissions: string;
+}
+
+export enum StaffPosition {
+  Manager = 0,
+  Receptionist = 1,
+  Housekeeping = 2,
+  Maintenance = 3,
+  Other = 4,
 }
 
 // Command to add a new staff member

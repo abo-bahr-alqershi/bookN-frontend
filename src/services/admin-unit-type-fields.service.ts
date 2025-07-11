@@ -16,7 +16,7 @@ import type {
   FieldGroupWithFieldsDto,
 } from '../types/unit-type-field.types';
 import type { UnitTypeFieldDto } from '../types/unit-type.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 /**
  * خدمات الحقول الديناميكية لنوع الوحدة (Admin)

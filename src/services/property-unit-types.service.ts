@@ -7,7 +7,7 @@ import type {
   GetUnitTypeByIdQuery,
   GetUnitTypesByPropertyTypeQuery,
 } from '../types/unit-type.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // المسار الأساسي لتعاملات أنواع الوحدات لأصحاب العقارات
 const API_BASE = '/api/property/UnitTypes';

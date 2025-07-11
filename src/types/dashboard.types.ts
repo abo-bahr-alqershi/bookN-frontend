@@ -19,12 +19,94 @@ export interface AdminDashboardDto {
 /**
  * Owner dashboard data
  */
+export interface ExportResultDto {
+  exportId: string;
+  fileName: string;
+  downloadUrl: string;
+  fileFormat: string;
+  fileSizeBytes: number;
+  fileSizeReadable: string;
+  contentType: string;
+  createdAt: string;
+  expiryDate: string;
+  requestedBy: string;
+  requestedByName: string;
+  recordsCount: number;
+  exportedFields: string[];
+  appliedFilters?: Record<string, any>;
+  status: string;
+  statusMessage?: string;
+  processingDuration: string;
+  metadata?: ExportMetadataDto;
+  warnings?: string[];
+  canRetry: boolean;
+  security?: ExportSecurityDto;
+}
+
+export interface ExportMetadataDto {
+  exportSystemVersion: string;
+  templateVersion?: string;
+  timezone: string;
+  encoding: string;
+  language: string;
+  currency?: string;
+  dateFormat: string;
+  timeFormat: string;
+  decimalSeparator: string;
+  thousandsSeparator: string;
+  customMetadata?: Record<string, any>;
+  dataSource: string;
+  databaseVersion?: string;
+  dataSnapshotAt: string;
+}
+
+export interface ExportSecurityDto {
+  isPasswordProtected: boolean;
+  encryptionLevel?: string;
+  encryptionType?: string;
+  containsSensitiveData: boolean;
+  privacyLevel: string;
+  accessRestrictions?: string[];
+  redactedFields?: string[];
+  retentionPolicy?: string;
+  allowedDownloads?: number;
+  currentDownloadCount: number;
+}
+
 export interface OwnerDashboardDto {
   ownerId: string;
   ownerName: string;
   propertyCount: number;
   bookingCount: number;
   totalRevenue: number;
+}
+
+export interface StatisticsPeriodDto {
+  startDate: string;
+  endDate: string;
+  periodName: string;
+  periodType: PeriodType;
+  value: number;
+  count: number;
+  average?: number;
+  changePercentage?: number;
+  changeDirection?: ChangeDirection;
+  additionalData?: Record<string, any>;
+}
+
+export enum PeriodType {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  YEARLY = 'YEARLY',
+  CUSTOM = 'CUSTOM',
+}
+
+export enum ChangeDirection {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  STABLE = 'STABLE',
 }
 
 /**
@@ -254,4 +336,9 @@ export interface GetTopPerformingPropertiesQuery {
 /**
  * نوع بيانات العقار لأفضل أداء
  */
+export interface CategoricalDataDto {
+  category: string;
+  value: number;
+}
+
 export type { PropertyDto }; 

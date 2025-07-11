@@ -7,31 +7,18 @@ import type { FieldValueDto } from './unit-field-value.types';
  * بيانات الوحدة الأساسية
  */
 export interface UnitDto {
-  /** معرف الوحدة */
   id: string;
-  /** معرف العقار */
   propertyId: string;
-  /** معرف نوع الوحدة */
   unitTypeId: string;
-  /** اسم الوحدة */
   name: string;
-  /** السعر الأساسي للوحدة */
   basePrice: MoneyDto;
-  /** الميزات المخصصة (JSON) */
   customFeatures: string;
-  /** حالة توفر الوحدة */
   isAvailable: boolean;
-  /** اسم العقار */
   propertyName: string;
-  /** اسم نوع الوحدة */
   unitTypeName: string;
-  /** طريقة حساب السعر */
   pricingMethod: PricingMethod;
-  /** قيم الحقول الديناميكية للوحدة */
   fieldValues: UnitFieldValueDto[];
-  /** الحقول الديناميكية مجمعة */
   dynamicFields: FieldGroupWithValuesDto[];
-  /** المسافة من الموقع الحالي بالكيلومترات */
   distanceKm?: number;
 }
 
@@ -45,6 +32,19 @@ export interface UnitDetailsDto extends UnitDto {
 /**
  * أمر إنشاء وحدة جديدة
  */
+export interface CreateUnitDto {
+  unitTypeId: string;
+  unitNumber: string;
+  basePrice: number;
+  currency: string;
+  maxCapacity: number;
+  bedroomsCount?: number;
+  bathroomsCount?: number;
+  areaSquareMeters?: number;
+  isAvailable: boolean;
+  dynamicFields?: UnitDynamicFieldValueDto[];
+}
+
 export interface CreateUnitCommand {
   propertyId: string;
   unitTypeId: string;
@@ -83,40 +83,51 @@ export interface GetUnitByIdQuery {
  * استعلام جلب الوحدات الخاصة بعقار معين
  */
 export interface GetUnitsByPropertyQuery {
-  /** معرف العقار */
   propertyId: string;
-  /** رقم الصفحة */
   pageNumber?: number;
-  /** حجم الصفحة */
   pageSize?: number;
+  isAvailable?: boolean;
+  minBasePrice?: number;
+  maxBasePrice?: number;
+  minCapacity?: number;
+  nameContains?: string;
 }
 
 /**
  * استعلام جلب الوحدات حسب النوع
  */
+export interface GetUnitPriceQuery {
+  unitId: string;
+  checkIn: string;
+  checkOut: string;
+  guestCount?: number;
+}
+
 export interface GetUnitsByTypeQuery {
-  /** معرف نوع الوحدة */
   unitTypeId: string;
-  /** رقم الصفحة */
   pageNumber?: number;
-  /** حجم الصفحة */
   pageSize?: number;
+  isAvailable?: boolean;
+  minBasePrice?: number;
+  maxBasePrice?: number;
+  minCapacity?: number;
+  nameContains?: string;
 }
 
 /**
  * استعلام جلب توفر الوحدة
  */
-export interface GetUnitAvailabilityQuery {
-  /** معرف الوحدة */
+export interface GetUnitDetailsQuery {
   unitId: string;
+  includeDynamicFields?: boolean;
 }
 
 /**
  * استعلام جلب بيانات الوحدة للتعديل
  */
 export interface GetUnitForEditQuery {
-  /** معرف الوحدة */
   unitId: string;
+  ownerId: string;
 }
 
 /**
@@ -168,17 +179,39 @@ export interface BulkUpdateUnitAvailabilityCommand {
 /**
  * استعلام جلب الوحدات المتاحة
  */
+export interface UnitDynamicFieldFilterDto {
+  fieldId: string;
+  fieldValue: string;
+}
+
 export interface GetAvailableUnitsQuery {
-  /** معرف العقار */
   propertyId: string;
-  /** تاريخ البداية */
-  startDate?: string;
-  /** تاريخ النهاية */
-  endDate?: string;
-  /** رقم الصفحة */
+  checkInDate: string;
+  checkOutDate: string;
+  guestsCount: number;
+  unitTypeId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  amenityIds?: string[];
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   pageNumber?: number;
-  /** حجم الصفحة */
   pageSize?: number;
+}
+
+export interface UnitAvailabilityDto {
+  unitId: string;
+  startDate?: string;
+  endDate?: string;
+  unitName: string;
+}
+
+export interface UnitEditDto {
+  unitId: string;
+  name: string;
+  basePrice: MoneyDto;
+  customFeatures: Record<string, any>;
+  dynamicFields: FieldGroupWithValuesDto[];
 }
 
 /**

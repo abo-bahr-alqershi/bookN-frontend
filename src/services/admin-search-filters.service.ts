@@ -10,7 +10,7 @@ import type {
   GetSearchableFieldsQuery,
 } from '../types/search-filter.types';
 import type { UnitTypeFieldDto } from '../types/unit-type.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // المسار الأساسي لتعاملات فلاتر البحث للمدراء
 const API_BASE = '/api/admin/searchfilters';

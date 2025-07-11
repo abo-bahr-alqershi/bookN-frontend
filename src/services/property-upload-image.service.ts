@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 import type { UploadImageCommand } from '../types/upload-image.types';
 
 export const PropertyUploadImageService = {

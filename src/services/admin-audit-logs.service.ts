@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { PaginatedResult } from '../types/common.types';
-import type { AuditLogDto, GetAdminActivityLogsQuery, GetAuditLogsQuery, GetCustomerActivityLogsQuery, GetPropertyActivityLogsQuery } from '../types/audit-log.types';
+import type { AuditLogDto, GetCustomerActivityLogsQuery, GetPropertyActivityLogsQuery } from '../types/audit-log.types';
+import type { GetAdminActivityLogsQuery, GetAuditLogsQuery} from '../types/';
 
 // المسار الأساسي لنقاط نهاية سجلات التدقيق للإدارة
 const API_BASE = '/api/admin/auditlogs';

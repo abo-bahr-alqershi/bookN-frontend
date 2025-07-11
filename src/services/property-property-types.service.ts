@@ -4,7 +4,7 @@ import type {
   GetAllPropertyTypesQuery,
   GetPropertyTypeByIdQuery,
 } from '../types/property-type.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // المسار الأساسي لتعاملات أنواع العقارات لأصحاب العقارات
 const API_BASE = '/api/property/propertytypes';

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { RoleDto, CreateRoleCommand, UpdateRoleCommand, DeleteRoleCommand, GetAllRolesQuery } from '../types/role.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // خدمات إدارة الأدوار (Roles Service)
 export const AdminRolesService = {

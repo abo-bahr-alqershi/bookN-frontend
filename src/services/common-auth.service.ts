@@ -10,7 +10,7 @@ import type {
   VerifyEmailCommand,
   ChangePasswordCommand,
 } from '../types/auth.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // المسار الأساسي لتعاملات المصادقة
 const API_BASE = '/api/common/auth';

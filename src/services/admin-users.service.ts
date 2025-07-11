@@ -15,7 +15,7 @@ import type {
   GetUserNotificationsQuery,
   GetUserRolesQuery,
 } from '../types/user.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // خدمات إدارة المستخدمين (Users Service)
 export const AdminUsersService = {

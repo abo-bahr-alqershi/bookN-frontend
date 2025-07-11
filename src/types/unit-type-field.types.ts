@@ -26,9 +26,7 @@ export interface UnitTypeFieldDto {
  * نموذج لترتيب الحقول
  */
 export interface FieldOrderDto {
-  /** معرف الحقل */
   fieldId: string;
-  /** ترتيب الحقل */
   sortOrder: number;
 }
 
@@ -226,20 +224,12 @@ export interface ReorderFieldsInGroupCommand {
  * مجموعة حقول مع الحقول المرتبطة
  */
 export interface FieldGroupWithFieldsDto {
-  /** معرف المجموعة */
   groupId: string;
-  /** اسم المجموعة */
   groupName: string;
-  /** الاسم المعروض للمجموعة */
   displayName: string;
-  /** وصف المجموعة */
   description: string;
-  /** ترتيب العرض */
   sortOrder: number;
-  /** قابلية الطي للمجموعة */
   isCollapsible: boolean;
-  /** حالة التوسع الافتراضي للمجموعة */
   isExpandedByDefault: boolean;
-  /** الحقول المرتبطة */
   fields: UnitTypeFieldDto[];
 } 

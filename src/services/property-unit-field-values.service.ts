@@ -13,7 +13,7 @@ import type {
   BulkDeleteUnitFieldValueCommand,
   BulkUpdateUnitFieldValueCommand,
 } from '../types/unit-field-value.types';
-import type { ResultDto } from '../types/amenity.types';
+import type { ResultDto } from '../types/common.types';
 
 // خدمات قيم الحقول للوحدات (Property)
 const API_BASE = '/api/property/unitfieldvalues';

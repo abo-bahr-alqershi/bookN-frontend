@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 import type { AmenityDto, GetAllAmenitiesQuery, GetAmenitiesByPropertyQuery, GetAmenitiesByPropertyTypeQuery, AssignAmenityToPropertyCommand, UpdatePropertyAmenityCommand } from '../types/amenity.types';
 
 // خدمات إدارة المرافق لأصحاب العقارات (Property Amenities Service)

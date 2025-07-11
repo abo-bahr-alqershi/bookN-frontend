@@ -5,7 +5,7 @@ import type {
   GetUserNotificationsQuery,
   NotificationDto,
 } from '../types/notification.types';
-import type { ResultDto, PaginatedResult } from '../types/amenity.types';
+import type { ResultDto, PaginatedResult } from '../types/common.types';
 
 // خدمات الإشعارات لأصحاب العقارات (Property Notifications Service)
 export const PropertyNotificationsService = {

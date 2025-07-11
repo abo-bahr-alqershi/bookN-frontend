@@ -5,31 +5,18 @@
  * بيانات الإشعار الأساسية
  */
 export interface NotificationDto {
-  /** معرف الإشعار */
   id: string;
-  /** نوع الإشعار */
   type: string;
-  /** عنوان الإشعار */
   title: string;
-  /** محتوى الإشعار */
   message: string;
-  /** أولوية الإشعار */
   priority: string;
-  /** حالة الإشعار */
   status: string;
-  /** معرف المستلم */
   recipientId: string;
-  /** اسم المستلم */
   recipientName: string;
-  /** معرف المرسل (اختياري) */
   senderId?: string;
-  /** اسم المرسل (اختياري) */
-  senderName?: string;
-  /** هل تم قراءة الإشعار */
+  senderName: string;
   isRead: boolean;
-  /** تاريخ القراءة (اختياري) */
   readAt?: string;
-  /** تاريخ الإنشاء */
   createdAt: string;
 }
 

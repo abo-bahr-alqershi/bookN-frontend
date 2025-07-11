@@ -170,10 +170,37 @@ export interface GetPropertyRatingStatsQuery {
 /**
  * بيانات إحصائيات تقييم العقار
  */
+export interface DestinationDto {
+  city: string;
+  viewCount: number;
+}
+
+export interface PropertyAmenityDto {
+  amenityId: string;
+  isAvailable: boolean;
+  extraCost?: number;
+  description?: string;
+}
+
+export interface PropertyPolicyDto {
+  policyType: string;
+  policyContent: string;
+  isActive: boolean;
+}
+
+export interface UnitDynamicFieldFilterDto {
+  fieldId: string;
+  fieldValue: string;
+}
+
+export interface UnitDynamicFieldValueDto {
+  fieldId: string;
+  fieldValue: string;
+  isPublic: boolean;
+}
+
 export interface PropertyRatingStatsDto {
-  /** متوسط تقييم العقار */
   averageRating: number;
-  /** إجمالي عدد التقييمات */
   totalReviews: number;
 }
 

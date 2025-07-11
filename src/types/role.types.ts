@@ -5,9 +5,7 @@
  * بيانات الدور الأساسية
  */
 export interface RoleDto {
-  /** المعرف الفريد للدور */
   id: string;
-  /** اسم الدور */
   name: string;
 }
 
