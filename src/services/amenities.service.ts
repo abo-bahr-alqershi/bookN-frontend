@@ -1,14 +1,5 @@
 import axios from 'axios';
-import type {
-  AmenityDto,
-  CreateAmenityCommand,
-  UpdateAmenityCommand,
-  AssignAmenityToPropertyCommand,
-  AssignAmenityToPropertyTypeCommand,
-  UpdatePropertyAmenityCommand,
-  ResultDto,
-  PaginatedResult,
-} from '../types/amenity.types';
+import type { GetAllAmenitiesQuery, GetAmenitiesByPropertyQuery, GetAmenitiesByPropertyTypeQuery, AmenityDto, CreateAmenityCommand, UpdateAmenityCommand, AssignAmenityToPropertyCommand, AssignAmenityToPropertyTypeCommand, UpdatePropertyAmenityCommand, ResultDto, PaginatedResult } from '../types/amenity.types';
 
 const API_BASE = '/api/admin/amenities';
 
@@ -26,16 +17,16 @@ export const AmenitiesService = {
     axios.delete<ResultDto<boolean>>(`${API_BASE}/${amenityId}`),
 
   // جلب جميع المرافق مع صفحات
-  getAllAmenities: (params?: { pageNumber?: number; pageSize?: number; searchTerm?: string }) =>
-    axios.get<PaginatedResult<AmenityDto>>(`${API_BASE}`, { params }),
+  getAllAmenities: (query?: GetAllAmenitiesQuery) =>
+    axios.get<PaginatedResult<AmenityDto>>(`${API_BASE}`, { params: query }),
 
   // جلب مرافق بناءً على معرف العقار
-  getAmenitiesByProperty: (propertyId: string) =>
-    axios.get<ResultDto<AmenityDto[]>>(`${API_BASE}/property/${propertyId}`),
+  getAmenitiesByProperty: (query: GetAmenitiesByPropertyQuery) =>
+    axios.get<ResultDto<AmenityDto[]>>(`${API_BASE}/property/${query.propertyId}`, { params: query }),
 
   // جلب مرافق بناءً على نوع العقار
-  getAmenitiesByPropertyType: (propertyTypeId: string) =>
-    axios.get<ResultDto<AmenityDto[]>>(`${API_BASE}/type/${propertyTypeId}`),
+  getAmenitiesByPropertyType: (query: GetAmenitiesByPropertyTypeQuery) =>
+    axios.get<ResultDto<AmenityDto[]>>(`${API_BASE}/type/${query.propertyTypeId}`, { params: query }),
 
   // إسناد مرفق لعقار
   assignAmenityToProperty: (amenityId: string, propertyId: string, data: AssignAmenityToPropertyCommand) =>

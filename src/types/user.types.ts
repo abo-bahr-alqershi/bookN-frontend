@@ -63,3 +63,83 @@ export interface SearchUsersQuery {
   minTotalSpent?: number;
   sortBy?: string;
 }
+
+/**
+ * استعلام جلب بيانات مستخدم بواسطة المعرف
+ */
+export interface GetUserByIdQuery {
+  /** معرف المستخدم */
+  userId: string;
+}
+
+/**
+ * أمر تخصيص دور للمستخدم
+ */
+export interface AssignUserRoleCommand {
+  /** معرف المستخدم */
+  userId: string;
+  /** معرف الدور */
+  roleId: string;
+}
+
+/**
+ * استعلام جلب المستخدمين حسب الدور
+ */
+export interface GetUsersByRoleQuery {
+  /** اسم الدور */
+  roleName: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام سجلات نشاط المستخدم
+ */
+export interface GetUserActivityLogQuery {
+  /** معرف المستخدم */
+  userId: string;
+  /** تاريخ البداية (ISO) */
+  from?: string;
+  /** تاريخ النهاية (ISO) */
+  to?: string;
+}
+
+/**
+ * استعلام إحصائيات المستخدم مدى الحياة
+ */
+export interface GetUserLifetimeStatsQuery {
+  /** معرف المستخدم */
+  userId: string;
+}
+
+/**
+ * استعلام إشعارات المستخدم
+ */
+export interface GetUserNotificationsQuery {
+  /** معرف المستخدم */
+  userId: string;
+  /** حالة الإشعار (مقروء/غير مقروء) */
+  isRead?: boolean;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+  /** فلترة بنوع الإشعار */
+  notificationType?: string;
+  /** فلترة بتاريخ الإرسال بعد */
+  sentAfter?: string;
+  /** فلترة بتاريخ الإرسال قبل */
+  sentBefore?: string;
+  /** خيارات الترتيب */
+  sortBy?: string;
+}
+
+/**
+ * استعلام إرجاع أدوار المستخدم
+ */
+export interface GetUserRolesQuery {
+  /** معرف المستخدم */
+  userId: string;
+}

@@ -53,10 +53,96 @@ export interface GetUnitTypeByIdQuery {
   unitTypeId: string;
 }
 
-// أنواع فرعية مستخدمة
-export interface FieldGroupDto {
-  // ... أكمل حسب الحاجة
+/**
+ * استعلام جلب أنواع الوحدات لنوع عقار معين
+ */
+export interface GetUnitTypesByPropertyTypeQuery {
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
 }
+
+/**
+ * مجموعة حقول نوع الوحدة
+ */
+export interface FieldGroupDto {
+  /** معرف المجموعة */
+  groupId: string;
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** اسم المجموعة */
+  groupName: string;
+  /** الاسم المعروض للمجموعة */
+  displayName: string;
+  /** وصف المجموعة */
+  description: string;
+  /** ترتيب المجموعة */
+  sortOrder: number;
+  /** قابلية الطي للمجموعة */
+  isCollapsible: boolean;
+  /** حالة التوسع الافتراضي */
+  isExpandedByDefault: boolean;
+  /** حقول المجموعة */
+  fields: UnitTypeFieldDto[];
+}
+
+/**
+ * حقل ديناميكي لنوع الوحدة
+ */
+export interface UnitTypeFieldDto {
+  /** معرف الحقل */
+  fieldId: string;
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** معرف نوع الحقل */
+  fieldTypeId: string;
+  /** اسم الحقل */
+  fieldName: string;
+  /** الاسم المعروض للحقل */
+  displayName: string;
+  /** وصف الحقل */
+  description: string;
+  /** خيارات الحقل (JSON) */
+  fieldOptions: Record<string, any>;
+  /** قواعد التحقق (JSON) */
+  validationRules: Record<string, any>;
+  /** هل الحقل إلزامي */
+  isRequired: boolean;
+  /** هل الحقل قابل للفلترة */
+  isSearchable: boolean;
+  /** هل الحقل عام */
+  isPublic: boolean;
+  /** ترتيب الحقل */
+  sortOrder: number;
+  /** فئة الحقل */
+  category: string;
+  /** معرف المجموعة المرتبطة (إن وجدت) */
+  groupId: string;
+  /** يحدد ما إذا كان الحقل مخصص للوحدات */
+  isForUnits: boolean;
+}
+
+/**
+ * فلتر البحث الديناميكي
+ */
 export interface SearchFilterDto {
-  // ... أكمل حسب الحاجة
+  /** معرف الفلتر */
+  filterId: string;
+  /** معرف الحقل */
+  fieldId: string;
+  /** نوع الفلتر */
+  filterType: string;
+  /** الاسم المعروض */
+  displayName: string;
+  /** خيارات الفلتر (JSON) */
+  filterOptions: Record<string, any>;
+  /** حالة التفعيل */
+  isActive: boolean;
+  /** ترتيب الفلتر */
+  sortOrder: number;
+  /** معلومات الحقل الديناميكي المرتبط */
+  field: UnitTypeFieldDto;
 }

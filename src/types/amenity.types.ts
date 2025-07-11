@@ -68,3 +68,31 @@ export interface PaginatedResult<T> {
   totalCount: number;
   totalPages: number;
 }
+
+/**
+ * استعلام جلب جميع المرافق مع صفحات
+ */
+export interface GetAllAmenitiesQuery {
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+  /** مصطلح البحث */
+  searchTerm?: string;
+}
+
+/**
+ * استعلام جلب مرافق عقار معين
+ */
+export interface GetAmenitiesByPropertyQuery {
+  /** معرف العقار */
+  propertyId: string;
+}
+
+/**
+ * استعلام جلب مرافق حسب نوع العقار
+ */
+export interface GetAmenitiesByPropertyTypeQuery {
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+}

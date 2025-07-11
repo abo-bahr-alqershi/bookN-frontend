@@ -1,5 +1,9 @@
 // أنواع بيانات العقارات (Properties)
 
+import type { UnitDto } from './unit.types';
+import type { AmenityDto } from './amenity.types';
+import type { UnitTypeFieldDto } from './unit-type.types';
+
 export interface PropertyDto {
   id: string;
   ownerId: string;
@@ -59,4 +63,114 @@ export interface GetAllPropertiesQuery {
   minAverageRating?: number;
   isApproved?: boolean;
   hasActiveBookings?: boolean;
+}
+
+/**
+ * استعلام للحصول على بيانات عقار بواسطة المعرف
+ */
+export interface GetPropertyByIdQuery {
+  /** معرف العقار */
+  propertyId: string;
+}
+
+/**
+ * استعلام للحصول على العقارات في انتظار الموافقة
+ */
+export interface GetPendingPropertiesQuery {
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب تفاصيل العقار مع خيارات الوحدات والحقول الديناميكية
+ */
+export interface GetPropertyDetailsQuery {
+  /** معرف العقار */
+  propertyId: string;
+  /** تضمين الوحدات الفرعية */
+  includeUnits?: boolean;
+  /** تضمين القيم الديناميكية */
+  includeDynamicFields?: boolean;
+}
+
+/**
+ * استعلام جلب بيانات العقار للتحرير
+ */
+export interface GetPropertyForEditQuery {
+  /** معرف العقار */
+  propertyId: string;
+  /** معرف المالك */
+  ownerId: string;
+}
+
+/**
+ * استعلام لجلب حقول النموذج لنوع العقار
+ */
+export interface GetPropertyFormFieldsQuery {
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** عرض خاصة بالمالك */
+  ownerView?: boolean;
+}
+
+/**
+ * استعلام لجلب مرافق العقار
+ */
+export interface GetPropertyAmenitiesQuery {
+  /** معرف العقار */
+  propertyId: string;
+}
+
+// إضافة DTO لتفاصيل العقار الكامل
+export interface PropertyDetailsDto extends PropertyDto {
+  /** قائمة الوحدات التابعة للعقار */
+  units: UnitDto[];
+  /** قائمة المرافق التابعة للعقار */
+  amenities: AmenityDto[];
+}
+
+// إضافة DTO لبيانات تحرير العقار
+export interface PropertyEditDto {
+  /** معرف العقار */
+  propertyId: string;
+  /** اسم العقار */
+  name: string;
+  /** العنوان الكامل */
+  address: string;
+  /** المدينة */
+  city: string;
+  /** خط العرض */
+  latitude?: number;
+  /** خط الطول */
+  longitude?: number;
+  /** تقييم النجوم */
+  starRating?: number;
+  /** وصف العقار */
+  description: string;
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** الحقول الديناميكية مع قيمها */
+  dynamicFields: FieldGroupWithFieldsDto[];
+}
+
+// إضافة تعريف مجموعة الحقول مع تفاصيل الحقول
+export interface FieldGroupWithFieldsDto {
+  /** معرف المجموعة */
+  groupId: string;
+  /** اسم المجموعة */
+  groupName: string;
+  /** الاسم المعروض للمجموعة */
+  displayName: string;
+  /** وصف المجموعة */
+  description: string;
+  /** ترتيب العرض */
+  sortOrder: number;
+  /** هل المجموعة قابلة للطي */
+  isCollapsible: boolean;
+  /** هل تكون الموسعة افتراضياً */
+  isExpandedByDefault: boolean;
+  /** الحقول المرتبطة بالمجموعة */
+  fields: UnitTypeFieldDto[];
 }
