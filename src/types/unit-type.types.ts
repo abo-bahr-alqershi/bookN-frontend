@@ -5,19 +5,12 @@
  * بيانات نوع الوحدة الأساسية
  */
 export interface UnitTypeDto {
-  /** معرف نوع الوحدة */
   id: string;
-  /** معرف نوع العقار */
   propertyTypeId: string;
-  /** اسم نوع الوحدة */
   name: string;
-  /** وصف نوع الوحدة */
   description: string;
-  /** قواعد التسعير الافتراضية (JSON) */
   defaultPricingRules: string;
-  /** مجموعات الحقول الديناميكية */
   fieldGroups: FieldGroupDto[];
-  /** فلاتر البحث الديناميكية */
   filters: SearchFilterDto[];
 }
 

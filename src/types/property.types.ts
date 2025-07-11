@@ -123,6 +123,60 @@ export interface GetPropertyAmenitiesQuery {
   propertyId: string;
 }
 
+/**
+ * استعلام لجلب العقارات حسب المدينة
+ */
+export interface GetPropertiesByCityQuery {
+  /** اسم المدينة */
+  cityName: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام لجلب عقارات المالك
+ */
+export interface GetPropertiesByOwnerQuery {
+  /** معرف المالك */
+  ownerId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام لجلب العقارات حسب النوع
+ */
+export interface GetPropertiesByTypeQuery {
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام لإحصائيات تقييم العقار
+ */
+export interface GetPropertyRatingStatsQuery {
+  /** معرف العقار */
+  propertyId: string;
+}
+
+/**
+ * بيانات إحصائيات تقييم العقار
+ */
+export interface PropertyRatingStatsDto {
+  /** متوسط تقييم العقار */
+  averageRating: number;
+  /** إجمالي عدد التقييمات */
+  totalReviews: number;
+}
+
 // إضافة DTO لتفاصيل العقار الكامل
 export interface PropertyDetailsDto extends PropertyDto {
   /** قائمة الوحدات التابعة للعقار */

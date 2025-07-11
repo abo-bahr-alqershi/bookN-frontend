@@ -1,6 +1,8 @@
 // أنواع بيانات الوحدات (Units)
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
+import type { FieldValueDto } from './unit-field-value.types';
+
 /**
  * بيانات الوحدة الأساسية
  */
@@ -75,6 +77,108 @@ export interface DeleteUnitCommand {
  */
 export interface GetUnitByIdQuery {
   unitId: string;
+}
+
+/**
+ * استعلام جلب الوحدات الخاصة بعقار معين
+ */
+export interface GetUnitsByPropertyQuery {
+  /** معرف العقار */
+  propertyId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب الوحدات حسب النوع
+ */
+export interface GetUnitsByTypeQuery {
+  /** معرف نوع الوحدة */
+  unitTypeId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب توفر الوحدة
+ */
+export interface GetUnitAvailabilityQuery {
+  /** معرف الوحدة */
+  unitId: string;
+}
+
+/**
+ * استعلام جلب بيانات الوحدة للتعديل
+ */
+export interface GetUnitForEditQuery {
+  /** معرف الوحدة */
+  unitId: string;
+}
+
+/**
+ * استعلام جلب صور الوحدة
+ */
+export interface GetUnitImagesQuery {
+  /** معرف الوحدة */
+  unitId: string;
+}
+
+/**
+ * أمر إنشاء وحدة مع قيم الحقول الديناميكية
+ */
+export interface CreateUnitWithFieldValuesCommand {
+  /** معرف العقار */
+  propertyId: string;
+  /** معرف نوع الوحدة */
+  unitTypeId: string;
+  /** اسم الوحدة */
+  name: string;
+  /** السعر الأساسي */
+  basePrice: MoneyDto;
+  /** ميزات مخصصة (JSON) */
+  customFeatures: string;
+  /** طريقة حساب السعر */
+  pricingMethod: PricingMethod;
+  /** قيم الحقول الديناميكية */
+  fieldValues: FieldValueDto[];
+}
+
+/**
+ * أمر تحديث توفر الوحدة
+ */
+export interface UpdateUnitAvailabilityCommand {
+  /** معرف الوحدة */
+  unitId: string;
+  /** متاح أم لا */
+  isAvailable: boolean;
+}
+
+/**
+ * أمر تحديث متعدد لتوفر الوحدات
+ */
+export interface BulkUpdateUnitAvailabilityCommand {
+  /** قائمة أوامر توفر الوحدات */
+  commands: UpdateUnitAvailabilityCommand[];
+}
+
+/**
+ * استعلام جلب الوحدات المتاحة
+ */
+export interface GetAvailableUnitsQuery {
+  /** معرف العقار */
+  propertyId: string;
+  /** تاريخ البداية */
+  startDate?: string;
+  /** تاريخ النهاية */
+  endDate?: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
 }
 
 /**

@@ -1,49 +1,42 @@
-// أنواع بيانات سجلات التدقيق (Audit Logs)
-// جميع الحقول موثقة بالعربي لضمان التوافق التام مع الباك اند
+import type { PaginatedResult } from './amenity.types';
 
 /**
- * بيانات سجل التدقيق
+ * تمثيل سجل النشاط
  */
 export interface AuditLogDto {
-  /** المعرف الفريد للسجل */
+  /** معرف السجل */
   id: string;
-  /** اسم الجدول أو الكيان */
+  /** اسم الجدول */
   tableName: string;
-  /** العملية (إنشاء، تحديث، حذف) */
+  /** نوع الإجراء */
   action: string;
   /** معرف السجل المتأثر */
   recordId: string;
-  /** معرف المستخدم الذي قام بالتغيير */
+  /** معرف المستخدم */
   userId: string;
-  /** وصف التغييرات */
+  /** التغييرات الموثقة */
   changes: string;
-  /** تاريخ العملية */
+  /** الطابع الزمني */
   timestamp: string;
 }
 
 /**
- * استعلام لجلب سجلات نشاط الأدمن
+ * معلمات استعلام سجلات التدقيق
  */
-export interface GetAdminActivityLogsQuery {
+export interface AuditLogsQuery {
   /** رقم الصفحة */
   pageNumber?: number;
   /** حجم الصفحة */
   pageSize?: number;
-}
-
-/**
- * استعلام جلب سجلات التدقيق مع فلتر حسب المستخدم أو الفترة
- */
-export interface GetAuditLogsQuery {
-  /** معرف المستخدم (اختياري) */
+  /** تصفية حسب معرف المستخدم */
   userId?: string;
-  /** تاريخ بداية الفلترة (ISO) */
+  /** تاريخ البداية (ISO) */
   from?: string;
-  /** تاريخ نهاية الفلترة (ISO) */
+  /** تاريخ النهاية (ISO) */
   to?: string;
-  /** مصطلح البحث النصي في السجلات (اختياري) */
+  /** مصطلح البحث */
   searchTerm?: string;
-  /** نوع العملية للفلترة (اختياري) */
+  /** نوع العملية */
   operationType?: string;
 }
 

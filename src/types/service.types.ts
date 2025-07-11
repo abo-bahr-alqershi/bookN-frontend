@@ -57,6 +57,42 @@ export interface DeleteServiceCommand {
 }
 
 /**
+ * أمر لإنشاء خدمة جديدة للعقار (Property Service)
+ */
+export interface CreatePropertyServiceCommand {
+  /** معرف العقار */
+  propertyId: string;
+  /** اسم الخدمة */
+  name: string;
+  /** سعر الخدمة */
+  price: number;
+  /** نموذج التسعير */
+  pricingModel: string;
+}
+
+/**
+ * أمر لتحديث خدمة عقار (Property Service)
+ */
+export interface UpdatePropertyServiceCommand {
+  /** معرف الخدمة */
+  serviceId: string;
+  /** اسم الخدمة (اختياري) */
+  name?: string;
+  /** سعر الخدمة (اختياري) */
+  price?: number;
+  /** نموذج التسعير (اختياري) */
+  pricingModel?: string;
+}
+
+/**
+ * أمر لحذف خدمة عقار (Property Service)
+ */
+export interface DeletePropertyServiceCommand {
+  /** معرف الخدمة */
+  serviceId: string;
+}
+
+/**
  * تفاصيل الخدمة
  */
 export interface ServiceDetailsDto {

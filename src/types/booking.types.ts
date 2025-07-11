@@ -1,7 +1,16 @@
-// أنواع بيانات الحجوزات (Bookings)
-// جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
+import type { PaginatedResult } from './amenity.types';
+import type { MoneyDto, PaymentDto } from './payment.types';
+import type { ServiceDto } from './service.types';
 
-import type { PaymentMethod, PaymentStatus } from "./payment.types";
+/**
+ * حالات الحجز
+ */
+export type BookingStatus =
+  | 'Confirmed'
+  | 'Pending'
+  | 'Cancelled'
+  | 'Completed'
+  | 'CheckedIn';
 
 /**
  * بيانات الحجز الأساسية
@@ -14,116 +23,67 @@ export interface BookingDto {
   /** معرف الوحدة */
   unitId: string;
   /** تاريخ الوصول */
-  checkIn: string; // ISO date
+  checkIn: string;
   /** تاريخ المغادرة */
-  checkOut: string; // ISO date
+  checkOut: string;
   /** عدد الضيوف */
   guestsCount: number;
   /** السعر الإجمالي */
   totalPrice: MoneyDto;
   /** حالة الحجز */
   status: BookingStatus;
-  /** تاريخ الحجز */
-  bookedAt: string; // ISO date
+  /** تاريخ إجراء الحجز */
+  bookedAt: string;
   /** اسم المستخدم */
   userName: string;
   /** اسم الوحدة */
   unitName: string;
 }
-
 /**
  * تفاصيل الحجز (تشمل المدفوعات والخدمات)
  */
 export interface BookingDetailsDto extends BookingDto {
+  /** المدفوعات المرتبطة */
   payments: PaymentDto[];
+  /** الخدمات المرتبطة */
   services: ServiceDto[];
 }
 
 /**
- * أمر إنشاء حجز جديد
+ * الأمر لإنشاء حجز جديد
  */
 export interface CreateBookingCommand {
+  /** معرف المستخدم */
   userId: string;
+  /** معرف الوحدة */
   unitId: string;
+  /** تاريخ الوصول */
   checkIn: string;
+  /** تاريخ المغادرة */
   checkOut: string;
+  /** عدد الضيوف */
   guestsCount: number;
+  /** قائمة معرفات الخدمات الإضافية (اختياري) */
   services?: string[];
 }
 
 /**
- * أمر تحديث بيانات الحجز
+ * الأمر لتحديث بيانات الحجز
  */
 export interface UpdateBookingCommand {
+  /** معرف الحجز */
   bookingId: string;
+  /** تاريخ الوصول المحدث (اختياري) */
   checkIn?: string;
+  /** تاريخ المغادرة المحدث (اختياري) */
   checkOut?: string;
+  /** عدد الضيوف المحدث (اختياري) */
   guestsCount?: number;
 }
 
 /**
- * استعلام جلب تفاصيل الحجز
+ * الأمر لإلغاء الحجز
  */
-export interface GetBookingByIdQuery {
-  bookingId: string;
-}
-
-/**
- * استعلام جلب الحجوزات حسب الحالة
- */
-export interface GetBookingsByStatusQuery {
-  /** حالة الحجز */
-  status: BookingStatus;
-  /** رقم الصفحة */
-  pageNumber?: number;
-  /** حجم الصفحة */
-  pageSize?: number;
-}
-
-/**
- * حالة الحجز (مطابقة للباك اند)
- */
-export const BookingStatus = {
-  Confirmed: 'Confirmed',
-  Pending: 'Pending',
-  Cancelled: 'Cancelled',
-  Completed: 'Completed',
-  CheckedIn: 'CheckedIn',
-} as const;
-export type BookingStatus = keyof typeof BookingStatus;
-
-// أنواع فرعية مستخدمة
-export interface MoneyDto {
-  amount: number;
-  currency: string;
-  formattedAmount?: string;
-}
-
-export interface PaymentDto {
-  /** معرف الدفعة */
-  id: string;
-  /** معرف الحجز */
-  bookingId: string;
-  /** المبلغ المدفوع */
-  amount: MoneyDto;
-  /** رقم المعاملة */
-  transactionId: string;
-  /** طريقة الدفع */
-  method: PaymentMethod;
-  /** حالة الدفع */
-  status: PaymentStatus;
-  /** تاريخ الدفع */
-  paymentDate: string; // ISO date
-}
-
-export interface ServiceDto {
-  id: string;
-  propertyId: string;
-  propertyName: string;
-  name: string;
-  // ... أكمل بقية الحقول حسب الحاجة
-}
-
 export interface CancelBookingCommand {
   /** معرف الحجز */
   bookingId: string;
@@ -132,7 +92,67 @@ export interface CancelBookingCommand {
 }
 
 /**
- * استعلام للحصول على حجوزات العقار
+ * الأمر لتأكيد الحجز
+ */
+export interface ConfirmBookingCommand {
+  /** معرف الحجز */
+  bookingId: string;
+}
+
+/**
+ * الأمر لإكمال الحجز (تسجيل الخروج)
+ */
+export interface CompleteBookingCommand {
+  /** معرف الحجز */
+  bookingId: string;
+}
+
+/**
+ * الأمر لتسجيل الوصول
+ */
+export interface CheckInCommand {
+  /** معرف الحجز */
+  bookingId: string;
+}
+
+/**
+ * الأمر لتسجيل المغادرة
+ */
+export interface CheckOutCommand {
+  /** معرف الحجز */
+  bookingId: string;
+}
+
+/**
+ * الأمر لإضافة خدمة للحجز
+ */
+export interface AddServiceToBookingCommand {
+  /** معرف الحجز */
+  bookingId: string;
+  /** معرف الخدمة */
+  serviceId: string;
+}
+
+/**
+ * الأمر لإزالة خدمة من الحجز
+ */
+export interface RemoveServiceFromBookingCommand {
+  /** معرف الحجز */
+  bookingId: string;
+  /** معرف الخدمة */
+  serviceId: string;
+}
+
+/**
+ * استعلام جلب حجز بواسطة المعرف
+ */
+export interface GetBookingByIdQuery {
+  /** معرف الحجز */
+  bookingId: string;
+}
+
+/**
+ * استعلام جلب الحجوزات حسب العقار مع خيارات فلترة وتصفح
  */
 export interface GetBookingsByPropertyQuery {
   /** معرف العقار */
@@ -141,36 +161,48 @@ export interface GetBookingsByPropertyQuery {
   startDate?: string;
   /** تاريخ النهاية (اختياري) */
   endDate?: string;
-  /** رقم الصفحة */
+  /** رقم الصفحة (اختياري) */
   pageNumber?: number;
-  /** حجم الصفحة */
+  /** حجم الصفحة (اختياري) */
   pageSize?: number;
   /** معرف المستخدم للفلترة (اختياري) */
   userId?: string;
   /** معرف نوع العقار للفلترة (اختياري) */
   propertyTypeId?: string;
-  /** قائمة IDs المرافق للفلترة (اختياري) */
+  /** قائمة معرفات المرافق للفلترة (اختياري) */
   amenityIds?: string[];
   /** حالة الحجز للفلترة (اختياري) */
   status?: BookingStatus;
   /** حالة الدفع للفلترة (اختياري) */
-  paymentStatus?: PaymentStatus;
+  paymentStatus?: string;
   /** بحث باسم الضيف أو البريد الإلكتروني (اختياري) */
   guestNameOrEmail?: string;
   /** مصدر الحجز (اختياري) */
   bookingSource?: string;
   /** فلترة بالحجوزات المباشرة (اختياري) */
   isWalkIn?: boolean;
-  /** السعر الأدنى (اختياري) */
+  /** فلترة بالسعر الأدنى (اختياري) */
   minTotalPrice?: number;
-  /** عدد الضيوف الأدنى (اختياري) */
+  /** فلترة بعدد الضيوف (اختياري) */
   minGuestsCount?: number;
-  /** خيارات الترتيب (اختياري) */
+  /** خيارات الترتيب المتقدمة (اختياري) */
   sortBy?: string;
 }
 
 /**
- * استعلام للحصول على حجوزات الوحدة
+ * استعلام جلب الحجوزات حسب الحالة
+ */
+export interface GetBookingsByStatusQuery {
+  /** حالة الحجز */
+  status: BookingStatus;
+  /** رقم الصفحة (اختياري) */
+  pageNumber?: number;
+  /** حجم الصفحة (اختياري) */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب الحجوزات حسب الوحدة
  */
 export interface GetBookingsByUnitQuery {
   /** معرف الوحدة */
@@ -179,42 +211,64 @@ export interface GetBookingsByUnitQuery {
   startDate?: string;
   /** تاريخ النهاية (اختياري) */
   endDate?: string;
-  /** رقم الصفحة */
+  /** رقم الصفحة (اختياري) */
   pageNumber?: number;
-  /** حجم الصفحة */
+  /** حجم الصفحة (اختياري) */
   pageSize?: number;
 }
 
 /**
- * استعلام للحصول على حجوزات المستخدم
+ * استعلام جلب حجوزات المستخدم
  */
 export interface GetBookingsByUserQuery {
   /** معرف المستخدم */
   userId: string;
-  /** رقم الصفحة */
+  /** رقم الصفحة (اختياري) */
   pageNumber?: number;
-  /** حجم الصفحة */
+  /** حجم الصفحة (اختياري) */
   pageSize?: number;
-  /** حالة الحجز (اختياري) */
+  /** حالة الحجز للفلترة (اختياري) */
   status?: BookingStatus;
   /** بحث باسم الضيف أو البريد الإلكتروني (اختياري) */
   guestNameOrEmail?: string;
-  /** فلترة بالوحدة (اختياري) */
+  /** معرف الوحدة للفلترة (اختياري) */
   unitId?: string;
   /** مصدر الحجز (اختياري) */
   bookingSource?: string;
   /** فلترة بالحجوزات المباشرة (اختياري) */
   isWalkIn?: boolean;
-  /** السعر الأدنى (اختياري) */
+  /** فلترة بالسعر الأدنى (اختياري) */
   minTotalPrice?: number;
-  /** عدد الضيوف الأدنى (اختياري) */
+  /** فلترة بعدد الضيوف (اختياري) */
   minGuestsCount?: number;
-  /** خيارات الترتيب (اختياري) */
+  /** خيارات الترتيب المتقدمة (اختياري) */
   sortBy?: string;
 }
 
 /**
- * استعلام للحصول على خدمات الحجز
+ * استعلام الحجوزات في نطاق زمني
+ */
+export interface GetBookingsByDateRangeQuery {
+  /** تاريخ البداية */
+  startDate: string;
+  /** تاريخ النهاية */
+  endDate: string;
+  /** رقم الصفحة (اختياري) */
+  pageNumber?: number;
+  /** حجم الصفحة (اختياري) */
+  pageSize?: number;
+  /** معرف المستخدم للفلترة (اختياري) */
+  userId?: string;
+  /** بحث باسم الضيف أو البريد الإلكتروني (اختياري) */
+  guestNameOrEmail?: string;
+  /** معرف الوحدة للفلترة (اختياري) */
+  unitId?: string;
+  /** مصدر الحجز (اختياري) */
+  bookingSource?: string;
+}
+
+/**
+ * استعلام جلب خدمات الحجز
  */
 export interface GetBookingServicesQuery {
   /** معرف الحجز */
@@ -222,51 +276,23 @@ export interface GetBookingServicesQuery {
 }
 
 /**
- * استعلام للحصول على الحجوزات في نطاق زمني
- */
-export interface GetBookingsByDateRangeQuery {
-  /** تاريخ البداية */
-  startDate: string;
-  /** تاريخ النهاية */
-  endDate: string;
-  /** رقم الصفحة */
-  pageNumber?: number;
-  /** حجم الصفحة */
-  pageSize?: number;
-  /** معرف المستخدم للفلترة (اختياري) */
-  userId?: string;
-  /** بحث باسم الضيف أو البريد الإلكتروني (اختياري) */
-  guestNameOrEmail?: string;
-  /** فلترة بالوحدة (اختياري) */
-  unitId?: string;
-  /** مصدر الحجز (اختياري) */
-  bookingSource?: string;
-  /** فلترة بالحجوزات المباشرة (اختياري) */
-  isWalkIn?: boolean;
-  /** السعر الأدنى (اختياري) */
-  minTotalPrice?: number;
-  /** عدد الضيوف الأدنى (اختياري) */
-  minGuestsCount?: number;
-  /** خيارات الترتيب (اختياري) */
-  sortBy?: string;
-}
-
-/**
- * استعلام تقرير الحجوزات
+ * استعلام تقرير الحجوزات اليومية
  */
 export interface GetBookingReportQuery {
   /** تاريخ البداية */
   startDate: string;
   /** تاريخ النهاية */
   endDate: string;
-  /** معرف العقار (اختياري) */
+  /** معرف العقار للفلترة (اختياري) */
   propertyId?: string;
 }
 
 /**
- * نطاق زمني للتقارير والاتجاهات
+ * استعلام اتجاهات الحجوزات كسلسلة زمنية
  */
-export interface DateRangeDto {
+export interface GetBookingTrendsQuery {
+  /** معرف العقار (اختياري) */
+  propertyId?: string;
   /** تاريخ البداية */
   startDate: string;
   /** تاريخ النهاية */
@@ -274,17 +300,7 @@ export interface DateRangeDto {
 }
 
 /**
- * استعلام لاتجاهات الحجوزات كسلسلة زمنية
- */
-export interface GetBookingTrendsQuery {
-  /** معرف العقار (اختياري) */
-  propertyId?: string;
-  /** النطاق الزمني للاتجاهات */
-  range: DateRangeDto;
-}
-
-/**
- * استعلام لتحليل نافذة الحجوزات لعقار
+ * استعلام تحليل نافذة الحجز لعقار معين
  */
 export interface GetBookingWindowAnalysisQuery {
   /** معرف العقار */
@@ -302,14 +318,15 @@ export interface BookingReportItemDto {
 }
 
 /**
- * تقرير الحجوزات
+ * تقرير الحجوزات اليومية
  */
 export interface BookingReportDto {
+  /** عناصر التقرير */
   items: BookingReportItemDto[];
 }
 
 /**
- * بيانات نقطية زمنية للرسوم البيانية
+ * بيانات نقطية زمنية (Time series)
  */
 export interface TimeSeriesDataDto {
   /** التاريخ */

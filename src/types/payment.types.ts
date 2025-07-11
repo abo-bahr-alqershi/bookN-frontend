@@ -80,3 +80,71 @@ export interface UpdatePaymentStatusCommand {
   /** الحالة الجديدة للدفع */
   newStatus: PaymentStatus;
 }
+
+/**
+ * أمر لمعالجة الدفع
+ */
+export interface ProcessPaymentCommand {
+  /** معرف الحجز */
+  bookingId: string;
+  /** مبلغ الدفع */
+  amount: MoneyDto;
+  /** طريقة الدفع */
+  method: PaymentMethod;
+}
+
+/**
+ * استعلام جلب دفعة بواسطة المعرف
+ */
+export interface GetPaymentByIdQuery {
+  /** معرف الدفعة */
+  paymentId: string;
+}
+
+/**
+ * استعلام جلب المدفوعات حسب الحجز
+ */
+export interface GetPaymentsByBookingQuery {
+  /** معرف الحجز */
+  bookingId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب المدفوعات حسب الحالة
+ */
+export interface GetPaymentsByStatusQuery {
+  /** حالة الدفع */
+  status: PaymentStatus;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب المدفوعات حسب المستخدم
+ */
+export interface GetPaymentsByUserQuery {
+  /** معرف المستخدم */
+  userId: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}
+
+/**
+ * استعلام جلب المدفوعات حسب طريقة الدفع
+ */
+export interface GetPaymentsByMethodQuery {
+  /** طريقة الدفع */
+  paymentMethod: PaymentMethod;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
+}

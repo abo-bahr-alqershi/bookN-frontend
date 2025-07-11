@@ -143,3 +143,9 @@ export interface GetUserRolesQuery {
   /** معرف المستخدم */
   userId: string;
 }
+
+/**
+ * استعلام للحصول على بيانات المستخدم الحالي
+ * Query to get current logged-in user data
+ */
+export interface GetCurrentUserQuery {}
