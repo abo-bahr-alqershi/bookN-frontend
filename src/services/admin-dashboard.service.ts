@@ -5,17 +5,22 @@ import type {
   ExportDashboardReportCommand,
   CustomerReportDto,
   GetCustomerReportQuery,
+  OccupancyReportDto,
+  GetOccupancyRateQuery,
+  GetOccupancyReportQuery,
+  RevenueReportDto,
+  GetRevenueReportQuery,
+  ReviewSentimentDto,
+  PropertyDto,
+  GetTopPerformingPropertiesQuery
+} from '../types/dashboard.types';
+import type {
   FinancialSummaryDto,
   GetFinancialSummaryQuery,
   PropertyPerformanceDto,
   GetPropertyPerformanceQuery,
   PerformanceComparisonDto,
   GetPropertyPerformanceComparisonQuery,
-  OccupancyReportDto,
-  GetOccupancyRateQuery,
-  GetOccupancyReportQuery,
-  RevenueReportDto,
-  GetRevenueReportQuery,
   CancellationReasonDto,
   GetPlatformCancellationAnalysisQuery,
   RevenueBreakdownDto,
@@ -24,9 +29,6 @@ import type {
   GetUserAcquisitionFunnelQuery,
   CohortDto,
   GetCustomerCohortAnalysisQuery,
-  ReviewSentimentDto,
-  PropertyDto,
-  GetTopPerformingPropertiesQuery
 } from '../types/dashboard.types';
 
 // Base URL for admin dashboard endpoints

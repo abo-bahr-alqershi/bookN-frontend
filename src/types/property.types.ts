@@ -92,7 +92,6 @@ export interface GetPropertyDetailsQuery {
   /** تضمين الوحدات الفرعية */
   includeUnits?: boolean;
   /** تضمين القيم الديناميكية */
-  includeDynamicFields?: boolean;
 }
 
 /**
@@ -103,16 +102,6 @@ export interface GetPropertyForEditQuery {
   propertyId: string;
   /** معرف المالك */
   ownerId: string;
-}
-
-/**
- * استعلام لجلب حقول النموذج لنوع العقار
- */
-export interface GetPropertyFormFieldsQuery {
-  /** معرف نوع العقار */
-  propertyTypeId: string;
-  /** عرض خاصة بالمالك */
-  ownerView?: boolean;
 }
 
 /**
@@ -233,7 +222,6 @@ export interface PropertyEditDto {
   /** معرف نوع العقار */
   propertyTypeId: string;
   /** الحقول الديناميكية مع قيمها */
-  dynamicFields: FieldGroupWithFieldsDto[];
 }
 
 // إضافة تعريف مجموعة الحقول مع تفاصيل الحقول

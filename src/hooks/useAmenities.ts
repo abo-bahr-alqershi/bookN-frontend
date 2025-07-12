@@ -1,15 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AmenitiesService } from '../services/amenities.service';
-import type {
-  AmenityDto,
-  CreateAmenityCommand,
-  UpdateAmenityCommand,
-  AssignAmenityToPropertyCommand,
-  AssignAmenityToPropertyTypeCommand,
-  UpdatePropertyAmenityCommand,
-  PaginatedResult,
-  ResultDto,
-} from '../types/amenity.types';
+import { AdminAmenitiesService as AmenitiesService } from '../services/admin-amenities.service';
+import type { CreateAmenityCommand, UpdateAmenityCommand } from '../types/amenity.types';
 
 // جلب جميع المرافق مع صفحات
 export function useGetAllAmenities(params?: { pageNumber?: number; pageSize?: number; searchTerm?: string }) {

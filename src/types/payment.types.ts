@@ -13,11 +13,6 @@ export interface MoneyDto {
   formattedAmount: string;
 }
 
-/**
- * طرق الدفع
- * (تم التحويل إلى نوع union string لضمان التوافق مع إعدادات TypeScript الحديثة)
- */
-export type PaymentMethod = 'Card' | 'Cash' | 'Wallet';
 
 /**
  * حالات الدفع
@@ -44,12 +39,12 @@ export interface PaymentDto {
   paymentDate: string;
 }
 
-export enum PaymentMethod {
-  CreditCard = 0,
-  PayPal = 1,
-  BankTransfer = 2,
-  Cash = 3,
-  Other = 4,
+export type PaymentMethod = {
+  CreditCard: 0,
+  PayPal: 1,
+  BankTransfer: 2,
+  Cash: 3,
+  Other: 4,
 }
 
 /**

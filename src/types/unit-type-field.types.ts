@@ -232,4 +232,32 @@ export interface FieldGroupWithFieldsDto {
   isCollapsible: boolean;
   isExpandedByDefault: boolean;
   fields: UnitTypeFieldDto[];
+}
+
+/**
+ * استعلام لجلب الحقول غير المجمعة ضمن أي مجموعة
+ */
+export interface GetUngroupedFieldsQuery {
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** قابل للبحث فقط (اختياري) */
+  isSearchable?: boolean;
+  /** عام فقط (اختياري) */
+  isPublic?: boolean;
+  /** مخصص للوحدات فقط (اختياري) */
+  isForUnits?: boolean;
+  /** فئة الحقل (اختياري) */
+  category?: string;
+  /** رقم الصفحة (اختياري) */
+  pageNumber?: number;
+  /** حجم الصفحة (اختياري) */
+  pageSize?: number;
+}
+
+/**
+ * أمر bulk assign للحقول لمجموعة واحدة
+ */
+export interface BulkAssignFieldToGroupCommand {
+  /** قائمة معرفات الحقول */
+  fieldIds: string[];
 } 

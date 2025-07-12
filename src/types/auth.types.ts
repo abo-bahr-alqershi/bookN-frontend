@@ -58,3 +58,17 @@ export interface ResendPasswordResetLinkCommand {
 export interface ResendEmailVerificationLinkCommand {
   email: string;
 }
+
+export interface ChangePasswordCommand {
+    userId: string;
+    currentPassword: string;
+    newPassword: string;
+}
+
+export interface RefreshTokenCommand {
+    refreshToken: string;
+}
+
+export interface ForgotPasswordCommand {
+    email: string;
+}

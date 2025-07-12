@@ -10,7 +10,6 @@ import type {
   GetPendingPropertiesQuery,
   GetPropertyDetailsQuery,
   GetPropertyForEditQuery,
-  GetPropertyFormFieldsQuery,
   GetPropertyAmenitiesQuery,
   PropertyDetailsDto,
   PropertyEditDto,
@@ -57,13 +56,10 @@ export const AdminPropertiesService = {
     axios.get<PaginatedResult<PropertyDto>>(`${API_BASE}/pending`, { params }).then(res => res.data),
   /** جلب تفاصيل العقار مع الوحدات والحقول الديناميكية */
   getDetails: (query: GetPropertyDetailsQuery) =>
-    axios.get<ResultDto<PropertyDetailsDto>>(`${API_BASE}/${query.propertyId}/details`, { params: { includeUnits: query.includeUnits, includeDynamicFields: query.includeDynamicFields } }).then(res => res.data),
+    axios.get<ResultDto<PropertyDetailsDto>>(`${API_BASE}/${query.propertyId}/details`, { params: { includeUnits: query.includeUnits } }).then(res => res.data),
   /** جلب بيانات العقار للتحرير */
   getForEdit: (query: GetPropertyForEditQuery) =>
     axios.get<ResultDto<PropertyEditDto>>(`${API_BASE}/${query.propertyId}/for-edit`, { params: { ownerId: query.ownerId } }).then(res => res.data),
-  /** جلب حقول النموذج لنوع العقار */
-  getFormFields: (query: GetPropertyFormFieldsQuery) =>
-    axios.get<FieldGroupWithFieldsDto[]>(`${API_BASE}/form-fields/${query.propertyTypeId}`, { params: query }).then(res => res.data),
   /** جلب مرافق العقار */
   getAmenities: (query: GetPropertyAmenitiesQuery) =>
     axios.get<ResultDto<AmenityDto[]>>(`${API_BASE}/${query.propertyId}/amenities`, { params: query }).then(res => res.data),

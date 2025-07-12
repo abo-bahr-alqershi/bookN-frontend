@@ -17,12 +17,11 @@ export interface ReviewImageDto {
   uploadedAt: string;
 }
 
-export enum ImageCategory {
-  Review = 0,
-  Property = 1,
-  Unit = 2,
-  Profile = 3,
-  Other = 4,
+export type ImageCategory = {
+    Exterior: 0,
+    Interior: 1,
+    Room: 2,
+    Facility: 3,
 }
 
 /**
@@ -91,3 +90,18 @@ export interface GetReviewsByUserQuery {
  * استعلام جلب التقييمات المعلقة للموافقة
  */
 export interface GetPendingReviewsQuery {}
+
+export interface ApproveReviewCommand {
+    reviewId: string;
+    adminId: string;
+}
+
+export interface DeleteReviewCommand {
+    reviewId: string;
+}
+
+export interface RespondToReviewCommand {
+    reviewId: string;
+    responseText: string;
+    ownerId: string;
+}

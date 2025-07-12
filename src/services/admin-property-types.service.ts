@@ -3,9 +3,7 @@ import type {
   PropertyTypeDto,
   CreatePropertyTypeCommand,
   UpdatePropertyTypeCommand,
-  DeletePropertyTypeCommand,
   GetAllPropertyTypesQuery,
-  GetPropertyTypeByIdQuery,
 } from '../types/property-type.types';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 

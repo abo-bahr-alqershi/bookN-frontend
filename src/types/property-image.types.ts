@@ -2,12 +2,12 @@
 // جميع الحقول موثقة بالعربي لضمان التوافق التام مع الباك اند
 
 /**
- * فئة الصورة
+ * فئة الصورة (مطابقة للـ enum في الباك اند)
  */
 export type ImageCategory = 'Exterior' | 'Interior' | 'Room' | 'Facility';
 
 /**
- * حالة الصورة
+ * حالة الصورة (مطابقة للـ enum في الباك اند)
  */
 export type ImageStatus = 'Pending' | 'Approved' | 'Rejected';
 
@@ -37,6 +37,9 @@ export interface PropertyImageDto {
   altText: string;
   /** وسوم الصورة (JSON) */
   tags: string;
+
+  /** أحجام الصورة (JSON) */
+  sizes: string;
   /** هل هي الصورة الرئيسية */
   isMain: boolean;
   /** ترتيب العرض */
@@ -118,13 +121,42 @@ export interface AssignPropertyImageToUnitCommand {
 }
 
 /**
- * استعلام جلب جميع صور العقار/الوحدة
+ * أمر لتعيين صور متعددة لعقارات
+ */
+export interface BulkAssignImageToPropertyCommand {
+  /** قائمة التعيينات: معرف العقار ومعرف الصورة */
+  assignments: Array<{ propertyId: string; imageId: string }>;
+}
+
+/**
+ * أمر لتعيين صور متعددة لوحدات
+ */
+export interface BulkAssignImageToUnitCommand {
+  /** قائمة التعيينات: معرف الوحدة ومعرف الصورة */
+  assignments: Array<{ unitId: string; imageId: string }>;
+}
+
+/**
+ * أمر لإعادة ترتيب الصور
+ * Command to reorder property images display order
+ */
+export interface ReorderPropertyImagesCommand {
+  /** قائمة الترتيبات: معرف الصورة وترتيب العرض */
+  assignments: Array<{ imageId: string; displayOrder: number }>;
+}
+
+/**
+ * استعلام جلب صور العقار/الوحدة مع الترقيم
  */
 export interface GetPropertyImagesQuery {
   /** معرف العقار (اختياري) */
   propertyId?: string;
   /** معرف الوحدة (اختياري) */
   unitId?: string;
+  /** رقم الصفحة */
+  pageNumber?: number;
+  /** حجم الصفحة */
+  pageSize?: number;
 }
 
 /**

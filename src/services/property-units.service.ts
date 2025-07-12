@@ -62,9 +62,16 @@ export const PropertyUnitsService = {
   getDetails: (query: GetUnitAvailabilityQuery) =>
     axios.get<ResultDto<UnitDetailsDto>>(`${API_BASE}/${query.unitId}/details`, { params: { includeDynamicFields: true } }).then(res => res.data),
 
-  /** جلب الوحدات حسب النوع */
-  getByType: (query: GetUnitsByTypeQuery) =>
-    axios.get<PaginatedResult<UnitDto>>(`${API_BASE}/type/${query.unitTypeId}`, { params: { pageNumber: query.pageNumber, pageSize: query.pageSize } }).then(res => res.data),
+  /** جلب الوحدات حسب النوع مع إمكانية تضمين القيم الديناميكية */
+  getByType: (query: GetUnitsByTypeQuery) => {
+    const { unitTypeId, includeDynamicFields, pageNumber, pageSize, isAvailable, minBasePrice, maxBasePrice, minCapacity, nameContains } = query;
+    return axios
+      .get<PaginatedResult<UnitDto>>(
+        `${API_BASE}/type/${unitTypeId}`,
+        { params: { includeDynamicFields, pageNumber, pageSize, isAvailable, minBasePrice, maxBasePrice, minCapacity, nameContains } }
+      )
+      .then(res => res.data);
+  },
 
   /** جلب توفر وحدة */
   getAvailability: (query: GetUnitAvailabilityQuery) =>

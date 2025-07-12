@@ -26,6 +26,9 @@ export interface UnitDto {
  * تفاصيل الوحدة (تشمل الحقول الديناميكية)
  */
 export interface UnitDetailsDto extends UnitDto {
+  maxCapacity: number;
+  viewCount: number;
+  bookingCount: number;
   dynamicFields: FieldGroupWithValuesDto[];
 }
 
@@ -33,6 +36,7 @@ export interface UnitDetailsDto extends UnitDto {
  * أمر إنشاء وحدة جديدة
  */
 export interface CreateUnitDto {
+  /** معرف نوع الوحدة */
   unitTypeId: string;
   unitNumber: string;
   basePrice: number;
@@ -42,7 +46,8 @@ export interface CreateUnitDto {
   bathroomsCount?: number;
   areaSquareMeters?: number;
   isAvailable: boolean;
-  dynamicFields?: UnitDynamicFieldValueDto[];
+  /** قيم الحقول الديناميكية للوحدة */
+  dynamicFields?: UnitFieldValueDto[];
 }
 
 export interface CreateUnitCommand {
@@ -52,6 +57,8 @@ export interface CreateUnitCommand {
   basePrice: MoneyDto;
   customFeatures: string;
   pricingMethod: PricingMethod;
+  /** قيم الحقول الديناميكية للوحدة (اختياري) */
+  fieldValues?: FieldValueDto[];
 }
 
 /**
@@ -63,6 +70,8 @@ export interface UpdateUnitCommand {
   basePrice?: MoneyDto;
   customFeatures?: string;
   pricingMethod?: PricingMethod;
+  /** قيم الحقول الديناميكية للوحدة (اختياري) */
+  fieldValues?: FieldValueDto[];
 }
 
 /**
@@ -112,6 +121,8 @@ export interface GetUnitsByTypeQuery {
   maxBasePrice?: number;
   minCapacity?: number;
   nameContains?: string;
+  /** تضمين القيم الديناميكية (اختياري) */
+  includeDynamicFields?: boolean;
 }
 
 /**
@@ -238,4 +249,13 @@ export interface UnitFieldValueDto {
 
 export interface FieldGroupWithValuesDto {
   // ... أكمل حسب الحاجة
+}
+
+/**
+ * استعلام جلب توفر الوحدة ضمن نطاق زمني
+ */
+export interface GetUnitAvailabilityQuery {
+  unitId: string;
+  startDate?: string;
+  endDate?: string;
 }

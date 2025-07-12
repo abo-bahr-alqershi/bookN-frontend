@@ -3,10 +3,8 @@ import type {
   UnitFieldValueDto,
   CreateUnitFieldValueCommand,
   UpdateUnitFieldValueCommand,
-  DeleteUnitFieldValueCommand,
-  GetUnitFieldValueByIdQuery,
   GetUnitFieldValuesQuery,
-  BulkUpdateUnitFieldValuesCommand,
+  BulkUpdateUnitFieldValueCommand,
   GetUnitFieldValuesGroupedQuery,
   FieldGroupWithValuesDto,
 } from '../types/unit-field-value.types';
@@ -27,7 +25,7 @@ export const AdminUnitFieldValuesService = {
     axios.delete<ResultDto<boolean>>(`/api/admin/UnitFieldValues/${valueId}`).then(res => res.data),
 
   /** تحديث متعدد لقيم حقول الوحدات */
-  bulkUpdate: (data: BulkUpdateUnitFieldValuesCommand) =>
+  bulkUpdate: (data: BulkUpdateUnitFieldValueCommand) =>
     axios.post<ResultDto<boolean>>(`/api/admin/UnitFieldValues/bulk-update`, data).then(res => res.data),
 
   /** جلب جميع قيم الحقول لوحدة */

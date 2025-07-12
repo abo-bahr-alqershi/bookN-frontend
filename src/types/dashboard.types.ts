@@ -94,19 +94,19 @@ export interface StatisticsPeriodDto {
   additionalData?: Record<string, any>;
 }
 
-export enum PeriodType {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-  QUARTERLY = 'QUARTERLY',
-  YEARLY = 'YEARLY',
-  CUSTOM = 'CUSTOM',
+export type PeriodType = {
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY',
+  QUARTERLY: 'QUARTERLY',
+  YEARLY: 'YEARLY',
+  CUSTOM: 'CUSTOM',
 }
 
-export enum ChangeDirection {
-  UP = 'UP',
-  DOWN = 'DOWN',
-  STABLE = 'STABLE',
+export type ChangeDirection = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+  STABLE: 'STABLE',
 }
 
 /**
@@ -340,5 +340,62 @@ export interface CategoricalDataDto {
   category: string;
   value: number;
 }
+
+
+export interface FinancialSummaryDto {
+    totalRevenue: number;
+    totalBookings: number;
+    averageBookingValue: number;
+}
+
+export interface GetFinancialSummaryQuery {
+    startDate: string;
+    endDate: string;
+    propertyId?: string;
+}
+
+export interface GetPropertyPerformanceQuery {
+    propertyId: string;
+    startDate: string;
+    endDate: string;
+}
+
+/**
+ * استعلام للحصول على مقارنة أداء العقار بين فترتين زمنيتين
+ */
+export interface GetPropertyPerformanceComparisonQuery {
+  propertyId: string;
+  currentRange: DateRangeDto;
+  previousRange: DateRangeDto;
+}
+
+/**
+ * استعلام للحصول على تحليل أسباب إلغاء الحجوزات ضمن نطاق زمني
+ */
+export interface GetPlatformCancellationAnalysisQuery {
+  range: DateRangeDto;
+}
+
+/**
+ * استعلام للحصول على تفصيل الإيرادات الكلي لمنصة ضمن نطاق زمني
+ */
+export interface GetPlatformRevenueBreakdownQuery {
+  range: DateRangeDto;
+}
+
+/**
+ * استعلام للحصول على بيانات قمع اكتساب العملاء ضمن نطاق زمني
+ */
+export interface GetUserAcquisitionFunnelQuery {
+  range: DateRangeDto;
+}
+
+/**
+ * استعلام للحصول على تحليل أفواج العملاء ضمن نطاق زمني
+ */
+export interface GetCustomerCohortAnalysisQuery {
+  range: DateRangeDto;
+}
+
 
 export type { PropertyDto }; 

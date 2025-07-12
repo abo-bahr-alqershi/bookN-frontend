@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { PaginatedResult } from '../types/common.types';
-import type { PropertyDto, SearchPropertiesQuery } from '../types/property.types';
+import type { PropertyDto } from '../types/property.types';
+import type { SearchPropertiesQuery } from '../types/property-search.types';
 
 // المسار الأساسي لتعاملات العقارات المشتركة
 const API_BASE = '/api/common/properties';

@@ -6,7 +6,6 @@ import type {
   DeleteUnitFieldValueCommand,
   GetUnitFieldValueByIdQuery,
   GetUnitFieldValuesQuery,
-  BulkUpdateUnitFieldValuesCommand,
   GetUnitFieldValuesGroupedQuery,
   FieldGroupWithValuesDto,
   BulkCreateUnitFieldValueCommand,
@@ -32,7 +31,7 @@ export const PropertyUnitFieldValuesService = {
     axios.delete<ResultDto<boolean>>(`${API_BASE}/${valueId}`).then(res => res.data),
 
   /** تحديث متعدد لقيم حقول الوحدات */
-  bulkUpdate: (data: BulkUpdateUnitFieldValuesCommand) =>
+  bulkUpdate: (data: BulkUpdateUnitFieldValueCommand) =>
     axios.post<ResultDto<boolean>>(`${API_BASE}/bulk-update`, data).then(res => res.data),
 
   /** إنشاء جماعي لقيم حقول الوحدات */

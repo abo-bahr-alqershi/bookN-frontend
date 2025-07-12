@@ -12,15 +12,15 @@ export interface PolicyDto {
   rules: string;
 }
 
-export enum PolicyType {
-  Cancellation = 0,
-  CheckIn = 1,
-  CheckOut = 2,
-  Payment = 3,
-  Smoking = 4,
-  Pets = 5,
-  Damage = 6,
-  Other = 7,
+export type PolicyType = {
+  Cancellation: 0,
+  CheckIn: 1,
+  CheckOut: 2,
+  Payment: 3,
+  Smoking: 4,
+  Pets: 5,
+  Damage: 6,
+  Other: 7,
 }
 
 /**

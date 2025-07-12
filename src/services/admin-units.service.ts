@@ -42,9 +42,16 @@ export const AdminUnitsService = {
   /** تحديث متعدد لتوفر الوحدات ضمن نطاق زمني */
   bulkUpdateAvailability: (data: { unitIds: string[]; startDate: string; endDate: string; isAvailable: boolean }) =>
     axios.post<ResultDto<boolean>>(`${API_BASE}/bulk-availability`, data).then(res => res.data),
-  /** جلب الوحدات حسب نوع الوحدة */
-  getByType: (params: { unitTypeId: string; isAvailable?: boolean; minBasePrice?: number; maxBasePrice?: number; minCapacity?: number; nameContains?: string; pageNumber?: number; pageSize?: number }) =>
-    axios.get<PaginatedResult<UnitDto>>(`${API_BASE}/type/${params.unitTypeId}`, { params }).then(res => res.data),
+  /** جلب الوحدات حسب نوع الوحدة مع إمكانية تضمين القيم الديناميكية */
+  getByType: (query: { unitTypeId: string; includeDynamicFields?: boolean; isAvailable?: boolean; minBasePrice?: number; maxBasePrice?: number; minCapacity?: number; nameContains?: string; pageNumber?: number; pageSize?: number }) => {
+    const { unitTypeId, includeDynamicFields, isAvailable, minBasePrice, maxBasePrice, minCapacity, nameContains, pageNumber, pageSize } = query;
+    return axios
+      .get<PaginatedResult<UnitDto>>(
+        `${API_BASE}/type/${unitTypeId}`,
+        { params: { includeDynamicFields, isAvailable, minBasePrice, maxBasePrice, minCapacity, nameContains, pageNumber, pageSize } }
+      )
+      .then(res => res.data);
+  },
   /** جلب توفر وحدة */
   getAvailability: (unitId: string, query?: { startDate?: string; endDate?: string }) =>
     axios.get<ResultDto<any>>(`${API_BASE}/${unitId}/availability`, { params: query }).then(res => res.data),

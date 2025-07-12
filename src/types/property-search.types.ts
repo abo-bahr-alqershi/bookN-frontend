@@ -22,7 +22,6 @@ export interface PropertySearchItemDto {
   distanceKm?: number;
   isAvailable: boolean;
   availableUnitsCount: number;
-  dynamicFields: Record<string, any>;
   maxCapacity: number;
   isFeatured: boolean;
   lastUpdated: string;
@@ -53,4 +52,52 @@ export interface SearchStatisticsDto {
   totalResultsBeforePaging: number;
   suggestions: string[];
   priceRange?: PriceRangeDto;
+}
+
+/**
+ * استعلام بحث عن العقارات بناءً على معايير متعددة
+ */
+export interface SearchPropertiesQuery {
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    propertyTypeId?: string;
+    checkInDate?: string;
+    checkOutDate?: string;
+    numberOfGuests?: number;
+    pageNumber: number;
+    pageSize: number;
+    amenityIds?: string[];
+    starRatings?: number[];
+    minAverageRating?: number;
+    isApproved?: boolean;
+    hasActiveBookings?: boolean;
+    latitude?: number;
+    longitude?: number;
+    radiusKm?: number;
+    sortBy?: string;
+}
+
+/**
+ * أمر بحث عن العقارات بناءً على معايير متعددة
+ */
+export interface SearchPropertiesCommand {
+    city?: string;
+    checkIn?: string;
+    checkOut?: string;
+    guestCount?: number;
+    propertyTypeId?: string;
+    pageNumber: number;
+    pageSize: number;
+    sortBy?: string;
+    sortDirection: string;
+    minPrice?: number;
+    maxPrice?: number;
+    amenityIds?: string[];
+    starRatings?: number[];
+    minAverageRating?: number;
+    searchTerm?: string;
+    latitude?: number;
+    longitude?: number;
+    radiusKm?: number;
 }

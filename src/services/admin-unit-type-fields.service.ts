@@ -14,9 +14,12 @@ import type {
   RemoveFieldFromGroupCommand,
   ReorderFieldsInGroupCommand,
   FieldGroupWithFieldsDto,
+  GetUngroupedFieldsQuery,
+  BulkAssignFieldToGroupCommand,
 } from '../types/unit-type-field.types';
 import type { UnitTypeFieldDto } from '../types/unit-type.types';
 import type { ResultDto } from '../types/common.types';
+import type { PaginatedResult } from '../types/common.types';
 
 /**
  * خدمات الحقول الديناميكية لنوع الوحدة (Admin)
@@ -70,4 +73,16 @@ export const AdminUnitTypeFieldsService = {
   /** إعادة ترتيب الحقول ضمن مجموعة */
   reorderFieldsInGroup: (data: ReorderFieldsInGroupCommand) =>
     axios.post<ResultDto<boolean>>(`/api/admin/property-type-fields/reorder-fields`, data).then(res => res.data),
+
+  /**
+   * جلب الحقول غير المجمعة ضمن أي مجموعة لنوع العقار
+   */
+  getUngroupedFields: (query: GetUngroupedFieldsQuery) =>
+    axios.get<PaginatedResult<UnitTypeFieldDto>>(`/api/admin/property-type-fields/ungrouped-fields/${query.propertyTypeId}`, { params: query }).then(res => res.data),
+
+  /**
+   * bulk assign للحقول لمجموعة واحدة
+   */
+  bulkAssignFieldToGroup: (groupId: string, data: BulkAssignFieldToGroupCommand) =>
+    axios.post<ResultDto<boolean>>(`/api/admin/property-type-fields/${groupId}/bulk-assign-field`, data).then(res => res.data),
 };

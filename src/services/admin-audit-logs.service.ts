@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { PaginatedResult } from '../types/common.types';
-import type { AuditLogDto, GetCustomerActivityLogsQuery, GetPropertyActivityLogsQuery } from '../types/audit-log.types';
-import type { GetAdminActivityLogsQuery, GetAuditLogsQuery} from '../types/';
+import type { AuditLogDto, GetCustomerActivityLogsQuery, GetPropertyActivityLogsQuery, GetAdminActivityLogsQuery, AuditLogsQuery } from '../types/audit-log.types';
 
 // المسار الأساسي لنقاط نهاية سجلات التدقيق للإدارة
 const API_BASE = '/api/admin/auditlogs';
@@ -11,7 +10,7 @@ const API_BASE = '/api/admin/auditlogs';
  */
 export const AdminAuditLogsService = {
   /** جلب سجلات التدقيق العامة */
-  getAuditLogs: (query: GetAuditLogsQuery) =>
+  getAuditLogs: (query: AuditLogsQuery) =>
     axios.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/audit-logs`, { params: query }).then(res => res.data),
 
   /** جلب سجلات نشاط مدراء النظام */

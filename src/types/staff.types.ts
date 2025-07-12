@@ -1,4 +1,3 @@
-import type { ResultDto, PaginatedResult } from './amenity.types';
 
 // DTO for staff data
 export interface StaffDto {
@@ -11,12 +10,12 @@ export interface StaffDto {
   permissions: string;
 }
 
-export enum StaffPosition {
-  Manager = 0,
-  Receptionist = 1,
-  Housekeeping = 2,
-  Maintenance = 3,
-  Other = 4,
+export type StaffPosition = {
+  Manager: 0,
+  Receptionist: 1,
+  Housekeeping: 2,
+  Maintenance: 3,
+  Other: 4,
 }
 
 // Command to add a new staff member

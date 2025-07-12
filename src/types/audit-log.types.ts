@@ -1,5 +1,3 @@
-import type { PaginatedResult } from './amenity.types';
-
 /**
  * تمثيل سجل النشاط
  */
@@ -53,4 +51,9 @@ export interface GetPropertyActivityLogsQuery {
   pageNumber?: number;
   /** حجم الصفحة */
   pageSize?: number;
+}
+
+export interface GetAdminActivityLogsQuery {
+    pageNumber: number;
+    pageSize: number;
 }

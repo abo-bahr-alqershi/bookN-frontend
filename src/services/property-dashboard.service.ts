@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { OwnerDashboardDto, GetOwnerDashboardQuery } from '../types/dashboard.types';
 import type { ResultDto } from '../types/common.types';
+import type { ExportDashboardReportCommand } from '../types/dashboard.types';
 
 // Base URL for property owner dashboard endpoints
 const API_BASE = '/api/property/dashboard';
@@ -11,8 +12,8 @@ export const PropertyDashboardService = {
     axios.post<OwnerDashboardDto>(`${API_BASE}/owner`, query).then(res => res.data),
 
   /** Export dashboard report */
-  exportReport: (query: any) =>
-    axios.post<ResultDto<string>>(`${API_BASE}/export`, query).then(res => res.data),
+  exportReport: (data: ExportDashboardReportCommand) =>
+    axios.post(`${API_BASE}/export`, data, { responseType: 'blob' }).then(res => res.data),
 
   /** Get customer report */
   getCustomerReport: (query: any) =>

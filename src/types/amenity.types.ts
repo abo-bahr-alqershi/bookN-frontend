@@ -37,8 +37,12 @@ export interface UpdatePropertyAmenityCommand {
   amenityId: string;
   isAvailable: boolean;
   extraCost: MoneyDto;
+  description?: string;  // Added for full backend compatibility
 }
 
+/**
+ * DTO للمبالغ المالية (مطابقة للباك اند)
+ */
 export interface MoneyDto {
   amount: number;
   currency: string;

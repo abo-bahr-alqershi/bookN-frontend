@@ -67,7 +67,7 @@ export interface FieldValueDto {
 /**
  * أمر تحديث متعدد لقيم الحقول
  */
-export interface BulkUpdateUnitFieldValuesCommand {
+export interface BulkUpdateUnitFieldValueCommand {
   /** معرف الوحدة */
   unitId: string;
   /** قائمة قيم الحقول */
@@ -104,4 +104,19 @@ export interface FieldGroupWithValuesDto {
   displayName: string;
   description: string;
   fieldValues: FieldWithValueDto[];
+}
+
+/**
+ * أمر إنشاء قيم حقول للوحدة بشكل مجمع
+ */
+export interface BulkCreateUnitFieldValueCommand {
+  unitId: string;
+  fieldValues: FieldValueDto[];
+}
+
+/**
+ * أمر حذف قيم حقول للوحدة بشكل مجمع
+ */
+export interface BulkDeleteUnitFieldValueCommand {
+  valueIds: string[];
 }

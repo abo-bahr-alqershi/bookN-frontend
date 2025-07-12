@@ -6,14 +6,14 @@ export interface ValidationWarningDto {
   recommendations: ValidationRecommendationDto[];
 }
 
-export enum FieldValidationWarningType {
-  MissingRequiredField = 0,
-  InconsistentData = 1,
-  LowQualityContent = 2,
-  IncompleteConfiguration = 3,
-  PerformanceIssue = 4,
-  SecurityVulnerability = 5,
-  Other = 6,
+export type FieldValidationWarningType = {
+  MissingRequiredField: 0,
+  InconsistentData: 1,
+  LowQualityContent: 2,
+  IncompleteConfiguration: 3,
+  PerformanceIssue: 4,
+  SecurityVulnerability: 5,
+  Other: 6,
 }
 
 export interface ValidationRecommendationDto {
@@ -23,19 +23,19 @@ export interface ValidationRecommendationDto {
   actionableSteps: string[];
 }
 
-export enum RecommendationType {
-  DataCorrection = 0,
-  ContentImprovement = 1,
-  ConfigurationAdjustment = 2,
-  PerformanceOptimization = 3,
-  SecurityFix = 4,
-  Other = 5,
+export type RecommendationType = {
+  DataCorrection: 0,
+  ContentImprovement: 1,
+  ConfigurationAdjustment: 2,
+  PerformanceOptimization: 3,
+  SecurityFix: 4,
+  Other: 5,
 }
 
-export enum RecommendationPriority {
-  High = 0,
-  Medium = 1,
-  Low = 2,
+export type RecommendationPriority = {
+  High: 0,
+  Medium: 1,
+  Low: 2,
 }
 
 export interface ValidationStatisticsDto {
@@ -73,21 +73,21 @@ export interface ValidationErrorDto {
   severity: ErrorSeverity;
 }
 
-export enum FieldValidationErrorType {
-  InvalidFormat = 0,
-  OutOfRange = 1,
-  MissingDependency = 2,
-  DuplicateEntry = 3,
-  BusinessRuleViolation = 4,
-  SystemError = 5,
-  Other = 6,
+export type FieldValidationErrorType = {
+  InvalidFormat: 0,
+  OutOfRange: 1,
+  MissingDependency: 2,
+  DuplicateEntry: 3,
+  BusinessRuleViolation: 4,
+  SystemError: 5,
+  Other: 6,
 }
 
-export enum ErrorSeverity {
-  Critical = 0,
-  High = 1,
-  Medium = 2,
-  Low = 3,
+export type ErrorSeverity = {
+  Critical: 0,
+  High: 1,
+  Medium: 2,
+  Low: 3,
 }
 
 export interface QualityTrend {

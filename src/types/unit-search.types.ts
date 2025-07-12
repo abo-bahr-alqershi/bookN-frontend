@@ -1,3 +1,5 @@
+import type { UnitDynamicFieldFilterDto } from "./unit.types";
+
 export interface SearchUnitsQuery {
   location?: string;
   minPrice?: number;

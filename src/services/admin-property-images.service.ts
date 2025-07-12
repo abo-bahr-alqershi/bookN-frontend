@@ -9,6 +9,9 @@ import type {
   AssignPropertyImageToUnitCommand,
   GetPropertyImagesQuery,
   PropertyImageStatsDto,
+  BulkAssignImageToPropertyCommand,
+  BulkAssignImageToUnitCommand,
+  ReorderPropertyImagesCommand,
 } from '../types/property-image.types';
 
 const API_BASE = '/api/admin/propertyimages';
@@ -35,11 +38,27 @@ export const AdminPropertyImagesService = {
   assignToUnit: (imageId: string, unitId: string, data: AssignPropertyImageToUnitCommand) =>
     axios.post<ResultDto<boolean>>(`${API_BASE}/${imageId}/assign/unit/${unitId}`, data).then(res => res.data),
 
+  /**
+   * تعيين صور متعددة لعقارات
+   */
+  bulkAssignToProperties: (data: BulkAssignImageToPropertyCommand) =>
+    axios.post<ResultDto<boolean>>(`${API_BASE}/bulk-assign/property`, data).then(res => res.data),
+
+  /**
+   * تعيين صور متعددة لوحدات
+   */
+  bulkAssignToUnits: (data: BulkAssignImageToUnitCommand) =>
+    axios.post<ResultDto<boolean>>(`${API_BASE}/bulk-assign/unit`, data).then(res => res.data),
+
   /** جلب جميع صور العقار */
   getAll: (query: GetPropertyImagesQuery) =>
-    axios.get<PaginatedResult<PropertyImageDto>>(`${API_BASE}`, { params: query }).then(res => res.data),
+    axios.get<ResultDto<PaginatedResult<PropertyImageDto>>>(`${API_BASE}`, { params: query }).then(res => res.data),
 
   /** جلب إحصائيات صور عقار */
   getStats: (propertyId: string) =>
     axios.get<ResultDto<PropertyImageStatsDto>>(`${API_BASE}/${propertyId}/stats`).then(res => res.data),
+
+  /** إعادة ترتيب صور العقار */
+  reorder: (data: ReorderPropertyImagesCommand) =>
+    axios.put<ResultDto<boolean>>(`${API_BASE}/order`, data).then(res => res.data),
 }; 

@@ -1,6 +1,5 @@
-import type { PaginatedResult } from './amenity.types';
 import type { MoneyDto, PaymentDto } from './payment.types';
-import type { export ServiceDto } from './service.types';
+import type { ServiceDto } from './service.types';
 
 /**
  * حالات الحجز

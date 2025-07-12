@@ -1,5 +1,7 @@
 // أنواع بيانات المستخدمين (Users)
 
+import type { PropertyImageDto } from './property-image.types';
+
 export interface UserDto {
   id: string;
   name: string;
@@ -8,6 +10,10 @@ export interface UserDto {
   profileImage: string;
   createdAt: string;
   isActive: boolean;
+  /** إعدادات المستخدم بصيغة JSON */
+  settingsJson: string;
+  /** قائمة المفضلة للمستخدم بصيغة JSON */
+  favoritesJson: string;
 }
 
 export interface CreateUserCommand {
@@ -175,4 +181,45 @@ export interface LoyaltyProgressDto {
 export interface OwnerRegistrationResultDto {
   userId: string;
   propertyId: string;
+}
+
+/**
+ * استعلام لجلب مستخدم بواسطة البريد الإلكتروني
+ */
+export interface GetUserByEmailQuery {
+  email: string;
+}
+
+/**
+ * أمر لتسجيل مالك عقار جديد مع بيانات العقار الكاملة والحقول الديناميكية
+ */
+export interface RegisterPropertyOwnerCommand {
+  /** اسم المالك */
+  name: string;
+  /** بريد المالك الإلكتروني */
+  email: string;
+  /** كلمة مرور المالك */
+  password: string;
+  /** رقم هاتف المالك */
+  phone: string;
+  /** رابط صورة الملف الشخصي (اختياري) */
+  profileImage?: string;
+  /** معرف نوع العقار */
+  propertyTypeId: string;
+  /** اسم العقار */
+  propertyName: string;
+  /** وصف العقار (اختياري) */
+  description?: string;
+  /** عنوان العقار */
+  address: string;
+  /** المدينة */
+  city: string;
+  /** خط العرض (اختياري) */
+  latitude?: number;
+  /** خط الطول (اختياري) */
+  longitude?: number;
+  /** تقييم النجوم */
+  starRating: number;
+  /** الصور الأولية للعقار (اختياري) */
+  initialImages?: PropertyImageDto[];
 }

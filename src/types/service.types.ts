@@ -14,31 +14,13 @@ export interface ServiceDto {
   pricingModel: PricingModel;
 }
 
-export enum PricingModel {
-  PerBooking = 0,
-  PerDay = 1,
-  PerPerson = 2,
-  PerUnit = 3,
+export type PricingModel = {
+  PerBooking: 0,
+  PerDay: 1,
+  PerPerson: 2,
+  PerUnit: 3,
 }
-  /** معرف الخدمة */
-  id: string;
-  /** اسم الخدمة */
-  name: string;
-  /** وصف الخدمة */
-  description: string;
-  /** نوع الخدمة (تنظيف، نقل، إلخ) */
-  type: string;
-  /** تفاصيل الخدمة (JSON) */
-  details: Record<string, any>;
-  /** حالة التفعيل */
-  isActive: boolean;
-  /** سعر الخدمة */
-  price: number;
-  /** تاريخ الإنشاء */
-  createdAt: string;
-  /** تاريخ آخر تحديث */
-  updatedAt: string;
-}
+
 
 /**
  * أمر إنشاء خدمة جديدة
@@ -116,19 +98,6 @@ export interface ServiceDetailsDto {
   name: string;
   price: MoneyDto;
   pricingModel: PricingModel;
-}
-  /** معرف الخدمة */
-  id: string;
-  /** معرف العقار */
-  propertyId: string;
-  /** اسم العقار */
-  propertyName: string;
-  /** اسم الخدمة */
-  name: string;
-  /** سعر الخدمة */
-  price: MoneyDto;
-  /** نموذج التسعير */
-  pricingModel: string;
 }
 
 /**
