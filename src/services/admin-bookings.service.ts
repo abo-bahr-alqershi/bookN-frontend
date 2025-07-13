@@ -120,5 +120,10 @@ export const AdminBookingsService = {
     axios.get<PaginatedResult<BookingDto>>(
       `${API_BASE}/by-date-range`,
       { params: query }
-    ).then(res => res.data)
+    ).then(res => res.data),
+
+      /** تأكيد الحجز */
+  confirm: (data: ConfirmBookingCommand) =>
+    axios.post<ResultDto<boolean>>(`${API_BASE}/confirm`, data).then(res => res.data),
+
 }; 

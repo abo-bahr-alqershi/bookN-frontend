@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminReviews } from '../../hooks/useAdminReviews';
+import { useAdminProperties } from '../../hooks/useAdminProperties';
+import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
-import { AdminReviewsService } from '../../services/admin-reviews.service';
 import type {
   ReviewDto,
   GetReviewsByPropertyQuery,
@@ -14,9 +15,10 @@ import type {
   DeleteReviewCommand,
   RespondToReviewCommand
 } from '../../types/review.types';
+import type { GetAllPropertiesQuery } from '../../types/property.types';
 
 const AdminReviews = () => {
-  const queryClient = useQueryClient();
+  // removed erroneous hook invocation that returned queryClient
   
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,36 +51,33 @@ const AdminReviews = () => {
     ownerId: '',
   });
 
-  // Fetch reviews based on filter status
-  const { data: reviewsData, isLoading, error } = useQuery({
-    queryKey: ['admin-reviews', filterValues.status, currentPage, pageSize],
-    queryFn: () => {
-      if (filterValues.status === 'pending') {
-        return AdminReviewsService.getPending();
-      }
-      // For other statuses, we'll simulate with pending for now
-      return AdminReviewsService.getPending();
-    },
-  });
+  // Build query params
+  const queryParams: Record<string, any> = {
+    status: filterValues.status,
+    minRating: filterValues.minRating ? parseFloat(filterValues.minRating) : undefined,
+    maxRating: filterValues.maxRating ? parseFloat(filterValues.maxRating) : undefined,
+    hasImages: filterValues.hasImages,
+    propertyId: filterValues.propertyId || undefined,
+    userId: filterValues.userId || undefined,
+    reviewedAfter: filterValues.startDate || undefined,
+    pageNumber: currentPage,
+    pageSize,
+  };
 
-  // Mutations
-  const approveReviewMutation = useMutation({
-    mutationFn: (reviewId: string) => AdminReviewsService.approve(reviewId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
-      setShowApprovalModal(false);
-      setSelectedReview(null);
-    },
-  });
-
-  const deleteReviewMutation = useMutation({
-    mutationFn: (reviewId: string) => AdminReviewsService.deleteReview(reviewId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
-      setShowDeleteModal(false);
-      setSelectedReview(null);
-    },
-  });
+  // استخدام الهوك لإدارة استعلامات وعمليات التقييمات
+  const {
+    reviewsData,
+    isLoading: isLoadingReviews,
+    error: reviewsError,
+    approveReview,
+    deleteReview,
+  } = useAdminReviews(queryParams);
+  // جلب بيانات العقارات لفلتر الاختيار
+  const {
+    propertiesData,
+    isLoading: isLoadingProperties,
+  } = useAdminProperties({ pageNumber: 1, pageSize: 100 } as GetAllPropertiesQuery);
+  const { usersData, isLoading: isLoadingUsers } = useAdminUsers({});
 
   // Helper functions
   const handleViewDetails = (review: ReviewDto) => {
@@ -196,15 +195,15 @@ const AdminReviews = () => {
     },
     {
       key: 'propertyId',
-      label: 'معرف العقار',
-      type: 'text',
-      placeholder: 'أدخل معرف العقار',
+      label: 'العقار',
+      type: 'select',
+      options: propertiesData?.items.map(p => ({ value: p.id, label: p.name })) ?? [],
     },
     {
       key: 'userId',
-      label: 'معرف المستخدم',
-      type: 'text',
-      placeholder: 'أدخل معرف المستخدم',
+      label: 'المستخدم',
+      type: 'select',
+      options: usersData?.items.map(u => ({ value: u.id, label: u.name })) ?? [],
     },
     {
       key: 'startDate',
@@ -326,7 +325,7 @@ const AdminReviews = () => {
     },
   ];
 
-  if (error) {
+  if (reviewsError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -432,7 +431,7 @@ const AdminReviews = () => {
       <DataTable
         data={Array.isArray(reviewsData) ? reviewsData : []}
         columns={columns}
-        loading={isLoading}
+        loading={isLoadingReviews}
         pagination={{
           current: currentPage,
           total: Array.isArray(reviewsData) ? reviewsData.length : 0,
@@ -617,11 +616,11 @@ const AdminReviews = () => {
               إلغاء
             </button>
             <button
-              onClick={() => approveReviewMutation.mutate(selectedReview!.id)}
-              disabled={approveReviewMutation.isPending}
+              onClick={() => approveReview.mutate(selectedReview!.id)}
+              disabled={approveReview.status === 'pending'}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
-              {approveReviewMutation.isPending ? 'جارٍ الموافقة...' : 'الموافقة على التقييم'}
+              {approveReview.status === 'pending' ? 'جارٍ الموافقة...' : 'الموافقة على التقييم'}
             </button>
           </div>
         }
@@ -678,11 +677,11 @@ const AdminReviews = () => {
               إلغاء
             </button>
             <button
-              onClick={() => deleteReviewMutation.mutate(selectedReview!.id)}
-              disabled={deleteReviewMutation.isPending}
+              onClick={() => deleteReview.mutate(selectedReview!.id)}
+              disabled={deleteReview.status === 'pending'}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
             >
-              {deleteReviewMutation.isPending ? 'جارٍ الحذف...' : 'حذف التقييم'}
+              {deleteReview.status === 'pending' ? 'جارٍ الحذف...' : 'حذف التقييم'}
             </button>
           </div>
         }

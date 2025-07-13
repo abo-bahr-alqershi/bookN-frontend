@@ -1,6 +1,7 @@
 // أنواع بيانات قيم الحقول للوحدات (Unit Field Values)
 // جميع الحقول موثقة بالعربي لضمان التوافق التام مع الباك اند
-import type { UnitTypeFieldDto } from './unit-type.types';
+
+import type { UnitTypeFieldDto } from "./unit-type-field.types";
 
 /**
  * بيانات قيمة حقل للوحدة

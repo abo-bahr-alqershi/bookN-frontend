@@ -1,6 +1,8 @@
 // أنواع بيانات أنواع الوحدات (Unit Types)
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
+import type { UnitTypeFieldDto } from "./unit-type-field.types";
+
 /**
  * بيانات نوع الوحدة الأساسية
  */
@@ -82,41 +84,6 @@ export interface FieldGroupDto {
   fields: UnitTypeFieldDto[];
 }
 
-/**
- * حقل ديناميكي لنوع الوحدة
- */
-export interface UnitTypeFieldDto {
-  /** معرف الحقل */
-  fieldId: string;
-  /** معرف نوع العقار */
-  propertyTypeId: string;
-  /** معرف نوع الحقل */
-  fieldTypeId: string;
-  /** اسم الحقل */
-  fieldName: string;
-  /** الاسم المعروض للحقل */
-  displayName: string;
-  /** وصف الحقل */
-  description: string;
-  /** خيارات الحقل (JSON) */
-  fieldOptions: Record<string, any>;
-  /** قواعد التحقق (JSON) */
-  validationRules: Record<string, any>;
-  /** هل الحقل إلزامي */
-  isRequired: boolean;
-  /** هل الحقل قابل للفلترة */
-  isSearchable: boolean;
-  /** هل الحقل عام */
-  isPublic: boolean;
-  /** ترتيب الحقل */
-  sortOrder: number;
-  /** فئة الحقل */
-  category: string;
-  /** معرف المجموعة المرتبطة (إن وجدت) */
-  groupId: string;
-  /** يحدد ما إذا كان الحقل مخصص للوحدات */
-  isForUnits: boolean;
-}
 
 /**
  * فلتر البحث الديناميكي

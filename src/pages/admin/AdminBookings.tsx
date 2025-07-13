@@ -1,25 +1,22 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminBookings } from '../../hooks/useAdminBookings';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
-import { AdminBookingsService } from '../../services/admin-bookings.service';
+import UserSelector from '../../components/selectors/UserSelector';
+import UnitSelector from '../../components/selectors/UnitSelector';
+// تم حذف استدعاء خدمة الحجوزات المباشر لاستخدام الهوك
 import type {
   BookingDto,
-  BookingDetailsDto,
   BookingStatus,
   UpdateBookingCommand,
   CancelBookingCommand,
   ConfirmBookingCommand,
-  CompleteBookingCommand,
-  CheckInCommand,
-  CheckOutCommand,
   GetBookingsByDateRangeQuery
 } from '../../types/booking.types';
 import type { MoneyDto } from '../../types/payment.types';
 
 const AdminBookings = () => {
-  const queryClient = useQueryClient();
   
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,44 +68,22 @@ const AdminBookings = () => {
     bookingSource: filterValues.bookingSource || undefined,
   };
 
-  // Fetch bookings
-  const { data: bookingsData, isLoading, error } = useQuery({
-    queryKey: ['admin-bookings', queryParams],
-    queryFn: () => AdminBookingsService.getByDateRange(queryParams),
-  });
+  // استخدام الهوك لإدارة بيانات الحجوزات والعمليات
+  const {
+    bookingsData,
+    isLoading: isLoadingBookings,
+    error: bookingsError,
+    updateBooking,
+    cancelBooking,
+    confirmBooking
+  } = useAdminBookings(queryParams);
 
   // Filter bookings by status on client side if status filter is applied
   const filteredBookings = bookingsData?.items?.filter(booking => 
     !filterValues.status || booking.status === filterValues.status
   ) || [];
 
-  // Fetch booking details
-  const { data: bookingDetails } = useQuery({
-    queryKey: ['booking-details', selectedBooking?.id],
-    queryFn: () => AdminBookingsService.getById({ bookingId: selectedBooking!.id }),
-    enabled: !!selectedBooking?.id && showDetailsModal,
-  });
-
-  // Mutations
-  const updateBookingMutation = useMutation({
-    mutationFn: ({ bookingId, data }: { bookingId: string; data: UpdateBookingCommand }) =>
-      AdminBookingsService.update(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
-      setShowEditModal(false);
-      setSelectedBooking(null);
-    },
-  });
-
-  const cancelBookingMutation = useMutation({
-    mutationFn: (data: CancelBookingCommand) => AdminBookingsService.cancel(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
-      setShowCancelModal(false);
-      setSelectedBooking(null);
-      setCancelForm({ cancellationReason: '' });
-    },
-  });
+  // تم حذف التعريفات المباشرة للـ mutations لاستخدام الهوك الجديد
 
   // Helper functions
   const handleViewDetails = (booking: BookingDto) => {
@@ -132,10 +107,13 @@ const AdminBookings = () => {
     setShowCancelModal(true);
   };
 
+  /**
+   * دالة لتأكيد الحجز باستخدام الهوك
+   * @param booking بيانات الحجز
+   */
   const handleConfirm = (booking: BookingDto) => {
-    // Direct confirmation without modal for simplicity
     const command: ConfirmBookingCommand = { bookingId: booking.id };
-    // Add confirmation mutation here when needed
+    confirmBooking.mutate(command);
   };
 
   const handleFilterChange = (key: string, value: any) => {
@@ -218,15 +196,30 @@ const AdminBookings = () => {
     },
     {
       key: 'userId',
-      label: 'معرف المستخدم',
-      type: 'text',
-      placeholder: 'أدخل معرف المستخدم',
+      label: 'المستخدم',
+      type: 'custom',
+      render: (value: string, onChange: (value: any) => void) => (
+        <UserSelector
+          value={value}
+          onChange={(userId) => onChange(userId)}
+          placeholder="اختر المستخدم"
+          allowedRoles={['Customer']}
+          className="w-full"
+        />
+      ),
     },
     {
       key: 'unitId',
-      label: 'معرف الوحدة',
-      type: 'text',
-      placeholder: 'أدخل معرف الوحدة',
+      label: 'الوحدة',
+      type: 'custom',
+      render: (value: string, onChange: (value: any) => void) => (
+        <UnitSelector
+          value={value}
+          onChange={(unitId) => onChange(unitId)}
+          placeholder="اختر الوحدة"
+          className="w-full"
+        />
+      ),
     },
     {
       key: 'minTotalPrice',
@@ -368,7 +361,7 @@ const AdminBookings = () => {
     },
   ];
 
-  if (error) {
+  if (bookingsError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -472,7 +465,7 @@ const AdminBookings = () => {
       <DataTable
         data={filteredBookings}
         columns={columns}
-        loading={isLoading}
+        loading={isLoadingBookings}
         pagination={{
           current: currentPage,
           total: bookingsData?.totalCount || 0,
@@ -575,14 +568,11 @@ const AdminBookings = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updateBookingMutation.mutate({ 
-                bookingId: editForm.bookingId, 
-                data: editForm 
-              })}
-              disabled={updateBookingMutation.isPending}
+              onClick={() => updateBooking.mutate(editForm)}
+              disabled={updateBooking.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updateBookingMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updateBooking.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -652,14 +642,14 @@ const AdminBookings = () => {
               إلغاء
             </button>
             <button
-              onClick={() => cancelBookingMutation.mutate({
+              onClick={() => cancelBooking.mutate({
                 bookingId: selectedBooking!.id,
                 cancellationReason: cancelForm.cancellationReason,
               })}
-              disabled={cancelBookingMutation.isPending || !cancelForm.cancellationReason.trim()}
+              disabled={cancelBooking.status === 'pending' || !cancelForm.cancellationReason.trim()}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
             >
-              {cancelBookingMutation.isPending ? 'جارٍ الإلغاء...' : 'إلغاء الحجز'}
+              {cancelBooking.status === 'pending' ? 'جارٍ الإلغاء...' : 'إلغاء الحجز'}
             </button>
           </div>
         }

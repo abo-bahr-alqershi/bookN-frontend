@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
+import ImageUpload from '../../components/inputs/ImageUpload';
 import { AdminUsersService } from '../../services/admin-users.service';
 import type { UserDto, CreateUserCommand, UpdateUserCommand, GetAllUsersQuery } from '../../types/user.types';
 import type { UserRole } from '../../types/role.types';
 
 const AdminUsers = () => {
-  const queryClient = useQueryClient();
-  
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -56,45 +55,16 @@ const AdminUsers = () => {
     createdBefore: filterValues.createdBefore || undefined,
   };
 
-  // Fetch users
-  const { data: usersData, isLoading, error } = useQuery({
-    queryKey: ['admin-users', queryParams],
-    queryFn: () => AdminUsersService.getAll(queryParams),
-  });
-
-  // Mutations
-  const createUserMutation = useMutation({
-    mutationFn: AdminUsersService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      setShowCreateModal(false);
-      resetCreateForm();
-    },
-  });
-
-  const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }: { userId: string; data: UpdateUserCommand }) =>
-      AdminUsersService.update(userId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      setShowEditModal(false);
-      setSelectedUser(null);
-    },
-  });
-
-  const activateUserMutation = useMutation({
-    mutationFn: AdminUsersService.activate,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-  });
-
-  const deactivateUserMutation = useMutation({
-    mutationFn: AdminUsersService.deactivate,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-  });
+  // استخدام الهوك لإدارة البيانات والعمليات بعد تعريف queryParams
+  const {
+    usersData,
+    isLoading: isLoadingUsers,
+    error: usersError,
+    createUser,
+    updateUser,
+    activateUser,
+    deactivateUser,
+  } = useAdminUsers(queryParams);
 
   // Helper functions
   const resetCreateForm = () => {
@@ -121,9 +91,9 @@ const AdminUsers = () => {
 
   const handleToggleStatus = (user: UserDto) => {
     if (user.isActive) {
-      deactivateUserMutation.mutate(user.id);
+      deactivateUser.mutate(user.id);
     } else {
-      activateUserMutation.mutate(user.id);
+      activateUser.mutate(user.id);
     }
   };
 
@@ -245,12 +215,11 @@ const AdminUsers = () => {
       color: 'green' as const,
       onClick: (user: UserDto) => {
         // TODO: Implement role management modal
-        console.log('Manage roles for user:', user.id);
       },
     },
   ];
 
-  if (error) {
+  if (usersError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -299,7 +268,7 @@ const AdminUsers = () => {
       <DataTable
         data={usersData?.items || []}
         columns={columns}
-        loading={isLoading}
+        loading={isLoadingUsers}
         pagination={{
           current: currentPage,
           total: usersData?.totalCount || 0,
@@ -332,11 +301,11 @@ const AdminUsers = () => {
               إلغاء
             </button>
             <button
-              onClick={() => createUserMutation.mutate(createForm)}
-              disabled={createUserMutation.isPending}
+              onClick={() => createUser.mutate(createForm)}
+              disabled={createUser.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {createUserMutation.isPending ? 'جارٍ الإضافة...' : 'إضافة'}
+              {createUser.status === 'pending' ? 'جارٍ الإضافة...' : 'إضافة'}
             </button>
           </div>
         }
@@ -395,15 +364,18 @@ const AdminUsers = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              رابط الصورة الشخصية
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              الصورة الشخصية
             </label>
-            <input
-              type="url"
+            <ImageUpload
               value={createForm.profileImage}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, profileImage: e.target.value }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل رابط الصورة الشخصية (اختياري)"
+              onChange={(url) => setCreateForm(prev => ({ ...prev, profileImage: Array.isArray(url) ? url[0] : url }))}
+              multiple={false}
+              maxFiles={1}
+              maxSize={2}
+              showPreview={true}
+              placeholder="اضغط لرفع الصورة الشخصية أو اسحبها هنا"
+              uploadEndpoint="/api/upload/profile-images"
             />
           </div>
         </div>
@@ -430,11 +402,11 @@ const AdminUsers = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updateUserMutation.mutate({ userId: editForm.userId, data: editForm })}
-              disabled={updateUserMutation.isPending}
+              onClick={() => updateUser.mutate({ userId: editForm.userId, data: editForm })}
+              disabled={updateUser.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updateUserMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updateUser.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -478,14 +450,18 @@ const AdminUsers = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط الصورة الشخصية
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                الصورة الشخصية
               </label>
-              <input
-                type="url"
+              <ImageUpload
                 value={editForm.profileImage}
-                onChange={(e) => setEditForm(prev => ({ ...prev, profileImage: e.target.value }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                onChange={(url) => setEditForm(prev => ({ ...prev, profileImage: Array.isArray(url) ? url[0] : url }))}
+                multiple={false}
+                maxFiles={1}
+                maxSize={2}
+                showPreview={true}
+                placeholder="اضغط لرفع صورة جديدة أو اسحبها هنا"
+                uploadEndpoint="/api/upload/profile-images"
               />
             </div>
           </div>

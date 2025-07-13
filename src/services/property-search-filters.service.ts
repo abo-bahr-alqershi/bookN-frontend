@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { SearchFilterDto, GetSearchFiltersQuery, GetSearchFilterByIdQuery, GetSearchableFieldsQuery } from '../types/search-filter.types';
-import type { UnitTypeFieldDto } from '../types/unit-type.types';
+import type { UnitTypeFieldDto } from '../types/unit-type-field.types';
 
 // خدمات فلاتر البحث لأصحاب العقارات (Property Search Filters Service)
 export const PropertySearchFiltersService = {

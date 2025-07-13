@@ -37,7 +37,7 @@ export const CommonAuthService = {
     axios.post<ResultDto<boolean>>(`${API_BASE}/resend-email-verification`, data).then(res => res.data),
 
   // إعادة إرسال رابط استعادة كلمة المرور
-  resendPasswordReset: (data: ResendPasswordResetLinkCommand) =>
+  resendPasswordResetLink: (data: ResendPasswordResetLinkCommand) =>
     axios.post<ResultDto<boolean>>(`${API_BASE}/resend-password-reset`, data).then(res => res.data),
 
   // التحقق من صحة عنوان البريد الإلكتروني

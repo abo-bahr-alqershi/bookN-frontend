@@ -1,12 +1,13 @@
-import type { UnitTypeFieldDto } from './unit-type.types';
 // أنواع بيانات مجموعات الحقول (Field Group Types)
+
+import type { UnitTypeFieldDto } from "./unit-type-field.types";
 
 /**
  * بيانات مجموعة حقول
  */
 export interface FieldGroupDto {
   groupId: string;
-  propertyTypeId: string;
+  unitTypeId: string;
   groupName: string;
   displayName: string;
   description: string;
@@ -17,7 +18,7 @@ export interface FieldGroupDto {
 }
 
 export interface CreateFieldGroupCommand {
-  propertyTypeId: string;
+  unitTypeId: string;
   groupName: string;
   displayName?: string;
   description?: string;
@@ -54,8 +55,8 @@ export interface GetFieldGroupByIdQuery {
   groupId: string;
 }
 
-export interface GetFieldGroupsByPropertyTypeQuery {
-  propertyTypeId: string;
+export interface GetFieldGroupsByUnitTypeQuery {
+  unitTypeId: string;
 }
 
 export interface AssignFieldToGroupCommand {

@@ -1,9 +1,14 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminPayments } from '../../hooks/useAdminPayments';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
-import { AdminPaymentsService } from '../../services/admin-payments.service';
+import UserSelector from '../../components/selectors/UserSelector';
+import BookingSelector from '../../components/selectors/BookingSelector';
+import CurrencyInput from '../../components/inputs/CurrencyInput';
+import { LoadingSpinner, StatusBadge, ActionButton, ConfirmDialog, EmptyState, Tooltip } from '../../components/ui';
+import { useUXHelpers } from '../../hooks/useUXHelpers';
+// تم حذف استدعاء خدمة المدفوعات المباشر لاستخدام الهوك
 import type {
   PaymentDto,
   PaymentStatus,
@@ -16,7 +21,8 @@ import type {
 } from '../../types/payment.types';
 
 const AdminPayments = () => {
-  const queryClient = useQueryClient();
+  // UX Helpers
+  const { loading, executeWithFeedback, showConfirmDialog, confirmDialog, hideConfirmDialog, copyToClipboard } = useUXHelpers();
   
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,11 +67,17 @@ const AdminPayments = () => {
     pageSize,
   };
 
-  // Fetch payments
-  const { data: paymentsData, isLoading, error } = useQuery({
-    queryKey: ['admin-payments', queryParams],
-    queryFn: () => AdminPaymentsService.getByStatus(queryParams),
-  });
+  // استخدام الهوك لإدارة استعلام المدفوعات والعمليات بعد تعريف المعاملات
+  const {
+    paymentsData,
+    isLoading: isLoadingPayments,
+    error: paymentsError,
+    refundPayment,
+    voidPayment,
+    updatePaymentStatus
+  } = useAdminPayments(queryParams);
+
+  // تمت المعالجة عبر الهوك useAdminPayments
 
   // Filter payments on client side for additional filters
   const filteredPayments = paymentsData?.items?.filter(payment => {
@@ -76,39 +88,7 @@ const AdminPayments = () => {
     return true;
   }) || [];
 
-  // Mutations
-  const refundPaymentMutation = useMutation({
-    mutationFn: (data: RefundPaymentCommand) => AdminPaymentsService.refund(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
-      setShowRefundModal(false);
-      setSelectedPayment(null);
-      setRefundForm({
-        paymentId: '',
-        refundAmount: { amount: 0, currency: 'SAR', formattedAmount: '' },
-        refundReason: '',
-      });
-    },
-  });
-
-  const voidPaymentMutation = useMutation({
-    mutationFn: (data: VoidPaymentCommand) => AdminPaymentsService.void(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
-      setShowVoidModal(false);
-      setSelectedPayment(null);
-    },
-  });
-
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ paymentId, data }: { paymentId: string; data: UpdatePaymentStatusCommand }) =>
-      AdminPaymentsService.updateStatus(paymentId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
-      setShowStatusModal(false);
-      setSelectedPayment(null);
-    },
-  });
+  // تم حذف تعريفات الـ mutations لاستخدام الهوك الجديد
 
   // Helper functions
   const handleViewDetails = (payment: PaymentDto) => {
@@ -127,8 +107,21 @@ const AdminPayments = () => {
   };
 
   const handleVoid = (payment: PaymentDto) => {
-    setSelectedPayment(payment);
-    setShowVoidModal(true);
+    showConfirmDialog({
+      title: 'إبطال الدفعة',
+      message: `هل أنت متأكد من إبطال الدفعة ${payment.transactionId} بمبلغ ${payment.amount.amount} ${payment.amount.currency}؟ هذا الإجراء لا يمكن التراجع عنه.`,
+      type: 'danger',
+      onConfirm: () => {
+        executeWithFeedback(
+          () => voidPayment.mutateAsync({ paymentId: payment.id }),
+          {
+            loadingKey: 'voidPayment',
+            successMessage: 'تم إبطال الدفعة بنجاح',
+            errorMessage: 'فشل في إبطال الدفعة'
+          }
+        );
+      }
+    });
   };
 
   const handleUpdateStatus = (payment: PaymentDto) => {
@@ -185,15 +178,17 @@ const AdminPayments = () => {
     return statusLabels[status] || status;
   };
 
+  // Get method label
   const getMethodLabel = (method: PaymentMethod) => {
-    const methodLabels = {
-      0: 'بطاقة ائتمان', // CreditCard
-      1: 'PayPal',       // PayPal
-      2: 'تحويل بنكي',   // BankTransfer
-      3: 'نقداً',        // Cash
-      4: 'أخرى',         // Other
+    const methodLabels: Record<number, string> = {
+      0: 'بطاقة ائتمان',
+      1: 'PayPal',
+      2: 'تحويل بنكي',
+      3: 'نقداً',
+      4: 'أخرى',
     };
-    return methodLabels[method as keyof typeof methodLabels] || 'غير محدد';
+    const index = (method as unknown as number);
+    return methodLabels[index] || 'غير محدد';
   };
 
   // Statistics calculation
@@ -237,15 +232,30 @@ const AdminPayments = () => {
     },
     {
       key: 'bookingId',
-      label: 'معرف الحجز',
-      type: 'text',
-      placeholder: 'أدخل معرف الحجز',
+      label: 'الحجز',
+      type: 'custom',
+      render: (value: string, onChange: (value: any) => void) => (
+        <BookingSelector
+          value={value}
+          onChange={(bookingId) => onChange(bookingId)}
+          placeholder="اختر الحجز"
+          className="w-full"
+        />
+      ),
     },
     {
       key: 'userId',
-      label: 'معرف المستخدم',
-      type: 'text',
-      placeholder: 'أدخل معرف المستخدم',
+      label: 'المستخدم',
+      type: 'custom',
+      render: (value: string, onChange: (value: any) => void) => (
+        <UserSelector
+          value={value}
+          onChange={(userId) => onChange(userId)}
+          placeholder="اختر المستخدم"
+          allowedRoles={['Customer']}
+          className="w-full"
+        />
+      ),
     },
     {
       key: 'minAmount',
@@ -278,9 +288,14 @@ const AdminPayments = () => {
       title: 'معرف الدفعة',
       sortable: true,
       render: (value: string) => (
-        <span className="font-mono text-sm text-gray-600">
-          {value.substring(0, 8)}...
-        </span>
+        <Tooltip content={`انقر للنسخ: ${value}`}>
+          <button
+            onClick={() => copyToClipboard(value, 'تم نسخ معرف الدفعة')}
+            className="font-mono text-sm text-gray-600 hover:text-blue-600 transition-colors"
+          >
+            {value.substring(0, 8)}...
+          </button>
+        </Tooltip>
       ),
     },
     {
@@ -288,7 +303,14 @@ const AdminPayments = () => {
       title: 'رقم المعاملة',
       sortable: true,
       render: (value: string) => (
-        <span className="font-mono text-sm text-gray-900">{value}</span>
+        <Tooltip content={`انقر للنسخ: ${value}`}>
+          <button
+            onClick={() => copyToClipboard(value, 'تم نسخ رقم المعاملة')}
+            className="font-mono text-sm text-gray-900 hover:text-blue-600 transition-colors"
+          >
+            {value}
+          </button>
+        </Tooltip>
       ),
     },
     {
@@ -321,9 +343,7 @@ const AdminPayments = () => {
       key: 'status',
       title: 'الحالة',
       render: (value: PaymentStatus) => (
-        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(value)}`}>
-          {getStatusLabel(value)}
-        </span>
+        <StatusBadge status={value} variant="payment" />
       ),
     },
     {
@@ -369,12 +389,17 @@ const AdminPayments = () => {
     },
   ];
 
-  if (error) {
+  if (paymentsError) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <div className="text-red-500 text-6xl mb-4">⚠️</div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">خطأ في تحميل البيانات</h2>
-        <p className="text-gray-600">حدث خطأ أثناء تحميل بيانات المدفوعات. يرجى المحاولة مرة أخرى.</p>
+      <div className="bg-white rounded-lg shadow-sm">
+        <EmptyState
+          icon="⚠️"
+          title="خطأ في تحميل البيانات"
+          description="حدث خطأ أثناء تحميل بيانات المدفوعات. يرجى المحاولة مرة أخرى."
+          actionLabel="إعادة المحاولة"
+          onAction={() => window.location.reload()}
+          size="lg"
+        />
       </div>
     );
   }
@@ -482,26 +507,38 @@ const AdminPayments = () => {
       />
 
       {/* Payments Table */}
-      <DataTable
-        data={filteredPayments}
-        columns={columns}
-        loading={isLoading}
-        pagination={{
-          current: currentPage,
-          total: paymentsData?.totalCount || 0,
-          pageSize,
-          onChange: (page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          },
-        }}
-        rowSelection={{
-          selectedRowKeys: selectedRows,
-          onChange: setSelectedRows,
-        }}
-        actions={tableActions}
-        onRowClick={handleViewDetails}
-      />
+      {!isLoadingPayments && filteredPayments.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-sm">
+          <EmptyState
+            icon="💳"
+            title="لا توجد مدفوعات"
+            description="لم يتم العثور على أي مدفوعات تطابق معايير البحث والفلترة الحالية."
+            actionLabel="إعادة تعيين الفلاتر"
+            onAction={handleResetFilters}
+          />
+        </div>
+      ) : (
+        <DataTable
+          data={filteredPayments}
+          columns={columns}
+          loading={isLoadingPayments}
+          pagination={{
+            current: currentPage,
+            total: paymentsData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+          rowSelection={{
+            selectedRowKeys: selectedRows,
+            onChange: setSelectedRows,
+          }}
+          actions={tableActions}
+          onRowClick={handleViewDetails}
+        />
+      )}
 
       {/* Payment Details Modal */}
       <Modal
@@ -576,11 +613,11 @@ const AdminPayments = () => {
               إلغاء
             </button>
             <button
-              onClick={() => refundPaymentMutation.mutate(refundForm)}
-              disabled={refundPaymentMutation.isPending || !refundForm.refundReason.trim()}
+              onClick={() => refundPayment.mutate(refundForm)}
+              disabled={refundPayment.status === 'pending' || !refundForm.refundReason.trim()}
               className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50"
             >
-              {refundPaymentMutation.isPending ? 'جارٍ الاسترداد...' : 'استرداد'}
+              {loading.refundPayment ? 'جارٍ الاسترداد...' : 'استرداد'}
             </button>
           </div>
         }
@@ -603,36 +640,36 @@ const AdminPayments = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  مبلغ الاسترداد
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={refundForm.refundAmount.amount}
-                  onChange={(e) => setRefundForm(prev => ({ 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                مبلغ الاسترداد
+              </label>
+              <CurrencyInput
+                value={refundForm.refundAmount.amount}
+                currency={refundForm.refundAmount.currency}
+                onValueChange={(amount, currency) => 
+                  setRefundForm(prev => ({ 
                     ...prev, 
                     refundAmount: { 
-                      ...prev.refundAmount, 
-                      amount: Number(e.target.value) 
+                      ...prev.refundAmount,
+                      amount, 
+                      currency 
                     }
-                  }))}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  العملة
-                </label>
-                <input
-                  type="text"
-                  value={refundForm.refundAmount.currency}
-                  disabled
-                  className="block w-full rounded-md border-gray-300 shadow-sm bg-gray-50"
-                />
-              </div>
+                  }))
+                }
+                placeholder="0.00"
+                required={true}
+                min={0}
+                max={selectedPayment?.amount.amount}
+                showSymbol={true}
+                supportedCurrencies={[refundForm.refundAmount.currency]}
+                disabled={false}
+              />
+              {selectedPayment && (
+                <p className="mt-1 text-xs text-gray-500">
+                  الحد الأقصى للاسترداد: {selectedPayment.amount.amount} {selectedPayment.amount.currency}
+                </p>
+              )}
             </div>
 
             <div>
@@ -672,11 +709,11 @@ const AdminPayments = () => {
               إلغاء
             </button>
             <button
-              onClick={() => voidPaymentMutation.mutate({ paymentId: selectedPayment!.id })}
-              disabled={voidPaymentMutation.isPending}
+              onClick={() => voidPayment.mutate({ paymentId: selectedPayment!.id })}
+              disabled={voidPayment.status === 'pending'}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
             >
-              {voidPaymentMutation.isPending ? 'جارٍ الإبطال...' : 'إبطال الدفعة'}
+              {voidPayment.status === 'pending' ? 'جارٍ الإبطال...' : 'إبطال الدفعة'}
             </button>
           </div>
         }
@@ -724,14 +761,11 @@ const AdminPayments = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updateStatusMutation.mutate({ 
-                paymentId: statusForm.paymentId, 
-                data: statusForm 
-              })}
-              disabled={updateStatusMutation.isPending}
+              onClick={() => updatePaymentStatus.mutate({ paymentId: statusForm.paymentId, data: statusForm })}
+              disabled={updatePaymentStatus.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updateStatusMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updatePaymentStatus.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -775,6 +809,22 @@ const AdminPayments = () => {
           </div>
         )}
       </Modal>
+
+      {/* Confirm Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={hideConfirmDialog}
+          onConfirm={() => {
+            confirmDialog.onConfirm();
+            hideConfirmDialog();
+          }}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          type={confirmDialog.type}
+          loading={loading.voidPayment}
+        />
+      )}
     </div>
   );
 };

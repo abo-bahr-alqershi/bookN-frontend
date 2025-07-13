@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminAmenities } from '../../hooks/useAdminAmenities';
+import { useAdminProperties } from '../../hooks/useAdminProperties';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
-import { AdminAmenitiesService } from '../../services/admin-amenities.service';
 import type {
   AmenityDto,
   CreateAmenityCommand,
@@ -15,17 +15,28 @@ import type {
 } from '../../types/amenity.types';
 
 const AdminAmenities = () => {
-  const queryClient = useQueryClient();
-  
-  // State for search and filters
+  // استخدام الهوكات لإدارة البيانات والعمليات
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({
-    category: '',
-    isAssigned: undefined,
-  });
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({ category: '', isAssigned: undefined });
+
+  // بناء معايير الاستعلام
+  const queryParams = { pageNumber: currentPage, pageSize, searchTerm: searchTerm || undefined };
+  
+  // استعلام المرافق عبر هوك مخصص
+  const {
+    amenitiesData,
+    isLoading: isLoadingAmenities,
+    error: amenitiesError,
+    createAmenity,
+    updateAmenity,
+    deleteAmenity,
+    assignAmenityToProperty,
+  } = useAdminAmenities(queryParams);
+  // جلب قائمة العقارات للربط
+  const { data: propertiesData } = useAdminProperties();
 
   // State for modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -54,58 +65,7 @@ const AdminAmenities = () => {
     description: '',
   });
 
-  // Build query params
-  const queryParams: GetAllAmenitiesQuery = {
-    pageNumber: currentPage,
-    pageSize,
-    searchTerm: searchTerm || undefined,
-  };
-
-  // Fetch amenities
-  const { data: amenitiesData, isLoading, error } = useQuery({
-    queryKey: ['admin-amenities', queryParams],
-    queryFn: () => AdminAmenitiesService.getAllAmenities(queryParams),
-  });
-
-  // Mutations
-  const createAmenityMutation = useMutation({
-    mutationFn: AdminAmenitiesService.createAmenity,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-amenities'] });
-      setShowCreateModal(false);
-      resetCreateForm();
-    },
-  });
-
-  const updateAmenityMutation = useMutation({
-    mutationFn: ({ amenityId, data }: { amenityId: string; data: UpdateAmenityCommand }) =>
-      AdminAmenitiesService.updateAmenity(amenityId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-amenities'] });
-      setShowEditModal(false);
-      setSelectedAmenity(null);
-    },
-  });
-
-  const deleteAmenityMutation = useMutation({
-    mutationFn: AdminAmenitiesService.deleteAmenity,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-amenities'] });
-    },
-  });
-
-  const assignToPropertyMutation = useMutation({
-    mutationFn: ({ amenityId, propertyId, data }: { 
-      amenityId: string; 
-      propertyId: string; 
-      data: AssignAmenityToPropertyCommand 
-    }) => AdminAmenitiesService.assignAmenityToProperty(amenityId, propertyId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-amenities'] });
-      setShowAssignModal(false);
-      setSelectedAmenity(null);
-    },
-  });
+  // يتم تنفيذ العمليات (إنشاء، تحديث، حذف، ربط) عبر الهوك
 
   // Helper functions
   const resetCreateForm = () => {
@@ -132,7 +92,12 @@ const AdminAmenities = () => {
 
   const handleDelete = (amenity: AmenityDto) => {
     if (confirm(`هل أنت متأكد من حذف المرفق "${amenity.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
-      deleteAmenityMutation.mutate(amenity.id);
+      deleteAmenity.mutate(amenity.id, {
+        onSuccess: () => {
+          setShowEditModal(false);
+          setSelectedAmenity(null);
+        },
+      });
     }
   };
 
@@ -261,7 +226,7 @@ const AdminAmenities = () => {
     },
   ];
 
-  if (error) {
+  if (amenitiesError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -347,7 +312,7 @@ const AdminAmenities = () => {
       <DataTable
         data={amenitiesData?.items || []}
         columns={columns}
-        loading={isLoading}
+        loading={isLoadingAmenities}
         pagination={{
           current: currentPage,
           total: amenitiesData?.totalCount || 0,
@@ -380,11 +345,16 @@ const AdminAmenities = () => {
               إلغاء
             </button>
             <button
-              onClick={() => createAmenityMutation.mutate(createForm)}
-              disabled={createAmenityMutation.isPending || !createForm.name.trim()}
+              onClick={() => createAmenity.mutate(createForm, {
+                onSuccess: () => {
+                  setShowCreateModal(false);
+                  resetCreateForm();
+                },
+              })}
+              disabled={createAmenity.status === 'pending' || !createForm.name.trim()}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {createAmenityMutation.isPending ? 'جارٍ الإضافة...' : 'إضافة'}
+              {createAmenity.status === 'pending' ? 'جارٍ الإضافة...' : 'إضافة'}
             </button>
           </div>
         }
@@ -448,14 +418,16 @@ const AdminAmenities = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updateAmenityMutation.mutate({ 
-                amenityId: editForm.amenityId, 
-                data: editForm 
+              onClick={() => updateAmenity.mutate({ amenityId: editForm.amenityId, data: editForm }, {
+                onSuccess: () => {
+                  setShowEditModal(false);
+                  setSelectedAmenity(null);
+                },
               })}
-              disabled={updateAmenityMutation.isPending || !editForm.name?.trim()}
+              disabled={updateAmenity.status === 'pending' || !editForm.name?.trim()}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updateAmenityMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updateAmenity.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -573,18 +545,16 @@ const AdminAmenities = () => {
               إلغاء
             </button>
             <button
-              onClick={() => assignToPropertyMutation.mutate({
-                amenityId: selectedAmenity\!.id,
-                propertyId: assignForm.propertyId,
-                data: {
-                  amenityId: selectedAmenity\!.id,
-                  propertyId: assignForm.propertyId,
-                }
+              onClick={() => assignAmenityToProperty.mutate({ amenityId: selectedAmenity!.id, propertyId: assignForm.propertyId, data: { amenityId: selectedAmenity!.id, propertyId: assignForm.propertyId } }, {
+                onSuccess: () => {
+                  setShowAssignModal(false);
+                  setSelectedAmenity(null);
+                },
               })}
-              disabled={assignToPropertyMutation.isPending || \!assignForm.propertyId.trim()}
+              disabled={assignAmenityToProperty.status === 'pending' || !assignForm.propertyId}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
-              {assignToPropertyMutation.isPending ? "جارٍ الربط..." : "ربط المرفق"}
+              {assignAmenityToProperty.status === 'pending' ? 'جارٍ الربط...' : 'ربط المرفق'}
             </button>
           </div>
         }
@@ -611,13 +581,16 @@ const AdminAmenities = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 معرف العقار *
               </label>
-              <input
-                type="text"
+              <select
                 value={assignForm.propertyId}
                 onChange={(e) => setAssignForm(prev => ({ ...prev, propertyId: e.target.value }))}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="أدخل معرف العقار"
-              />
+              >
+                <option value="">اختر عقار</option>
+                {propertiesData?.items.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

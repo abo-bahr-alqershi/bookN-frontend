@@ -1,7 +1,7 @@
 // أنواع بيانات الوحدات (Units)
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
-import type { FieldValueDto } from './unit-field-value.types';
+import type { FieldValueDto, UnitFieldValueDto as UnitFieldValueDtoFull } from './unit-field-value.types';
 
 /**
  * بيانات الوحدة الأساسية
@@ -17,7 +17,7 @@ export interface UnitDto {
   propertyName: string;
   unitTypeName: string;
   pricingMethod: PricingMethod;
-  fieldValues: UnitFieldValueDto[];
+  fieldValues: UnitFieldValueDtoFull[];
   dynamicFields: FieldGroupWithValuesDto[];
   distanceKm?: number;
 }
@@ -47,7 +47,7 @@ export interface CreateUnitDto {
   areaSquareMeters?: number;
   isAvailable: boolean;
   /** قيم الحقول الديناميكية للوحدة */
-  dynamicFields?: UnitFieldValueDto[];
+  dynamicFields?: UnitFieldValueDtoFull[];
 }
 
 export interface CreateUnitCommand {
@@ -57,7 +57,7 @@ export interface CreateUnitCommand {
   basePrice: MoneyDto;
   customFeatures: string;
   pricingMethod: PricingMethod;
-  /** قيم الحقول الديناميكية للوحدة (اختياري) */
+  /** قيم الحقول الديناميكية للوحدة (اجباري في حال توفرت) */
   fieldValues?: FieldValueDto[];
 }
 
@@ -70,7 +70,7 @@ export interface UpdateUnitCommand {
   basePrice?: MoneyDto;
   customFeatures?: string;
   pricingMethod?: PricingMethod;
-  /** قيم الحقول الديناميكية للوحدة (اختياري) */
+  /** قيم الحقول الديناميكية للوحدة (اجباري في حال توفرت) */
   fieldValues?: FieldValueDto[];
 }
 
@@ -243,9 +243,6 @@ export interface MoneyDto {
   formattedAmount?: string;
 }
 
-export interface UnitFieldValueDto {
-  // ... أكمل حسب الحاجة
-}
 
 export interface FieldGroupWithValuesDto {
   // ... أكمل حسب الحاجة

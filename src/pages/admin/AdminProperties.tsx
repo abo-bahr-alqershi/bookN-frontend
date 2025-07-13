@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAdminProperties } from '../../hooks/useAdminProperties';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
-import { AdminPropertiesService } from '../../services/admin-properties.service';
+import UserSelector from '../../components/selectors/UserSelector';
+import LocationSelector from '../../components/selectors/LocationSelector';
+import ImageUpload from '../../components/inputs/ImageUpload';
 import type { 
   PropertyDto, 
   CreatePropertyCommand, 
@@ -12,7 +14,6 @@ import type {
 } from '../../types/property.types';
 
 const AdminProperties = () => {
-  const queryClient = useQueryClient();
   
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,6 +47,7 @@ const AdminProperties = () => {
     longitude: 0,
     city: '',
     starRating: 3,
+    images: [],
   });
 
   const [editForm, setEditForm] = useState<UpdatePropertyCommand>({
@@ -57,6 +59,7 @@ const AdminProperties = () => {
     longitude: 0,
     city: '',
     starRating: 3,
+    images: [],
   });
 
   // Build query params
@@ -72,60 +75,20 @@ const AdminProperties = () => {
     hasActiveBookings: filterValues.hasActiveBookings,
   };
 
-  // Fetch properties
-  const { data: propertiesData, isLoading, error } = useQuery({
-    queryKey: ['admin-properties', queryParams],
-    queryFn: () => AdminPropertiesService.getAll(queryParams),
-  });
+  // استخدام الهوك لإدارة بيانات العقارات والعمليات
+  const {
+    propertiesData,
+    pendingPropertiesData,
+    isLoading: isLoadingProperties,
+    error: propertiesError,
+    createProperty,
+    updateProperty,
+    approveProperty,
+    rejectProperty,
+    deleteProperty,
+  } = useAdminProperties(queryParams);
 
-  // Fetch pending properties
-  const { data: pendingPropertiesData } = useQuery({
-    queryKey: ['admin-properties-pending'],
-    queryFn: () => AdminPropertiesService.getPending({ pageNumber: 1, pageSize: 50 }),
-  });
-
-  // Mutations
-  const createPropertyMutation = useMutation({
-    mutationFn: AdminPropertiesService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
-      setShowCreateModal(false);
-      resetCreateForm();
-    },
-  });
-
-  const updatePropertyMutation = useMutation({
-    mutationFn: ({ propertyId, data }: { propertyId: string; data: UpdatePropertyCommand }) =>
-      AdminPropertiesService.update(propertyId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
-      setShowEditModal(false);
-      setSelectedProperty(null);
-    },
-  });
-
-  const approvePropertyMutation = useMutation({
-    mutationFn: AdminPropertiesService.approve,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-properties-pending'] });
-    },
-  });
-
-  const rejectPropertyMutation = useMutation({
-    mutationFn: AdminPropertiesService.reject,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-properties-pending'] });
-    },
-  });
-
-  const deletePropertyMutation = useMutation({
-    mutationFn: AdminPropertiesService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-properties'] });
-    },
-  });
+  // تم حذف تعريفات الـ mutations المباشرة لاستخدام الهوك
 
   // Helper functions
   const resetCreateForm = () => {
@@ -139,6 +102,7 @@ const AdminProperties = () => {
       longitude: 0,
       city: '',
       starRating: 3,
+      images: [],
     });
   };
 
@@ -153,6 +117,7 @@ const AdminProperties = () => {
       longitude: property.longitude,
       city: property.city,
       starRating: property.starRating,
+      images: property.images || [],
     });
     setShowEditModal(true);
   };
@@ -164,19 +129,19 @@ const AdminProperties = () => {
 
   const handleApprove = (property: PropertyDto) => {
     if (confirm(`هل أنت متأكد من الموافقة على العقار "${property.name}"؟`)) {
-      approvePropertyMutation.mutate(property.id);
+      approveProperty.mutate(property.id);
     }
   };
 
   const handleReject = (property: PropertyDto) => {
     if (confirm(`هل أنت متأكد من رفض العقار "${property.name}"؟`)) {
-      rejectPropertyMutation.mutate(property.id);
+      rejectProperty.mutate(property.id);
     }
   };
 
   const handleDelete = (property: PropertyDto) => {
     if (confirm(`هل أنت متأكد من حذف العقار "${property.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
-      deletePropertyMutation.mutate(property.id);
+      deleteProperty.mutate(property.id);
     }
   };
 
@@ -335,7 +300,7 @@ const AdminProperties = () => {
     },
   ];
 
-  if (error) {
+  if (propertiesError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -401,7 +366,7 @@ const AdminProperties = () => {
       <DataTable
         data={propertiesData?.items || []}
         columns={columns}
-        loading={isLoading}
+        loading={isLoadingProperties}
         pagination={{
           current: currentPage,
           total: propertiesData?.totalCount || 0,
@@ -434,11 +399,11 @@ const AdminProperties = () => {
               إلغاء
             </button>
             <button
-              onClick={() => createPropertyMutation.mutate(createForm)}
-              disabled={createPropertyMutation.isPending}
+              onClick={() => createProperty.mutate(createForm)}
+              disabled={createProperty.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {createPropertyMutation.isPending ? 'جارٍ الإضافة...' : 'إضافة'}
+              {createProperty.status === 'pending' ? 'جارٍ الإضافة...' : 'إضافة'}
             </button>
           </div>
         }
@@ -476,14 +441,15 @@ const AdminProperties = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              معرف المالك *
+              مالك العقار *
             </label>
-            <input
-              type="text"
+            <UserSelector
               value={createForm.ownerId}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, ownerId: e.target.value }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل معرف المالك"
+              onChange={(userId) => setCreateForm(prev => ({ ...prev, ownerId: userId }))}
+              placeholder="اختر مالك العقار"
+              allowedRoles={['Owner']}
+              required={true}
+              className=""
             />
           </div>
 
@@ -513,31 +479,24 @@ const AdminProperties = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              خط العرض
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              الموقع الجغرافي *
             </label>
-            <input
-              type="number"
-              step="any"
-              value={createForm.latitude}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, latitude: Number(e.target.value) }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="0.000000"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              خط الطول
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={createForm.longitude}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, longitude: Number(e.target.value) }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="0.000000"
+            <LocationSelector
+              latitude={createForm.latitude}
+              longitude={createForm.longitude}
+              onChange={(lat, lng, address) => {
+                setCreateForm(prev => ({
+                  ...prev,
+                  latitude: lat,
+                  longitude: lng
+                }));
+              }}
+              placeholder="حدد موقع العقار"
+              required={true}
+              showMap={true}
+              allowManualInput={true}
             />
           </div>
 
@@ -570,6 +529,22 @@ const AdminProperties = () => {
               placeholder="أدخل وصف مفصل للعقار"
             />
           </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              صور العقار
+            </label>
+            <ImageUpload
+              value={createForm.images || []}
+              onChange={(urls) => setCreateForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
+              multiple={true}
+              maxFiles={10}
+              maxSize={5}
+              showPreview={true}
+              placeholder="اضغط لرفع صور العقار أو اسحبها هنا"
+              uploadEndpoint="/api/upload/property-images"
+            />
+          </div>
         </div>
       </Modal>
 
@@ -594,14 +569,14 @@ const AdminProperties = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updatePropertyMutation.mutate({ 
+              onClick={() => updateProperty.mutate({ 
                 propertyId: editForm.propertyId, 
                 data: editForm 
               })}
-              disabled={updatePropertyMutation.isPending}
+              disabled={updateProperty.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updatePropertyMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updateProperty.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -644,29 +619,23 @@ const AdminProperties = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                خط العرض
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                الموقع الجغرافي
               </label>
-              <input
-                type="number"
-                step="any"
-                value={editForm.latitude}
-                onChange={(e) => setEditForm(prev => ({ ...prev, latitude: Number(e.target.value) }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                خط الطول
-              </label>
-              <input
-                type="number"
-                step="any"
-                value={editForm.longitude}
-                onChange={(e) => setEditForm(prev => ({ ...prev, longitude: Number(e.target.value) }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              <LocationSelector
+                latitude={editForm.latitude || 0}
+                longitude={editForm.longitude || 0}
+                onChange={(lat, lng, address) => {
+                  setEditForm(prev => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng
+                  }));
+                }}
+                placeholder="حدث موقع العقار"
+                showMap={true}
+                allowManualInput={true}
               />
             </div>
 
@@ -696,6 +665,22 @@ const AdminProperties = () => {
                 value={editForm.description}
                 onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                صور العقار
+              </label>
+              <ImageUpload
+                value={editForm.images || selectedProperty?.images || []}
+                onChange={(urls) => setEditForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
+                multiple={true}
+                maxFiles={10}
+                maxSize={5}
+                showPreview={true}
+                placeholder="اضغط لرفع صور جديدة أو اسحبها هنا"
+                uploadEndpoint="/api/upload/property-images"
               />
             </div>
           </div>

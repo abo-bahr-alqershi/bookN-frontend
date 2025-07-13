@@ -28,7 +28,7 @@ interface DataTableProps<T> {
     label: string;
     onClick: (record: T) => void;
     icon?: string;
-    color?: 'blue' | 'green' | 'red' | 'yellow';
+    color?: 'blue' | 'green' | 'red' | 'yellow' | 'orange';
     show?: (record: T) => boolean;
   }[];
 }
@@ -65,6 +65,7 @@ const DataTable = <T extends Record<string, any>>({
       green: 'text-green-600 hover:text-green-800 hover:bg-green-50',
       red: 'text-red-600 hover:text-red-800 hover:bg-red-50',
       yellow: 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50',
+      orange: 'text-orange-600 hover:text-orange-800 hover:bg-orange-50',
     };
     return colors[color as keyof typeof colors] || colors.blue;
   };

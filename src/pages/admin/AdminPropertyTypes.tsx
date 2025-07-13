@@ -65,7 +65,7 @@ const AdminPropertyTypes = () => {
   });
   
   const [dynamicFieldForm, setDynamicFieldForm] = useState<CreateUnitTypeFieldCommand>({
-    propertyTypeId: '',
+    unitTypeId: '',
     fieldTypeId: '',
     fieldName: '',
     displayName: '',
@@ -82,7 +82,7 @@ const AdminPropertyTypes = () => {
   });
   
   const [fieldGroupForm, setFieldGroupForm] = useState<CreateFieldGroupCommand>({
-    propertyTypeId: '',
+    unitTypeId: '',
     groupName: '',
     displayName: '',
     description: '',
@@ -107,14 +107,14 @@ const AdminPropertyTypes = () => {
   // Fetch dynamic fields for selected property type
   const { data: dynamicFieldsData, isLoading: loadingDynamicFields } = useQuery({
     queryKey: ['admin-dynamic-fields', selectedPropertyType?.id],
-    queryFn: () => selectedPropertyType ? AdminUnitTypeFieldsService.getByPropertyType({ propertyTypeId: selectedPropertyType.id }) : Promise.resolve([]),
+    queryFn: () => selectedPropertyType ? AdminUnitTypeFieldsService.getByUnitType({ unitTypeId: selectedPropertyType.id }) : Promise.resolve([]),
     enabled: !!selectedPropertyType && (currentView === 'dynamic-fields' || showFieldsModal),
   });
 
   // Fetch field groups for selected property type
   const { data: fieldGroupsData, isLoading: loadingFieldGroups } = useQuery({
     queryKey: ['admin-field-groups', selectedPropertyType?.id],
-    queryFn: () => selectedPropertyType ? AdminFieldGroupsService.getByPropertyType({ propertyTypeId: selectedPropertyType.id }) : Promise.resolve([]),
+    queryFn: () => selectedPropertyType ? AdminFieldGroupsService.getByUnitType({ unitTypeId: selectedPropertyType.id }) : Promise.resolve([]),
     enabled: !!selectedPropertyType && showGroupsModal,
   });
 
@@ -192,7 +192,7 @@ const AdminPropertyTypes = () => {
 
   const resetDynamicFieldForm = () => {
     setDynamicFieldForm({
-      propertyTypeId: selectedPropertyType?.id || '',
+      unitTypeId: selectedPropertyType?.id || '',
       fieldTypeId: '',
       fieldName: '',
       displayName: '',
@@ -211,7 +211,7 @@ const AdminPropertyTypes = () => {
 
   const resetFieldGroupForm = () => {
     setFieldGroupForm({
-      propertyTypeId: selectedPropertyType?.id || '',
+      unitTypeId: selectedPropertyType?.id || '',
       groupName: '',
       displayName: '',
       description: '',

@@ -1,11 +1,16 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useAdminUnits } from '../../hooks/useAdminUnits';
+import { useAdminProperties } from '../../hooks/useAdminProperties';
+import { useAdminUnitTypes } from '../../hooks/useAdminUnitTypes';
+import { useAdminUnitTypeFieldsByUnitType } from '../../hooks/useAdminUnitTypeFieldsByUnitType';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import CardView from '../../components/common/CardView';
 import MapView from '../../components/common/MapView';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import ViewToggle, { type ViewType } from '../../components/common/ViewToggle';
 import Modal from '../../components/common/Modal';
+import DynamicFieldsForm from '../../components/forms/DynamicFieldsForm';
+import CurrencyInput from '../../components/inputs/CurrencyInput';
 import { AdminUnitsService } from '../../services/admin-units.service';
 import type { 
   UnitDto, 
@@ -14,6 +19,8 @@ import type {
   MoneyDto,
   PricingMethod
 } from '../../types/unit.types';
+import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
+import type { FieldValueDto, UnitFieldValueDto } from '../../types/unit-field-value.types';
 
 // Extend UnitDto to include coordinates for map view
 interface UnitWithLocation extends UnitDto {
@@ -23,7 +30,6 @@ interface UnitWithLocation extends UnitDto {
 }
 
 const AdminUnits = () => {
-  const queryClient = useQueryClient();
   
   // State for view and search
   const [currentView, setCurrentView] = useState<ViewType>('table');
@@ -55,6 +61,7 @@ const AdminUnits = () => {
     basePrice: { amount: 0, currency: 'SAR' },
     customFeatures: '',
     pricingMethod: 'Daily' as PricingMethod,
+    fieldValues: [],
   });
 
   const [editForm, setEditForm] = useState<UpdateUnitCommand>({
@@ -62,8 +69,13 @@ const AdminUnits = () => {
     name: '',
     basePrice: { amount: 0, currency: 'SAR' },
     customFeatures: '',
-    pricingMethod: 'Daily' as PricingMethod,
+    pricingMethod: 'Dynamic' as PricingMethod,
+    fieldValues: [],
   });
+
+  // State for dynamic fields
+  const [createDynamicFields, setCreateDynamicFields] = useState<Record<string, any>>({});
+  const [editDynamicFields, setEditDynamicFields] = useState<Record<string, any>>({});
 
   // Build query params
   const queryParams = {
@@ -77,38 +89,50 @@ const AdminUnits = () => {
     maxBasePrice: filterValues.maxBasePrice || undefined,
   };
 
-  // Fetch units
-  const { data: unitsData, isLoading, error } = useQuery({
-    queryKey: ['admin-units', queryParams],
-    queryFn: () => AdminUnitsService.getAll(queryParams),
+  // هوكات لإدارة البيانات
+  const { unitsData, isLoading: isLoadingUnits, error: unitsError, createUnit, updateUnit, deleteUnit } = useAdminUnits(queryParams);
+  const { propertiesData, isLoading: isLoadingProperties } = useAdminProperties({
+    pageNumber: 1,
+    pageSize: 1000
+  });
+  const { unitTypesData, isLoading: isLoadingUnitTypes } = useAdminUnitTypes({
+    pageNumber: 1,
+    pageSize: 1000
+  });
+  
+  // جلب الحقول الديناميكية للوحدة المحددة في النموذج
+  const { unitTypeFieldsData: createFields } = useAdminUnitTypeFieldsByUnitType({
+    unitTypeId: createForm.unitTypeId,
+    isPublic: true
+  });
+  
+  const { unitTypeFieldsData: editFields } = useAdminUnitTypeFieldsByUnitType({
+    unitTypeId: selectedUnit?.unitTypeId || '',
+    isPublic: true
   });
 
-  // Mutations
-  const createUnitMutation = useMutation({
-    mutationFn: AdminUnitsService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-units'] });
-      setShowCreateModal(false);
-      resetCreateForm();
-    },
-  });
+  // دوال الإنشاء والتحديث والحذف من الهوك
+  // createUnit.mutate(createForm), createUnit.isLoading للتحكم في الزر
+  // updateUnit.mutate({ unitId: editForm.unitId, data: editForm })
+  // deleteUnit.mutate(unit.id)
 
-  const updateUnitMutation = useMutation({
-    mutationFn: ({ unitId, data }: { unitId: string; data: UpdateUnitCommand }) =>
-      AdminUnitsService.update(unitId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-units'] });
-      setShowEditModal(false);
-      setSelectedUnit(null);
-    },
-  });
+  // تحديث القيم الديناميكية عند تغيير نوع الوحدة
+  useEffect(() => {
+    if (createForm.unitTypeId && createFields?.length) {
+      setCreateDynamicFields({});
+    }
+  }, [createForm.unitTypeId, createFields]);
 
-  const deleteUnitMutation = useMutation({
-    mutationFn: AdminUnitsService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-units'] });
-    },
-  });
+  useEffect(() => {
+    if (selectedUnit && editFields?.length) {
+      // تحديد القيم الحالية للحقول الديناميكية
+      const currentValues: Record<string, any> = {};
+      selectedUnit.fieldValues?.forEach(value => {
+        currentValues[value.fieldId] = value.fieldValue;
+      });
+      setEditDynamicFields(currentValues);
+    }
+  }, [selectedUnit, editFields]);
 
   // Helper functions
   const resetCreateForm = () => {
@@ -119,7 +143,9 @@ const AdminUnits = () => {
       basePrice: { amount: 0, currency: 'SAR' },
       customFeatures: '',
       pricingMethod: 'Daily' as PricingMethod,
+      fieldValues: [],
     });
+    setCreateDynamicFields({});
   };
 
   const handleEdit = (unit: UnitDto) => {
@@ -130,6 +156,10 @@ const AdminUnits = () => {
       basePrice: unit.basePrice,
       customFeatures: unit.customFeatures,
       pricingMethod: unit.pricingMethod,
+      fieldValues: unit.fieldValues?.map(fv => ({
+        fieldId: fv.fieldId,
+        fieldValue: fv.fieldValue
+      })) || [],
     });
     setShowEditModal(true);
   };
@@ -141,7 +171,7 @@ const AdminUnits = () => {
 
   const handleDelete = (unit: UnitDto) => {
     if (confirm(`هل أنت متأكد من حذف الوحدة "${unit.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
-      deleteUnitMutation.mutate(unit.id);
+      deleteUnit.mutate(unit.id);
     }
   };
 
@@ -168,19 +198,14 @@ const AdminUnits = () => {
     {
       key: 'propertyId',
       label: 'العقار',
-      type: 'text',
-      placeholder: 'أدخل معرف العقار',
+      type: 'select',
+      options: propertiesData?.items.map(p => ({ value: p.id, label: p.name })) ?? [],
     },
     {
       key: 'unitTypeId',
       label: 'نوع الوحدة',
       type: 'select',
-      options: [
-        { value: 'standard', label: 'قياسي' },
-        { value: 'deluxe', label: 'فاخر' },
-        { value: 'suite', label: 'جناح' },
-        { value: 'villa', label: 'فيلا' },
-      ],
+      options: unitTypesData?.items.map(t => ({ value: t.id, label: t.name })) ?? [],
     },
     {
       key: 'isAvailable',
@@ -349,16 +374,18 @@ const AdminUnits = () => {
     </div>
   );
 
-  // Transform units data for map view
-  const unitsWithLocation: UnitWithLocation[] = (unitsData?.items || []).map(unit => ({
-    ...unit,
-    // In a real implementation, you would get coordinates from the property or unit data
-    latitude: 24.7136 + (Math.random() - 0.5) * 0.1, // Mock coordinates around Riyadh
-    longitude: 46.6753 + (Math.random() - 0.5) * 0.1,
-    address: unit.propertyName, // Use property name as address
-  }));
+  // ربط الوحدات بإحداثيات العقارات الحقيقية
+  const unitsWithLocation: UnitWithLocation[] = (unitsData?.items || []).map(unit => {
+    const property = propertiesData?.items.find(p => p.id === unit.propertyId);
+    return {
+      ...unit,
+      latitude: property?.latitude,
+      longitude: property?.longitude,
+      address: property?.address,
+    };
+  });
 
-  if (error) {
+  if (unitsError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -413,7 +440,7 @@ const AdminUnits = () => {
         <DataTable
           data={unitsData?.items || []}
           columns={columns}
-          loading={isLoading}
+          loading={isLoadingUnits}
           pagination={{
             current: currentPage,
             total: unitsData?.totalCount || 0,
@@ -435,7 +462,7 @@ const AdminUnits = () => {
       {currentView === 'cards' && (
         <CardView
           data={unitsData?.items || []}
-          loading={isLoading}
+          loading={isLoadingUnits}
           renderCard={renderUnitCard}
           emptyMessage="لا توجد وحدات للعرض"
           emptyIcon="🏠"
@@ -445,30 +472,29 @@ const AdminUnits = () => {
 
       {currentView === 'map' && (
         <MapView
-          data={unitsWithLocation}
-          loading={isLoading}
-          onItemClick={handleViewDetails}
-          renderPopup={(unit) => (
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">النوع:</span>
-                <span className="text-xs">{unit.unitTypeName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">السعر:</span>
-                <span className="text-xs font-medium">
-                  {unit.basePrice.amount} {unit.basePrice.currency}
-                </span>
-              </div>
-              <button
-                onClick={() => handleViewDetails(unit)}
-                className="w-full mt-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-              >
-                عرض التفاصيل
-              </button>
-            </div>
-          )}
+          markers={unitsWithLocation.map(unit => ({
+            id: unit.id,
+            name: unit.name,
+            address: unit.propertyName,
+            description: `${unit.unitTypeName} - ${unit.basePrice.amount} ${unit.basePrice.currency}`,
+            coordinates: unit.latitude && unit.longitude ? {
+              latitude: unit.latitude,
+              longitude: unit.longitude
+            } : undefined,
+            type: 'unit' as const,
+            color: unit.isAvailable ? '#10B981' : '#EF4444',
+            isAvailable: unit.isAvailable,
+            price: {
+              amount: unit.basePrice.amount,
+              currency: unit.basePrice.currency
+            }
+          }).filter(marker => marker.coordinates))}
+          onMarkerClick={(marker) => {
+            const unit = unitsWithLocation.find(u => u.id === marker.id);
+            if (unit) handleViewDetails(unit);
+          }}
           emptyMessage="لا توجد وحدات بمواقع محددة لعرضها على الخريطة"
+          height="600px"
         />
       )}
 
@@ -487,11 +513,23 @@ const AdminUnits = () => {
               إلغاء
             </button>
             <button
-              onClick={() => createUnitMutation.mutate(createForm)}
-              disabled={createUnitMutation.isPending}
+              onClick={() => {
+                const fieldValues: FieldValueDto[] = Object.entries(createDynamicFields).map(([fieldId, value]) => ({
+                  fieldId,
+                  fieldValue: Array.isArray(value) ? JSON.stringify(value) : String(value)
+                }));
+                
+                const unitData = {
+                  ...createForm,
+                  fieldValues
+                };
+                
+                createUnit.mutate(unitData);
+              }}
+              disabled={createUnit.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {createUnitMutation.isPending ? 'جارٍ الإضافة...' : 'إضافة'}
+              {createUnit.status === 'pending' ? 'جارٍ الإضافة...' : 'إضافة'}
             </button>
           </div>
         }
@@ -499,15 +537,20 @@ const AdminUnits = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              معرف العقار *
+              العقار *
             </label>
-            <input
-              type="text"
+            <select
               value={createForm.propertyId}
               onChange={(e) => setCreateForm(prev => ({ ...prev, propertyId: e.target.value }))}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل معرف العقار"
-            />
+            >
+              <option value="">اختر العقار</option>
+              {propertiesData?.items?.map(property => (
+                <option key={property.id} value={property.id}>
+                  {property.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div>
@@ -541,18 +584,23 @@ const AdminUnits = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               السعر الأساسي *
             </label>
-            <input
-              type="number"
+            <CurrencyInput
               value={createForm.basePrice.amount}
-              onChange={(e) => setCreateForm(prev => ({ 
-                ...prev, 
-                basePrice: { ...prev.basePrice, amount: Number(e.target.value) }
-              }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="0"
+              currency={createForm.basePrice.currency}
+              onValueChange={(amount, currency) => 
+                setCreateForm(prev => ({ 
+                  ...prev, 
+                  basePrice: { amount, currency }
+                }))
+              }
+              placeholder="0.00"
+              required={true}
+              min={0}
+              showSymbol={true}
+              supportedCurrencies={['SAR', 'USD', 'EUR', 'AED']}
             />
           </div>
 
@@ -584,6 +632,23 @@ const AdminUnits = () => {
               placeholder="أدخل الميزات المخصصة للوحدة"
             />
           </div>
+
+          {/* الحقول الديناميكية */}
+          {createForm.unitTypeId && createFields && createFields.length > 0 && (
+            <div className="md:col-span-2">
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  📝 الحقول الديناميكية
+                </h3>
+                <DynamicFieldsForm
+                  fields={createFields}
+                  values={[]}
+                  onChange={setCreateDynamicFields}
+                  className=""
+                />
+              </div>
+            </div>
+          )}
         </div>
       </Modal>
 
@@ -608,14 +673,26 @@ const AdminUnits = () => {
               إلغاء
             </button>
             <button
-              onClick={() => updateUnitMutation.mutate({ 
-                unitId: editForm.unitId, 
-                data: editForm 
-              })}
-              disabled={updateUnitMutation.isPending}
+              onClick={() => {
+                const fieldValues: FieldValueDto[] = Object.entries(editDynamicFields).map(([fieldId, value]) => ({
+                  fieldId,
+                  fieldValue: Array.isArray(value) ? JSON.stringify(value) : String(value)
+                }));
+                
+                const unitData = {
+                  ...editForm,
+                  fieldValues
+                };
+                
+                updateUnit.mutate({ 
+                  unitId: editForm.unitId, 
+                  data: unitData 
+                });
+              }}
+              disabled={updateUnit.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {updateUnitMutation.isPending ? 'جارٍ التحديث...' : 'تحديث'}
+              {updateUnit.status === 'pending' ? 'جارٍ التحديث...' : 'تحديث'}
             </button>
           </div>
         }
@@ -635,17 +712,22 @@ const AdminUnits = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 السعر الأساسي
               </label>
-              <input
-                type="number"
+              <CurrencyInput
                 value={editForm.basePrice?.amount || 0}
-                onChange={(e) => setEditForm(prev => ({ 
-                  ...prev, 
-                  basePrice: { ...prev.basePrice!, amount: Number(e.target.value) }
-                }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                currency={editForm.basePrice?.currency || 'SAR'}
+                onValueChange={(amount, currency) => 
+                  setEditForm(prev => ({ 
+                    ...prev, 
+                    basePrice: { amount, currency }
+                  }))
+                }
+                placeholder="0.00"
+                min={0}
+                showSymbol={true}
+                supportedCurrencies={['SAR', 'USD', 'EUR', 'AED']}
               />
             </div>
 
@@ -676,6 +758,26 @@ const AdminUnits = () => {
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
+
+            {/* الحقول الديناميكية */}
+            {selectedUnit && editFields && editFields.length > 0 && (
+              <div className="md:col-span-2">
+                <div className="border-t border-gray-200 pt-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    📝 الحقول الديناميكية
+                  </h3>
+                  <DynamicFieldsForm
+                    fields={editFields}
+                    values={selectedUnit?.fieldValues?.map(fv => ({
+                      fieldId: fv.fieldId,
+                      fieldValue: fv.fieldValue
+                    })) || []}
+                    onChange={setEditDynamicFields}
+                    className=""
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
@@ -735,6 +837,27 @@ const AdminUnits = () => {
                 {selectedUnit.customFeatures || 'لا توجد ميزات مخصصة'}
               </p>
             </div>
+
+            {/* عرض الحقول الديناميكية */}
+            {selectedUnit.fieldValues && selectedUnit.fieldValues.length > 0 && (
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  📝 الحقول الديناميكية
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedUnit.fieldValues.map((fieldValue) => (
+                    <div key={fieldValue.fieldId} className="space-y-1">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {fieldValue.displayName || fieldValue.fieldName}
+                      </label>
+                      <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                        {fieldValue.fieldValue || 'لا توجد قيمة'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>

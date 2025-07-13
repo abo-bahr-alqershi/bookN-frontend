@@ -7,7 +7,7 @@ import type {
   DeleteFieldGroupCommand,
   ReorderFieldGroupsCommand,
   GetFieldGroupByIdQuery,
-  GetFieldGroupsByPropertyTypeQuery,
+  GetFieldGroupsByUnitTypeQuery,
   AssignFieldToGroupCommand
 } from '../types/field-group.types';
 
@@ -44,9 +44,9 @@ export const AdminFieldGroupsService = {
   getById: (query: GetFieldGroupByIdQuery) =>
     axios.get<FieldGroupDto>(`${API_BASE}/${query.groupId}`).then(res => res.data),
 
-  /** جلب مجموعات الحقول حسب نوع العقار */
-  getByPropertyType: (query: GetFieldGroupsByPropertyTypeQuery) =>
-    axios.get<FieldGroupDto[]>(`${API_BASE}/property-type/${query.propertyTypeId}`).then(res => res.data),
+  /** جلب مجموعات الحقول حسب نوع الوحدة */
+  getByUnitType: (query: GetFieldGroupsByUnitTypeQuery) =>
+    axios.get<FieldGroupDto[]>(`${API_BASE}/unit-type/${query.unitTypeId}`).then(res => res.data),
 
   /** تخصيص حقل لمجموعة */
   assignField: (command: AssignFieldToGroupCommand) =>

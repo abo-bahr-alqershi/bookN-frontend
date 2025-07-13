@@ -1,24 +1,40 @@
 // أنواع بيانات حقول نوع الوحدة (Unit Type Field Types)
 // أنواع بيانات حقول نوع الوحدة (Unit Type Field Types)
 
+
 /**
- * DTO for UnitTypeField entity
+ * حقل ديناميكي لنوع الوحدة
  */
 export interface UnitTypeFieldDto {
+  /** معرف الحقل */
   fieldId: string;
-  propertyTypeId: string;
+  /** معرف نوع الوحدة */
+  unitTypeId: string;
+  /** معرف نوع الحقل */
   fieldTypeId: string;
+  /** اسم الحقل */
   fieldName: string;
+  /** الاسم المعروض للحقل */
   displayName: string;
+  /** وصف الحقل */
   description: string;
+  /** خيارات الحقل (JSON) */
   fieldOptions: Record<string, any>;
+  /** قواعد التحقق (JSON) */
   validationRules: Record<string, any>;
+  /** هل الحقل إلزامي */
   isRequired: boolean;
+  /** هل الحقل قابل للفلترة */
   isSearchable: boolean;
+  /** هل الحقل عام */
   isPublic: boolean;
+  /** ترتيب الحقل */
   sortOrder: number;
+  /** فئة الحقل */
   category: string;
+  /** معرف المجموعة المرتبطة (إن وجدت) */
   groupId: string;
+  /** يحدد ما إذا كان الحقل مخصص للوحدات */
   isForUnits: boolean;
 }
 
@@ -47,7 +63,7 @@ export interface FieldGroupAssignmentDto {
  */
 export interface CreateUnitTypeFieldCommand {
   /** معرف نوع الوحدة */
-  propertyTypeId: string;
+  unitTypeId: string;
   /** معرف نوع الحقل */
   fieldTypeId: string;
   /** اسم الحقل */
@@ -139,7 +155,7 @@ export interface ReorderUnitTypeFieldsCommand {
  */
 export interface GetUnitTypeFieldsQuery {
   /** معرف نوع الوحدة */
-  propertyTypeId: string;
+  unitTypeId: string;
   /** حالة التفعيل (اختياري) */
   isActive?: boolean;
   /** قابل للبحث فقط (اختياري) */
@@ -239,7 +255,7 @@ export interface FieldGroupWithFieldsDto {
  */
 export interface GetUngroupedFieldsQuery {
   /** معرف نوع العقار */
-  propertyTypeId: string;
+  unitTypeId: string;
   /** قابل للبحث فقط (اختياري) */
   isSearchable?: boolean;
   /** عام فقط (اختياري) */

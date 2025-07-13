@@ -9,7 +9,7 @@ import type {
   GetSearchFilterByIdQuery,
   GetSearchableFieldsQuery,
 } from '../types/search-filter.types';
-import type { UnitTypeFieldDto } from '../types/unit-type.types';
+import type { UnitTypeFieldDto } from '../types/unit-type-field.types';
 import type { ResultDto } from '../types/common.types';
 
 // المسار الأساسي لتعاملات فلاتر البحث للمدراء

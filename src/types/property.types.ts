@@ -2,7 +2,7 @@
 
 import type { UnitDto } from './unit.types';
 import type { AmenityDto } from './amenity.types';
-import type { UnitTypeFieldDto } from './unit-type.types';
+import type { UnitTypeFieldDto } from './unit-type-field.types';
 
 export interface PropertyDto {
   id: string;
