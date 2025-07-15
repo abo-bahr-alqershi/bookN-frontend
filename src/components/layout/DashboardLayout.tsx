@@ -40,7 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const menuItems = isAdmin ? adminMenuItems : isPropertyOwner ? ownerMenuItems : [];
 
   const getIcon = (iconName: string) => {
-    const icons: { [key: string]: JSX.Element } = {
+    const icons: Record<string, React.ReactElement> = {
       dashboard: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -96,9 +96,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50" dir="rtl">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="glass-card shadow-lg border-b border-white/20 backdrop-blur-lg">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Sidebar Toggle */}
@@ -112,10 +112,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 </svg>
               </button>
               <div className="flex items-center mr-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center shadow-lg hover-glow">
                   <span className="text-white text-sm font-bold">B</span>
                 </div>
-                <span className="mr-2 text-xl font-bold text-gray-900">BookN</span>
+                <span className="mr-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">BookN</span>
               </div>
             </div>
 
@@ -172,7 +172,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
       <div className="flex">
         {/* Sidebar */}
-        <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-0`}>
+        <div className={`fixed inset-y-0 right-0 z-50 w-64 glass-card shadow-2xl transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0`}>
           <div className="flex flex-col h-full pt-16 md:pt-0">
             <nav className="flex-1 px-4 py-4 space-y-1">
               {menuItems.map((item) => {
@@ -182,13 +182,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setIsSidebarOpen(false)}
-                    className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover-lift ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-700'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                        : 'text-gray-600 hover:bg-white/50 hover:text-gray-900 hover:shadow-md'
                     }`}
                   >
-                    <span className={`ml-3 ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}`}>
+                    <span className={`ml-3 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}>
                       {getIcon(item.icon)}
                     </span>
                     {item.label}

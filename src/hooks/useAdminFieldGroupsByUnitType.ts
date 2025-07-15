@@ -22,6 +22,7 @@ export const useAdminFieldGroupsByUnitType = (params: GetFieldGroupsByUnitTypeQu
   const { data: fieldGroupsData, isLoading, error } = useQuery<FieldGroupDto[], Error>({
     queryKey,
     queryFn: () => AdminFieldGroupsService.getByUnitType(params),
+    enabled: Boolean(params.unitTypeId),
   });
 
   // إنشاء مجموعة حقول

@@ -1,11 +1,11 @@
 import React, { createContext, useContext } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'Admin' | 'PropertyOwner' | 'User';
+  role: string;
   phone?: string;
   profileImage?: string;
 }

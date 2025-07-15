@@ -8,7 +8,7 @@ interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'Admin' | 'PropertyOwner' | 'User';
+  role: string;
   phone?: string;
   profileImage?: string;
 }
@@ -30,7 +30,7 @@ export const useAuth = (): UseAuthReturn => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const userData = localStorage.getItem('user');
 
@@ -76,11 +76,18 @@ export const useAuth = (): UseAuthReturn => {
       const result = await CommonAuthService.refreshToken(refreshCommand);
       
       if (result.isSuccess && result.data) {
-        localStorage.setItem('accessToken', result.data.accessToken);
-        localStorage.setItem('refreshToken', result.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(result.data));
-        
-        setUser(result.data);
+        const auth = result.data;
+        const newUser: AuthUser = {
+          id: auth.userId,
+          name: auth.userName,
+          email: auth.email,
+          role: auth.role,
+          profileImage: auth.profileImage,
+        };
+        localStorage.setItem('token', auth.accessToken);
+        localStorage.setItem('refreshToken', auth.refreshToken);
+        localStorage.setItem('user', JSON.stringify(newUser));
+        setUser(newUser);
         setIsAuthenticated(true);
       } else {
         clearAuthData();
@@ -92,7 +99,7 @@ export const useAuth = (): UseAuthReturn => {
   };
 
   const clearAuthData = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     setUser(null);
@@ -100,7 +107,7 @@ export const useAuth = (): UseAuthReturn => {
   };
 
   const login = (token: string, refreshToken: string, userData: AuthUser) => {
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('user', JSON.stringify(userData));
     

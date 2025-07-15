@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
-import type { UnitFieldValueDto } from '../../types/unit-field-value.types';
+import type { FieldValueDto } from '../../types/unit-field-value.types';
 
 interface DynamicFieldsFormProps {
   fields: UnitTypeFieldDto[];
-  values?: UnitFieldValueDto[];
+  values?: FieldValueDto[];
   onChange: (fieldValues: Record<string, any>) => void;
   className?: string;
 }
@@ -22,7 +22,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
     const initialValues: Record<string, any> = {};
     
     // Set values from existing data
-    values.forEach(value => {
+    values.forEach((value: FieldValueDto) => {
       initialValues[value.fieldId] = value.fieldValue;
     });
     

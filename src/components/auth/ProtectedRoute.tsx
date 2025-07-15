@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
   const location = useLocation();
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('token');
   const userData = localStorage.getItem('user');
 
   // التحقق من وجود التوكن

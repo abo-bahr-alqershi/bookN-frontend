@@ -11,6 +11,8 @@ interface UserSelectorProps {
   activeOnly?: boolean;
   showAvatar?: boolean;
   required?: boolean;
+  /** Roles allowed for selection */
+  allowedRoles?: string[];
 }
 
 const UserSelector: React.FC<UserSelectorProps> = ({

@@ -7,7 +7,7 @@ interface PublicRouteProps {
 }
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children, restricted = false }) => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('token');
   const userData = localStorage.getItem('user');
 
   // إذا كان المسار محدود (مثل صفحة تسجيل الدخول) والمستخدم مسجل دخول
@@ -19,13 +19,13 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children, restricted = false 
       if (user.role === 'Admin') {
         return <Navigate to="/admin/dashboard" replace />;
       } else if (user.role === 'PropertyOwner') {
-        return <Navigate to="/owner/dashboard" replace />;
+        return <Navigate to="/property-owner/dashboard" replace />;
       } else {
         return <Navigate to="/dashboard" replace />;
       }
     } catch (error) {
       console.error('خطأ في تحليل بيانات المستخدم:', error);
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
     }

@@ -4,11 +4,11 @@ import { useMutation } from '@tanstack/react-query';
 import { CommonAuthService } from '../../services/common-auth.service';
 import type { ForgotPasswordCommand, ResendPasswordResetLinkCommand } from '../../types/auth.types';
 import ActionButton from '../../components/ui/ActionButton';
-import { Card } from '../../components/ui/Card';
-import { useNotifications } from '../../hooks/useNotifications';
+import { useNotificationContext } from '../../components/ui/NotificationProvider';
+import { Card } from '../../components/ui';
 
 const ForgotPassword: React.FC = () => {
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError } = useNotificationContext();
   
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useAppStore, useNotifications } from '../stores/appStore';
@@ -119,14 +120,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
     // إضافة معالج للأخطاء العامة
     queryClient.getQueryCache().subscribe((event) => {
-      if (event.type === 'queryError') {
-        handleQueryError(event.error);
+      const q = (event as any).query;
+      if (q?.state.status === 'error') {
+        handleQueryError(q.state.error);
       }
     });
 
     queryClient.getMutationCache().subscribe((event) => {
-      if (event.type === 'mutationError') {
-        handleQueryError(event.error);
+      const m = (event as any).mutation;
+      if (m?.state.status === 'error') {
+        handleQueryError(m.state.error);
       }
     });
   }, [showError, isOnline]);
@@ -146,10 +149,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         <ToastContainer />
         {/* إظهار React Query DevTools في التطوير فقط */}
         {process.env.NODE_ENV === 'development' && (
-          <ReactQueryDevtools 
-            initialIsOpen={false} 
-            position="bottom-right"
-          />
+          <ReactQueryDevtools initialIsOpen={false} />
         )}
       </AppContext.Provider>
     </QueryClientProvider>

@@ -77,8 +77,8 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (currentUser?.data?.settingsJson) {
       try {
-        const savedSettings = JSON.parse(currentUser.data.settingsJson);
-        setSettings(prev => ({ ...prev, ...savedSettings }));
+        const savedSettings = JSON.parse(currentUser.data.settingsJson) as Partial<UserSettings>;
+        setSettings(prev => Object.assign({}, prev, savedSettings));
       } catch (error) {
         console.error('خطأ في تحليل الإعدادات المحفوظة:', error);
       }
@@ -87,13 +87,23 @@ const Settings: React.FC = () => {
 
   // تحديث إعداد محدد
   const updateSetting = (category: keyof UserSettings, key: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: value
+    setSettings(prev => {
+      // Handle nested object properties
+      if (category === 'notifications' || category === 'privacy' || category === 'preferences') {
+        return {
+          ...prev,
+          [category]: {
+            ...(prev[category] as any),
+            [key]: value
+          }
+        } as UserSettings;
       }
-    }));
+      // Handle top-level properties (language, theme)
+      return {
+        ...prev,
+        [category]: value
+      } as UserSettings;
+    });
   };
 
   // حفظ الإعدادات

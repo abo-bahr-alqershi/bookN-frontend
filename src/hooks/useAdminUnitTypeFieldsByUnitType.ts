@@ -22,6 +22,7 @@ export const useAdminUnitTypeFieldsByUnitType = (params: GetUnitTypeFieldsQuery)
   const { data: unitTypeFieldsData, isLoading, error } = useQuery<UnitTypeFieldDto[], Error>({
     queryKey,
     queryFn: () => AdminUnitTypeFieldsService.getByUnitType(params),
+    enabled: Boolean(params.unitTypeId),
   });
 
   // إنشاء حقل

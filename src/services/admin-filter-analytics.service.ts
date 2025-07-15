@@ -1,5 +1,5 @@
 // خدمات احصائيات الفلاتر الديناميكية للوحدات للإدمن
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { ResultDto } from '../types/common.types';
 import type { FieldFilterAnalyticsDto, GetUnitDynamicFilterAnalyticsQuery } from '../types/filter-analytics.types';
 
@@ -10,5 +10,5 @@ export const AdminFilterAnalyticsService = {
    * جلب احصائيات الفلاتر الديناميكية للوحدات
    */
   getUnitDynamicFilterAnalytics: (query: GetUnitDynamicFilterAnalyticsQuery) =>
-    axios.get<ResultDto<FieldFilterAnalyticsDto[]>>(API_BASE, { params: query }).then(res => res.data),
+    apiClient.get<ResultDto<FieldFilterAnalyticsDto[]>>(API_BASE, { params: query }).then(res => res.data),
 }; 

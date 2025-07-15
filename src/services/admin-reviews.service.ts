@@ -9,7 +9,7 @@ import type {
   GetReviewsByUserQuery,
   GetPendingReviewsQuery
 } from '../types/review.types';
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { ResultDto } from '../types/common.types';
 
 /**
@@ -40,11 +40,11 @@ export class AdminReviewsService {
 
   /** الموافقة على تقييم */
   static async approve(reviewId: string): Promise<ResultDto<boolean>> {
-    return axios.post<ResultDto<boolean>>(`/api/admin/reviews/${reviewId}/approve`).then(res => res.data);
+    return apiClient.post<ResultDto<boolean>>(`/api/admin/reviews/${reviewId}/approve`).then(res => res.data);
   }
 
   /** حذف تقييم */
   static async deleteReview(reviewId: string): Promise<ResultDto<boolean>> {
-    return axios.delete<ResultDto<boolean>>(`/api/admin/reviews/${reviewId}`).then(res => res.data);
+    return apiClient.delete<ResultDto<boolean>>(`/api/admin/reviews/${reviewId}`).then(res => res.data);
   }
 }

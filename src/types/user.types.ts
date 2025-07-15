@@ -5,6 +5,8 @@ import type { PropertyImageDto } from './property-image.types';
 export interface UserDto {
   id: string;
   name: string;
+  /** دور المستخدم */
+  role: string;
   email: string;
   phone: string;
   profileImage: string;

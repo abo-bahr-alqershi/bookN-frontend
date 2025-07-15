@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type {
   FieldGroupDto,
   GetFieldGroupByIdQuery,
@@ -14,9 +14,9 @@ const API_BASE = '/api/property/fieldgroups';
 export const PropertyFieldGroupsService = {
   /** جلب مجموعة حقول بواسطة المعرف */
   getById: (query: GetFieldGroupByIdQuery) =>
-    axios.get<FieldGroupDto>(`${API_BASE}/${query.groupId}`).then(res => res.data),
+    apiClient.get<FieldGroupDto>(`${API_BASE}/${query.groupId}`).then(res => res.data),
 
   /** جلب مجموعات الحقول حسب نوع الوحدة */
   getByUnitType: (query: GetFieldGroupsByUnitTypeQuery) =>
-    axios.get<FieldGroupDto[]>(`${API_BASE}/unit-type/${query.unitTypeId}`).then(res => res.data)
+    apiClient.get<FieldGroupDto[]>(`${API_BASE}/unit-type/${query.unitTypeId}`).then(res => res.data)
 }; 

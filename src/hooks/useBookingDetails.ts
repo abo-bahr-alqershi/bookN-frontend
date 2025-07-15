@@ -12,8 +12,13 @@ import type { BookingDto, GetBookingByIdQuery } from '../types/booking.types';
 export const useBookingDetails = (bookingId?: string, enabled = false) => {
   return useQuery<BookingDto, Error>({
     queryKey: ['booking-details', bookingId] as const,
-    queryFn: () =>
-      AdminBookingsService.getById({ bookingId: bookingId! }).then(res => res.data),
+    queryFn: async () => {
+      const data = await AdminBookingsService.getById({ bookingId: bookingId! }).then(res => res.data);
+      if (!data) {
+        throw new Error('Booking not found');
+      }
+      return data;
+    },
     enabled: !!bookingId && enabled
   });
 }; 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { PaginatedResult } from '../types/common.types';
 import type { AuditLogDto, GetCustomerActivityLogsQuery, GetPropertyActivityLogsQuery, GetAdminActivityLogsQuery, AuditLogsQuery } from '../types/audit-log.types';
 
@@ -11,17 +11,17 @@ const API_BASE = '/api/admin/auditlogs';
 export const AdminAuditLogsService = {
   /** جلب سجلات التدقيق العامة */
   getAuditLogs: (query: AuditLogsQuery) =>
-    axios.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/audit-logs`, { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/audit-logs`, { params: query }).then(res => res.data),
 
   /** جلب سجلات نشاط مدراء النظام */
   getAdminActivityLogs: (query: GetAdminActivityLogsQuery) =>
-    axios.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/activity-logs`, { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/activity-logs`, { params: query }).then(res => res.data),
 
   /** جلب سجلات نشاط العملاء */
   getCustomerActivityLogs: (query: GetCustomerActivityLogsQuery) =>
-    axios.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/customer-activity-logs`, { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/customer-activity-logs`, { params: query }).then(res => res.data),
 
   /** جلب سجلات نشاط العقارات */
   getPropertyActivityLogs: (query: GetPropertyActivityLogsQuery) =>
-    axios.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/property-activity-logs`, { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/property-activity-logs`, { params: query }).then(res => res.data),
 }; 

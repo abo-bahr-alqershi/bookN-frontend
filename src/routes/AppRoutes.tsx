@@ -2,13 +2,19 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from '../layouts/AdminLayout';
 import PropertyOwnerLayout from '../layouts/PropertyOwnerLayout';
 import AuthLayout from '../layouts/AuthLayout';
-import LoginPage from '../pages/shared/LoginPage';
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+import TestPage from '../pages/TestPage';
+import ModernDashboardLayout from '../components/layout/ModernDashboardLayout';
+import Profile from '../pages/profile/Profile';
+import Settings from '../pages/settings/Settings';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminUsers from '../pages/admin/AdminUsers';
 import AdminProperties from '../pages/admin/AdminProperties';
-import AdminPropertyTypes from '../pages/admin/AdminPropertyTypes';
+import AdminPropertyAndUnitTypes from '../pages/admin/AdminPropertyAndUnitTypes';
 import AdminUnits from '../pages/admin/AdminUnits';
 import AdminBookings from '../pages/admin/AdminBookings';
 import AdminPayments from '../pages/admin/AdminPayments';
@@ -18,6 +24,8 @@ import AdminNotifications from '../pages/admin/AdminNotifications';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminAuditLogs from '../pages/admin/AdminAuditLogs';
 import AdminSettings from '../pages/admin/AdminSettings';
+import PropertyImageGallery from '../pages/admin/PropertyImageGallery';
+import UnitImageGallery from '../pages/admin/UnitImageGallery';
 
 // Property Owner Pages
 import PropertyOwnerDashboard from '../pages/property/PropertyOwnerDashboard';
@@ -31,7 +39,9 @@ const AppRoutes = () => {
     <Routes>
       {/* Auth Routes */}
       <Route path="/auth" element={<AuthLayout />}>
-        <Route path="login" element={<LoginPage />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route index element={<Navigate to="login" replace />} />
       </Route>
 
@@ -41,8 +51,10 @@ const AppRoutes = () => {
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="properties" element={<AdminProperties />} />
-        <Route path="property-types" element={<AdminPropertyTypes />} />
+        <Route path="property-types" element={<AdminPropertyAndUnitTypes />} />
         <Route path="units" element={<AdminUnits />} />
+        <Route path="property-images/:propertyId" element={<PropertyImageGallery />} />
+        <Route path="unit-images/:propertyId/:unitId" element={<UnitImageGallery />} />
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="amenities" element={<AdminAmenities />} />
@@ -62,6 +74,27 @@ const AppRoutes = () => {
         <Route path="bookings" element={<PropertyOwnerBookings />} />
         <Route path="staff" element={<PropertyOwnerStaff />} />
       </Route>
+
+      {/* Test page */}
+      <Route path="/test" element={<TestPage />} />
+
+      {/* صفحات الملف الشخصي والإعدادات للمستخدم */}
+      <Route
+        path="/profile"
+        element={
+          <ModernDashboardLayout>
+            <Profile />
+          </ModernDashboardLayout>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ModernDashboardLayout>
+            <Settings />
+          </ModernDashboardLayout>
+        }
+      />
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/auth/login" replace />} />

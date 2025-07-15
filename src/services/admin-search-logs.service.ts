@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { PaginatedResult } from '../types/common.types';
 import type { SearchLogDto, GetSearchLogsQuery } from '../types/search-log.types';
 
@@ -12,5 +12,5 @@ export const AdminSearchLogsService = {
    * جلب سجلات البحث مع الفلترة والصفحات
    */
   getSearchLogs: (query: GetSearchLogsQuery) =>
-    axios.get<PaginatedResult<SearchLogDto>>(API_BASE, { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<SearchLogDto>>(API_BASE, { params: query }).then(res => res.data),
 }; 

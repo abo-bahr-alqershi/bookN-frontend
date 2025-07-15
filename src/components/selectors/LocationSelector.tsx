@@ -1,4 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// إعداد أيقونة Leaflet الافتراضية
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface LocationSelectorProps {
   latitude?: number;
@@ -26,7 +37,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const [currentLat, setCurrentLat] = useState(latitude);
   const [currentLng, setCurrentLng] = useState(longitude);
   const [address, setAddress] = useState('');
-  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isMapVisible, setIsMapVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const mapRef = useRef<HTMLDivElement>(null);
@@ -159,10 +170,26 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     }
   };
 
-  // فتح خريطة خارجية (Google Maps)
-  const openExternalMap = () => {
-    const url = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
-    window.open(url, '_blank');
+  // تبديل عرض الخريطة التفاعلية
+  const toggleMap = () => {
+    setIsMapVisible(!isMapVisible);
+  };
+
+  // مكون للتعامل مع أحداث النقر على الخريطة
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: async (e) => {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        
+        setCurrentLat(lat);
+        setCurrentLng(lng);
+        
+        const addressResult = await getAddressFromCoordinates(lat, lng);
+        onChange(lat, lng, addressResult);
+      },
+    });
+    return null;
   };
 
   return (
@@ -196,12 +223,12 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
           {showMap && (
             <button
               type="button"
-              onClick={openExternalMap}
+              onClick={toggleMap}
               disabled={disabled}
               className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-              title="فتح في الخريطة"
+              title={isMapVisible ? 'إخفاء الخريطة' : 'عرض الخريطة'}
             >
-              🗺️
+              {isMapVisible ? '🗺️' : '🗺️'}
             </button>
           )}
           
@@ -287,6 +314,32 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         </div>
       )}
 
+      {/* الخريطة التفاعلية */}
+      {isMapVisible && (
+        <div className="border border-gray-300 rounded-md overflow-hidden">
+          <div className="h-64 w-full">
+            <MapContainer
+              center={[currentLat, currentLng]}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker position={[currentLat, currentLng]} />
+              <MapClickHandler />
+            </MapContainer>
+          </div>
+          <div className="p-2 bg-gray-50 border-t border-gray-200">
+            <p className="text-xs text-gray-600 text-center">
+              💡 اضغط على أي مكان في الخريطة لتحديد الموقع
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* نصائح للاستخدام */}
       <div className="text-xs text-gray-500 space-y-1">
         <p>💡 نصائح:</p>
@@ -294,7 +347,8 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
           <li>اضغط على 📍 للحصول على موقعك الحالي</li>
           <li>ابحث بالاسم أو العنوان للعثور على الموقع</li>
           <li>يمكنك إدخال الإحداثيات يدوياً بدقة 6 خانات عشرية</li>
-          <li>اضغط على 🗺️ لفتح الموقع في خرائط جوجل</li>
+          <li>اضغط على 🗺️ لعرض/إخفاء الخريطة التفاعلية</li>
+          <li>اضغط على أي مكان في الخريطة لتحديد موقع جديد</li>
         </ul>
       </div>
     </div>

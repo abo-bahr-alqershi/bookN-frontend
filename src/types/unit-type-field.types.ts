@@ -166,6 +166,8 @@ export interface GetUnitTypeFieldsQuery {
   isForUnits?: boolean;
   /** فئة الحقل (اختياري) */
   category?: string;
+  /** نص البحث في الحقول (اختياري) */
+  searchTerm?: string;
 }
 
 /**

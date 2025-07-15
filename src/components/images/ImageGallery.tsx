@@ -3,7 +3,7 @@
  * Image Gallery Component - Comprehensive component for displaying and managing image gallery
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
@@ -89,7 +89,8 @@ const SortableImageItem: React.FC<{
   const sizeClasses = {
     small: 'w-24 h-24',
     medium: 'w-32 h-32',
-    large: 'w-48 h-48'
+    large: 'w-48 h-48',
+    xlarge: 'w-64 h-64',
   };
 
   const thumbnailUrl = image.thumbnails[thumbnailSize] || image.url;
@@ -107,7 +108,8 @@ const SortableImageItem: React.FC<{
       onClick={onSelect}
     >
       {/* صورة أساسية - Main Image */}
-      <div className={`${sizeClasses[thumbnailSize]} relative`}>
+      {/* <div className={`${sizeClasses[thumbnailSize]} relative`}> */}
+      <div className={`relative`}>
         <img
           src={thumbnailUrl}
           alt={image.alt || image.filename}
@@ -161,7 +163,7 @@ const SortableImageItem: React.FC<{
             <ActionButton
               variant="secondary"
               size="sm"
-              onClick={() => onEdit()}
+              onClick={(e) => { e.stopPropagation(); onEdit(); }}
               className="text-white hover:bg-white hover:bg-opacity-20"
               label="تحرير"
             >
@@ -174,7 +176,7 @@ const SortableImageItem: React.FC<{
               <ActionButton
                 variant="secondary"
                 size="sm"
-                onClick={() => onSetPrimary()}
+                onClick={(e) => { e.stopPropagation(); onSetPrimary(); }}
                 className="text-white hover:bg-white hover:bg-opacity-20"
                 label="تعيين رئيسية"
               >
@@ -187,7 +189,7 @@ const SortableImageItem: React.FC<{
             <ActionButton
               variant="danger"
               size="sm"
-              onClick={() => onDelete()}
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
               className="text-white hover:bg-red-500 hover:bg-opacity-50"
               label="حذف"
             >
@@ -292,25 +294,32 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     
     return filtered;
   }, [images, category]);
+  // Optimistic ordering state
+  const [orderedImages, setOrderedImages] = useState<Image[]>([]);
+  useEffect(() => {
+    setOrderedImages(filteredImages);
+  }, [filteredImages]);
 
   // معالجة إعادة ترتيب الصور - Handle image reordering
   const handleDragEnd = useCallback(async (event: any) => {
     const { active, over } = event;
     
     if (active.id !== over?.id) {
-      const oldIndex = filteredImages.findIndex(img => img.id === active.id);
-      const newIndex = filteredImages.findIndex(img => img.id === over.id);
-      
-      const newOrder = arrayMove(filteredImages, oldIndex, newIndex);
+      // Local optimistic reorder
+      const oldIndex = orderedImages.findIndex(img => img.id === active.id);
+      const newIndex = orderedImages.findIndex(img => img.id === over.id);
+      const newOrder = arrayMove(orderedImages, oldIndex, newIndex);
+      setOrderedImages(newOrder);
       const imageIds = newOrder.map(img => img.id);
-      
       try {
         await reorderImagesAsync({ imageIds, propertyId, unitId });
       } catch (error) {
+        // Revert on failure
+        setOrderedImages(filteredImages);
         console.error('فشل في إعادة ترتيب الصور:', error);
       }
     }
-  }, [filteredImages, executeWithFeedback, reorderImagesAsync, propertyId, unitId]);
+  }, [orderedImages, filteredImages, reorderImagesAsync, propertyId, unitId]);
 
   // معالجة اختيار الصورة - Handle image selection
   const handleImageSelect = useCallback((image: Image) => {
@@ -456,14 +465,14 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={filteredImages.map(img => img.id)} strategy={rectSortingStrategy}>
+          <SortableContext items={orderedImages.map(img => img.id)} strategy={rectSortingStrategy}>
             <div className={`
               ${viewMode === 'grid' 
                 ? `grid grid-cols-2 md:grid-cols-${Math.min(columns, 6)} gap-4`
                 : 'flex flex-col gap-2'
               }
             `}>
-              {filteredImages.map((image) => (
+              {orderedImages.map((image) => (
                 <SortableImageItem
                   key={image.id}
                   image={image}

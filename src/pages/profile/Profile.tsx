@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { CommonUsersService } from '../../services/common-users.service';
 import { CommonAuthService } from '../../services/common-auth.service';
-import type { UpdateUserCommand, ChangePasswordCommand, UpdateUserProfilePictureCommand, UpdateUserSettingsCommand } from '../../types/user.types';
+import type { UpdateUserCommand, UpdateUserProfilePictureCommand, UpdateUserSettingsCommand } from '../../types/user.types';
+import type { ChangePasswordCommand } from '../../types/auth.types';
 import ActionButton from '../../components/ui/ActionButton';
 import { Card } from '../../components/ui/Card';
 import ImageUpload from '../../components/ui/ImageUpload';
@@ -93,17 +94,18 @@ const Profile: React.FC = () => {
 
   // تحديث البيانات عند جلب المستخدم
   useEffect(() => {
-    if (currentUser?.data) {
+    const user = currentUser?.data;
+    if (user) {
       setProfileData({
-        name: currentUser.data.name || '',
-        email: currentUser.data.email || '',
-        phone: currentUser.data.phone || '',
-        profileImage: currentUser.data.profileImage || ''
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        profileImage: user.profileImage || ''
       });
       
       setPasswordData(prev => ({
         ...prev,
-        userId: currentUser.data.id
+        userId: user.id
       }));
     }
   }, [currentUser]);
@@ -166,7 +168,6 @@ const Profile: React.FC = () => {
     
     if (validateProfile()) {
       const updateData: UpdateUserSettingsCommand = {
-        userId: currentUser?.data?.id || '',
         settingsJson: JSON.stringify(profileData)
       };
       updateProfileMutation.mutate(updateData);
@@ -206,12 +207,12 @@ const Profile: React.FC = () => {
       // تحويل الصورة إلى base64
       const imageUrl = await convertFileToUrl(file);
       
-      if (currentUser?.data?.id) {
+      const user = currentUser?.data;
+      if (user?.id) {
         const updateCommand: UpdateUserProfilePictureCommand = {
-          userId: currentUser.data.id,
+          userId: user.id,
           profileImageUrl: imageUrl
         };
-        
         updateProfilePictureMutation.mutate(updateCommand);
       }
     } catch (error) {
@@ -221,12 +222,12 @@ const Profile: React.FC = () => {
 
   // معالجة حذف الصورة
   const handleImageDelete = () => {
-    if (currentUser?.data?.id) {
+    const user = currentUser?.data;
+    if (user?.id) {
       const updateCommand: UpdateUserProfilePictureCommand = {
-        userId: currentUser.data.id,
+        userId: user.id,
         profileImageUrl: ''
       };
-      
       updateProfilePictureMutation.mutate(updateCommand);
     }
   };

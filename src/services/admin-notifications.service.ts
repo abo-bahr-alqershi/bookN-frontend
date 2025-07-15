@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type {
   NotificationDto,
   CreateNotificationCommand,
@@ -11,16 +11,16 @@ import type { ResultDto, PaginatedResult } from '../types/common.types';
 export const AdminNotificationsService = {
   /** إنشاء إشعار جديد */
   create: (data: CreateNotificationCommand) =>
-    axios.post<ResultDto<string>>('/api/admin/Notifications', data).then(res => res.data),
+    apiClient.post<ResultDto<string>>('/api/admin/Notifications', data).then(res => res.data),
 
   /** جلب إشعارات النظام مع التصفية والصفحات */
   getSystemNotifications: (query?: GetSystemNotificationsQuery) =>
-    axios.get<PaginatedResult<NotificationDto>>('/api/admin/Notifications', { params: query }).then(res => res.data),
+    apiClient.get<PaginatedResult<NotificationDto>>('/api/admin/Notifications', { params: query }).then(res => res.data),
 
   /** جلب إشعارات مستخدم مع التصفية والصفحات */
   getUserNotifications: (query: GetUserNotificationsQuery) => {
     const { userId, ...params } = query;
-    return axios
+    return apiClient
       .get<PaginatedResult<NotificationDto>>(`/api/admin/Notifications/user/${userId}`, { params })
       .then(res => res.data);
   },

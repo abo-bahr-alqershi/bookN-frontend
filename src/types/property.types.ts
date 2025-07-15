@@ -3,6 +3,7 @@
 import type { UnitDto } from './unit.types';
 import type { AmenityDto } from './amenity.types';
 import type { UnitTypeFieldDto } from './unit-type-field.types';
+import type { PropertyImageDto } from './property-image.types';
 
 export interface PropertyDto {
   id: string;
@@ -17,6 +18,8 @@ export interface PropertyDto {
   description: string;
   isApproved: boolean;
   createdAt: string; // ISO date
+  /** تفاصيل صور العقار */
+  images?: PropertyImageDto[];
   ownerName: string;
   typeName: string;
   distanceKm?: number;
@@ -32,6 +35,8 @@ export interface CreatePropertyCommand {
   longitude: number;
   city: string;
   starRating: number;
+  // /** URLs of uploaded images */
+  images?: string[];
 }
 
 export interface UpdatePropertyCommand {
@@ -43,6 +48,8 @@ export interface UpdatePropertyCommand {
   longitude?: number;
   city?: string;
   starRating?: number;
+  // /** URLs of uploaded images */
+  images?: string[];
 }
 
 export interface DeletePropertyCommand {

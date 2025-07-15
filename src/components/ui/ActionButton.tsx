@@ -3,7 +3,7 @@ import Tooltip from './Tooltip';
 import LoadingSpinner from './LoadingSpinner';
 
 interface ActionButtonProps {
-  onClick: () => void;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
   icon?: string;
   label: string;
   tooltip?: string;

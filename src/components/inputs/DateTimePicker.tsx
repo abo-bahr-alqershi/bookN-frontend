@@ -232,7 +232,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
               className="p-1 hover:bg-gray-100 rounded"
             >
-              ←
+              →
             </button>
             <h3 className="text-sm font-medium">
               {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
@@ -242,7 +242,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
               className="p-1 hover:bg-gray-100 rounded"
             >
-              →
+              ←
             </button>
           </div>
 

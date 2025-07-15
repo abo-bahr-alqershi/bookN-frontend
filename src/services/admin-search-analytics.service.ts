@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { ResultDto } from '../types/common.types';
 import type { SearchAnalyticsDto, GetSearchAnalyticsQuery } from '../types/search-analytics.types';
 
@@ -12,5 +12,5 @@ export const AdminSearchAnalyticsService = {
    * جلب تحليلات البحث
    */
   getSearchAnalytics: (query: GetSearchAnalyticsQuery) =>
-    axios.get<ResultDto<SearchAnalyticsDto>>(API_BASE, { params: query }).then(res => res.data),
+    apiClient.get<ResultDto<SearchAnalyticsDto>>(API_BASE, { params: query }).then(res => res.data),
 }; 

@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useAdminProperties } from '../../hooks/useAdminProperties';
+import { useNavigate } from 'react-router-dom';
 import DataTable, { type Column } from '../../components/common/DataTable';
+import CardView from '../../components/common/CardView';
+import MapView from '../../components/common/MapView';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
+import ViewToggle, { type ViewType } from '../../components/common/ViewToggle';
 import Modal from '../../components/common/Modal';
 import UserSelector from '../../components/selectors/UserSelector';
 import LocationSelector from '../../components/selectors/LocationSelector';
@@ -13,9 +17,16 @@ import type {
   GetAllPropertiesQuery 
 } from '../../types/property.types';
 
+// Extend PropertyDto to include coordinates for map view
+interface PropertyWithLocation extends Omit<PropertyDto, 'latitude' | 'longitude'> {
+  latitude?: number;
+  longitude?: number;
+}
+
 const AdminProperties = () => {
   
-  // State for search and filters
+  // State for view and search
+  const [currentView, setCurrentView] = useState<ViewType>('table');
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,6 +98,11 @@ const AdminProperties = () => {
     rejectProperty,
     deleteProperty,
   } = useAdminProperties(queryParams);
+  const navigate = useNavigate();
+
+  const handleOpenGallery = (property: PropertyDto) => {
+    navigate(`/admin/property-images/${property.id}`, { state: { propertyName: property.name } });
+  };
 
   // تم حذف تعريفات الـ mutations المباشرة لاستخدام الهوك
 
@@ -117,7 +133,7 @@ const AdminProperties = () => {
       longitude: property.longitude,
       city: property.city,
       starRating: property.starRating,
-      images: property.images || [],
+      images: property.images?.values['url'] || [],
     });
     setShowEditModal(true);
   };
@@ -273,6 +289,12 @@ const AdminProperties = () => {
       onClick: handleViewDetails,
     },
     {
+      label: 'معرض الصور',
+      icon: '🖼️',
+      color: 'orange' as const,
+      onClick: handleOpenGallery,
+    },
+    {
       label: 'تعديل',
       icon: '✏️',
       color: 'blue' as const,
@@ -300,6 +322,77 @@ const AdminProperties = () => {
     },
   ];
 
+  // Card renderer for card view
+  const renderPropertyCard = (property: PropertyDto) => (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{property.name}</h3>
+            <p className="text-sm text-gray-600">{property.address}</p>
+          </div>
+          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+            property.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+          }`}>
+            {property.isApproved ? 'معتمد' : 'في انتظار الموافقة'}
+          </span>
+        </div>
+        
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-500">المالك:</span>
+            <span className="text-sm text-gray-900">{property.ownerName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-500">المدينة:</span>
+            <span className="text-sm text-gray-900">{property.city}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-500">التقييم:</span>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-900 ml-1">{property.starRating}</span>
+              <span className="text-yellow-400 text-sm">{'★'.repeat(property.starRating)}{'☆'.repeat(5 - property.starRating)}</span>
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-500">تاريخ الإنشاء:</span>
+            <span className="text-sm text-gray-900">{new Date(property.createdAt).toLocaleDateString('ar-SA')}</span>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={() => handleViewDetails(property)}
+            className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+          >
+            👁️ عرض التفاصيل
+          </button>
+          <button
+            onClick={() => handleEdit(property)}
+            className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            ✏️ تعديل
+          </button>
+          {!property.isApproved && (
+            <button
+              onClick={() => handleApprove(property)}
+              className="flex-1 px-3 py-2 text-sm bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+            >
+              ✅ موافقة
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Prepare properties with location data for map view
+  const propertiesWithLocation: PropertyWithLocation[] = (propertiesData?.items || []).map(property => ({
+    ...property,
+    latitude: property.latitude,
+    longitude: property.longitude
+  }));
+
   if (propertiesError) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
@@ -318,10 +411,15 @@ const AdminProperties = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">إدارة العقارات</h1>
             <p className="text-gray-600 mt-1">
-              مراجعة وموافقة العقارات الجديدة وإدارة العقارات المسجلة
+              مراجعة وموافقة العقارات الجديدة وإدارة العقارات المسجلة مع 3 طرق عرض مختلفة
             </p>
           </div>
           <div className="flex gap-3">
+            <ViewToggle
+              currentView={currentView}
+              onViewChange={setCurrentView}
+              availableViews={['table', 'cards', 'map']}
+            />
             <button
               onClick={() => setShowCreateModal(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -362,27 +460,83 @@ const AdminProperties = () => {
         onToggleAdvanced={() => setShowAdvancedFilters(!showAdvancedFilters)}
       />
 
-      {/* Data Table */}
-      <DataTable
-        data={propertiesData?.items || []}
-        columns={columns}
-        loading={isLoadingProperties}
-        pagination={{
-          current: currentPage,
-          total: propertiesData?.totalCount || 0,
-          pageSize,
-          onChange: (page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          },
-        }}
-        rowSelection={{
-          selectedRowKeys: selectedRows,
-          onChange: setSelectedRows,
-        }}
-        actions={tableActions}
-        onRowClick={handleViewDetails}
-      />
+      {/* Data Views */}
+      {currentView === 'table' && (
+        <DataTable
+          data={propertiesData?.items || []}
+          columns={columns}
+          loading={isLoadingProperties}
+          pagination={{
+            current: currentPage,
+            total: propertiesData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+          rowSelection={{
+            selectedRowKeys: selectedRows,
+            onChange: setSelectedRows,
+          }}
+          actions={tableActions}
+          onRowClick={handleViewDetails}
+        />
+      )}
+
+      {currentView === 'cards' && (
+        <CardView
+          data={propertiesData?.items || []}
+          loading={isLoadingProperties}
+          renderCard={renderPropertyCard}
+          emptyMessage="لا توجد عقارات للعرض"
+          emptyIcon="🏢"
+          columns={3}
+          pagination={{
+            current: currentPage,
+            total: propertiesData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+        />
+      )}
+
+      {currentView === 'map' && (
+        <MapView
+          markers={propertiesWithLocation.map(property => ({
+            id: property.id,
+            name: property.name,
+            address: property.address,
+            description: `${property.city} - تقييم ${property.starRating} نجوم`,
+            coordinates: property.latitude && property.longitude ? {
+              latitude: property.latitude,
+              longitude: property.longitude
+            } : undefined,
+            type: 'property' as const,
+            color: property.isApproved ? '#10B981' : '#F59E0B',
+            isApproved: property.isApproved,
+            rating: property.starRating
+          })).filter(marker => marker.coordinates)}
+          onMarkerClick={(marker) => {
+            const property = (propertiesData?.items || []).find(p => p.id === marker.id);
+            if (property) handleViewDetails(property);
+          }}
+          emptyMessage="لا توجد عقارات بمواقع محددة لعرضها على الخريطة"
+          height="600px"
+          pagination={{
+            current: currentPage,
+            total: propertiesData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+        />
+      )}
 
       {/* Create Property Modal */}
       <Modal
@@ -542,7 +696,7 @@ const AdminProperties = () => {
               maxSize={5}
               showPreview={true}
               placeholder="اضغط لرفع صور العقار أو اسحبها هنا"
-              uploadEndpoint="/api/upload/property-images"
+              uploadEndpoint="/api/images/upload"
             />
           </div>
         </div>
@@ -673,7 +827,7 @@ const AdminProperties = () => {
                 صور العقار
               </label>
               <ImageUpload
-                value={editForm.images || selectedProperty?.images || []}
+                value={editForm.images || selectedProperty?.images?.values['url'] || []}
                 onChange={(urls) => setEditForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
                 multiple={true}
                 maxFiles={10}

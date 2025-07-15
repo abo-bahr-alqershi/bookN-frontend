@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { ImagesService } from '../../services/images.service';
 
 interface ImageUploadProps {
   value?: string | string[];
@@ -21,6 +22,7 @@ interface ImageFile {
   uploading?: boolean;
   uploaded?: boolean;
   error?: string;
+  progress?: number;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -82,7 +84,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         url: URL.createObjectURL(file),
         uploading: false,
         uploaded: false,
-        error: error || undefined
+        error: error || undefined,
+        progress: 0
       };
 
       newFiles.push(imageFile);
@@ -91,23 +94,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setImageFiles(prev => [...prev, ...newFiles]);
   }, [currentUrls.length, imageFiles.length, maxFiles, multiple]);
 
-  // رفع صورة واحدة
-  const uploadImage = async (imageFile: ImageFile): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append('file', imageFile.file);
-
+  // رفع صورة واحدة باستخدام خدمة الصور
+  const uploadImage = async (imageFile: ImageFile): Promise<string> => {
     try {
-      const response = await fetch(uploadEndpoint, {
-        method: 'POST',
-        body: formData,
+      // استخدام ImagesService لرفع الصورة
+      const response = await ImagesService.uploadImage({
+        file: imageFile.file,
+        category: 'gallery'
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.url || result.data?.url;
-      } else {
-        throw new Error(`خطأ في الرفع: ${response.statusText}`);
+      if (!response.success) {
+        throw new Error(response.error || 'فشل في رفع الصورة');
+      }else{
+        console.log(response.image?.url);
+        console.log(response.image?.url);
       }
+
+      return response.image?.url || '';
     } catch (error) {
       console.error('خطأ في رفع الصورة:', error);
       throw error;
@@ -132,21 +134,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }
 
       try {
-        const uploadedUrl = await uploadImage(imageFile);
+        // رفع ومتابعة التقدم
+        const uploadedUrl = await ImagesService.uploadImage({ file: imageFile.file, category: 'gallery' }, (percent) => {
+          setImageFiles(prev => prev.map((img, idx) =>
+            idx === i ? { ...img, progress: percent } : img
+          ));
+        });
         if (uploadedUrl) {
-          uploadedUrls.push(uploadedUrl);
+          uploadedUrls.push(uploadedUrl.image?.url || '');
           
-          // تحديث حالة الصورة المرفوعة
-          setImageFiles(prev => prev.map((img, index) => 
-            index === i ? { ...img, uploading: false, uploaded: true } : img
+          // تحديث حالة الصورة المكتملة
+          setImageFiles(prev => prev.map((img, index) =>
+            index === i ? { ...img, uploading: false, uploaded: true, progress: 100 } : img
           ));
         }
       } catch (error) {
         // تحديث حالة الخطأ
-        setImageFiles(prev => prev.map((img, index) => 
-          index === i ? { 
-            ...img, 
-            uploading: false, 
+        setImageFiles(prev => prev.map((img, index) =>
+          index === i ? {
+            ...img,
+            uploading: false,
             error: 'فشل في رفع الصورة'
           } : img
         ));
@@ -317,9 +324,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 />
                 
                 {/* مؤشر الحالة */}
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center space-y-1">
                   {imageFile.uploading && (
-                    <div className="w-6 h-6 border-2 border-white border-t-blue-600 rounded-full animate-spin"></div>
+                    <>
+                      <progress value={imageFile.progress || 0} max={100} className="w-10 h-2" />
+                      <span className="text-white text-xs">{imageFile.progress || 0}%</span>
+                    </>
                   )}
                   {imageFile.uploaded && (
                     <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">

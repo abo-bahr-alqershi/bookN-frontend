@@ -104,7 +104,7 @@ const defaultState: AppState = {
     properties: [],
     users: [],
     unitTypes: [],
-    lastUpdated: {},
+    lastUpdated: {} as Record<string, number>,
   },
 };
 
@@ -182,8 +182,9 @@ export const useAppStore = create<AppState & AppActions>()(
         set((state) => {
           if (key) {
             const newCache = { ...state.cache };
-            newCache[key] = defaultState.cache[key];
-            delete newCache.lastUpdated[key];
+            // Assign default cache value by key with any-cast to bypass strict index type
+            (newCache as any)[key] = (defaultState.cache as any)[key];
+            delete (newCache as any).lastUpdated[key];
             return { cache: newCache };
           } else {
             return { cache: defaultState.cache };

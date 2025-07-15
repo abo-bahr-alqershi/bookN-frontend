@@ -38,7 +38,7 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({ notificat
   if (notifications.length === 0) return null;
 
   return (
-    <div className="fixed top-4 left-4 z-50 space-y-2" dir="rtl">
+    <div className="fixed top-4 right-4 z-50 space-y-3 w-96" dir="rtl">
       {notifications.map((notification) => (
         <NotificationToast
           key={notification.id}
@@ -57,17 +57,17 @@ interface NotificationToastProps {
 
 const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onRemove }) => {
   const typeStyles = {
-    success: 'bg-green-50 border-green-200 text-green-800',
-    error: 'bg-red-50 border-red-200 text-red-800',
-    warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800'
+    success: 'bg-green-50 border-green-300 text-green-900',
+    error: 'bg-red-50 border-red-300 text-red-900',
+    warning: 'bg-yellow-50 border-yellow-300 text-yellow-900',
+    info: 'bg-blue-50 border-blue-300 text-blue-900'
   };
 
   const iconStyles = {
-    success: 'text-green-400',
-    error: 'text-red-400',
-    warning: 'text-yellow-400',
-    info: 'text-blue-400'
+    success: 'text-green-500',
+    error: 'text-red-500',
+    warning: 'text-yellow-500',
+    info: 'text-blue-500'
   };
 
   const icons = {
@@ -94,27 +94,27 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onR
   };
 
   return (
-    <div className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden transform transition-all duration-300 ease-in-out ${typeStyles[notification.type]}`}>
-      <div className="p-4">
+    <div className={`w-full bg-white shadow-xl rounded-xl pointer-events-auto ring-1 ring-black ring-opacity-10 overflow-hidden transform transition-all duration-300 ease-in-out ${typeStyles[notification.type]}`}>
+      <div className="p-5">
         <div className="flex items-start">
           <div className={`flex-shrink-0 ${iconStyles[notification.type]}`}>
             {icons[notification.type]}
           </div>
-          <div className="mr-3 w-0 flex-1 pt-0.5">
+          <div className="mr-4 w-0 flex-1 pt-0.5">
             {notification.title && (
-              <p className="text-sm font-medium">{notification.title}</p>
+              <p className="text-base font-semibold leading-6">{notification.title}</p>
             )}
-            <p className={`text-sm ${notification.title ? 'mt-1' : ''}`}>
+            <p className={`text-base leading-6 ${notification.title ? 'mt-2' : ''}`}>
               {notification.message}
             </p>
           </div>
           <div className="mr-4 flex-shrink-0 flex">
             <button
-              className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 p-1"
               onClick={() => onRemove(notification.id)}
             >
               <span className="sr-only">إغلاق</span>
-              <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>

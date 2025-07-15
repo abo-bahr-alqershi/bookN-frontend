@@ -14,9 +14,9 @@ export const Card: React.FC<CardProps> = ({
   padding = 'md'
 }) => {
   const variantClasses = {
-    default: 'bg-white border border-gray-200',
-    outlined: 'bg-transparent border-2 border-gray-300',
-    elevated: 'bg-white shadow-lg border border-gray-100'
+    default: 'glass-card border border-white/30 hover-lift',
+    outlined: 'bg-white/50 border-2 border-gray-300/50 backdrop-blur-sm hover-lift',
+    elevated: 'bg-white shadow-2xl border border-gray-100/50 hover-lift hover-glow'
   };
 
   const paddingClasses = {
@@ -29,7 +29,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={`
-        rounded-lg
+        rounded-2xl transition-all duration-300
         ${variantClasses[variant]}
         ${paddingClasses[padding]}
         ${className}

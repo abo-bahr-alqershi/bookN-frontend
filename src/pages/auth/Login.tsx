@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { CommonAuthService } from '../../services/common-auth.service';
+import { useAuthContext } from '../../contexts/AuthContext';
 import type { LoginCommand } from '../../types/auth.types';
 import ActionButton from '../../components/ui/ActionButton';
-import { Card } from '../../components/ui/Card';
-import { useNotifications } from '../../hooks/useNotifications';
+import { useNotificationContext } from '../../components/ui/NotificationProvider';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError } = useNotificationContext();
+  const { login } = useAuthContext();
   
   const [formData, setFormData] = useState<LoginCommand>({
     email: '',
@@ -24,15 +25,29 @@ const Login: React.FC = () => {
     mutationFn: CommonAuthService.login,
     onSuccess: (result) => {
       if (result.isSuccess && result.data) {
-        localStorage.setItem('accessToken', result.data.accessToken);
-        localStorage.setItem('refreshToken', result.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(result.data));
-        
+        const auth = result.data;
+        console.log("سسسسسسسسسسسسسسسسس");
+
+        // إنشاء كائن المستخدم
+        const userData = {
+          id: auth.userId,
+          name: auth.userName,
+          email: auth.email,
+          role: auth.role,
+          profileImage: auth.profileImage || undefined
+        };
+        console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+
+        // استخدام AuthContext للتسجيل
+        login(auth.accessToken, auth.refreshToken, userData);
+        console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+
         showSuccess('تم تسجيل الدخول بنجاح');
         
-        if (result.data.role === 'PropertyOwner') {
+        // التوجيه بناءً على الدور
+        if (auth.role === 'PropertyOwner') {
           navigate('/owner/dashboard');
-        } else if (result.data.role === 'Admin') {
+        } else if (auth.role === 'Admin') {
           navigate('/admin/dashboard');
         } else {
           navigate('/dashboard');
@@ -42,6 +57,8 @@ const Login: React.FC = () => {
       }
     },
     onError: (error: any) => {
+      console.log('Login error:', error);
+      console.log('Error response:', error.response?.data);
       showError(error.response?.data?.message || 'حدث خطأ أثناء تسجيل الدخول');
     }
   });
@@ -67,9 +84,13 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit called with:', formData);
     
     if (validateForm()) {
+      console.log('Form is valid, submitting...');
       loginMutation.mutate(formData);
+    } else {
+      console.log('Form validation failed');
     }
   };
 
@@ -82,15 +103,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 shadow-xl">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-            <span className="text-white text-2xl font-bold">B</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">BookN</h1>
-          <p className="text-gray-600">تسجيل الدخول للأدمنز ومالكي العقارات</p>
-        </div>
+    <div>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">تسجيل الدخول</h2>
+        <p className="text-gray-600">أدخل بياناتك للوصول إلى النظام</p>
+      </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -194,7 +211,6 @@ const Login: React.FC = () => {
             <p>للحصول على حساب إدارة، تواصل مع الدعم الفني</p>
           </div>
         </div>
-      </Card>
     </div>
   );
 };

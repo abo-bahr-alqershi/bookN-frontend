@@ -18,7 +18,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
 
       if (!token) {
@@ -35,13 +35,13 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
           setUserRole(result.data.role);
         } else {
           setIsAuthenticated(false);
-          localStorage.removeItem('accessToken');
+          localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
         }
       } catch (error) {
         setIsAuthenticated(false);
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
       }

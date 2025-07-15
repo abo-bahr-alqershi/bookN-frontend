@@ -5,12 +5,12 @@ import { PropertyUsersService } from '../../services/property-users.service';
 import { AdminPropertyTypesService } from '../../services/admin-property-types.service';
 import type { RegisterPropertyOwnerCommand } from '../../types/user.types';
 import ActionButton from '../../components/ui/ActionButton';
-import { Card } from '../../components/ui/Card';
-import { useNotifications } from '../../hooks/useNotifications';
+import { useNotificationContext } from '../../components/ui/NotificationProvider';
+import { Card } from '../../components/ui';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError } = useNotificationContext();
   
   const [formData, setFormData] = useState<RegisterPropertyOwnerCommand>({
     name: '',
@@ -129,22 +129,17 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Card className="p-8 shadow-xl">
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-              <span className="text-white text-2xl font-bold">B</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">BookN</h1>
-            <p className="text-gray-600">تسجيل مالك عقار جديد</p>
-          </div>
+    <div>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">تسجيل مالك عقار جديد</h2>
+        <p className="text-gray-600">أدخل بياناتك لإنشاء حساب جديد</p>
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">البيانات الشخصية</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">البيانات الشخصية</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     الاسم الكامل
@@ -444,19 +439,17 @@ const Register: React.FC = () => {
             />
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
-              لديك حساب بالفعل؟{' '}
-              <Link
-                to="/auth/login"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                سجل الدخول
-              </Link>
-            </p>
-          </div>
-        </Card>
-      </div>
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-600">
+            لديك حساب بالفعل؟{' '}
+            <Link
+              to="/auth/login"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              سجل الدخول
+            </Link>
+          </p>
+        </div>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './components/ui/NotificationProvider';
 import AppRoutes from './routes/AppRoutes';
 import './App.css';
 
@@ -16,9 +18,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div dir="rtl" className="min-h-screen bg-gray-50">
-          <AppRoutes />
-        </div>
+        <AuthProvider>
+          <NotificationProvider>
+            <div dir="rtl" className="min-h-screen">
+              <AppRoutes />
+            </div>
+          </NotificationProvider>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

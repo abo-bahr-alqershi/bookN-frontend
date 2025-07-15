@@ -117,6 +117,8 @@ export interface UploadImageResponse {
   success: boolean;
   /** بيانات الصورة - Image data */
   image?: Image;
+  /** رابط الصورة - Image data */
+  url?: Image;
   /** رسالة الخطأ - Error message */
   error?: string;
   /** معرف المهمة لتتبع التقدم - Task ID for progress tracking */

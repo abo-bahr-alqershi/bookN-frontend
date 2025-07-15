@@ -8,9 +8,10 @@ import type { UnitTypeDto, CreateUnitTypeCommand, UpdateUnitTypeCommand } from '
 import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
 import type { FieldGroupDto, CreateFieldGroupCommand, UpdateFieldGroupCommand } from '../../types/field-group.types';
 import type { CreateUnitTypeFieldCommand, UpdateUnitTypeFieldCommand } from '../../types/unit-type-field.types';
+import { useNotificationContext } from '../../components/ui/NotificationProvider';
 
 const AdminPropertyAndUnitTypes = () => {
-  // (تمت إزالة تعريف useQueryClient لأنه لم يعد ضرورياً)
+  const { showSuccess, showError } = useNotificationContext();
   
   // State for UI management
   const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyTypeDto | null>(null);
@@ -111,7 +112,10 @@ const AdminPropertyAndUnitTypes = () => {
     createUnitTypeField,
     updateUnitTypeField,
     deleteUnitTypeField,
-  } = useAdminUnitTypeFieldsByUnitType({ unitTypeId: selectedUnitType?.id || '' });
+  } = useAdminUnitTypeFieldsByUnitType({
+    unitTypeId: selectedUnitType?.id || '',
+    searchTerm,
+  });
   const unitTypeFields = unitTypeFieldsData || [];
 
   // تمت إزالة كامل تعريفات الـ mutations التقليدية لتعويضها بالهوكس المركزية
@@ -285,6 +289,34 @@ const AdminPropertyAndUnitTypes = () => {
   };
 
   // تم إزالة كود الخيارات الديناميكية التجريبي مؤقتاً للحفاظ على التصميم والتركيز على الهوكس
+
+  // Handler for creating or updating a dynamic field
+  const handleSaveField = () => {
+    if (selectedField) {
+      updateUnitTypeField.mutate({ fieldId: selectedField.fieldId, data: { fieldId: selectedField.fieldId, ...fieldForm } }, {
+        onSuccess: () => {
+          showSuccess('تم تحديث الحقل بنجاح');
+          setShowFieldModal(false);
+          setSelectedField(null);
+          resetFieldForm();
+        },
+        onError: (error: any) => {
+          showError(error.response?.data?.message || 'فشل في تحديث الحقل');
+        }
+      });
+    } else {
+      createUnitTypeField.mutate(fieldForm, {
+        onSuccess: () => {
+          showSuccess('تم إضافة الحقل بنجاح');
+          setShowFieldModal(false);
+          resetFieldForm();
+        },
+        onError: (error: any) => {
+          showError(error.response?.data?.message || 'فشل في إضافة الحقل');
+        }
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6" dir="rtl">
@@ -639,6 +671,7 @@ const AdminPropertyAndUnitTypes = () => {
                   alert("يرجى اختيار نوع وحدة أولاً");
                   return;
                 }
+                setSelectedField(null);
                 resetFieldForm();
                 setShowFieldModal(true);
               }}
@@ -857,6 +890,481 @@ const AdminPropertyAndUnitTypes = () => {
           )}
         </div>
       </div>
+
+      {/* Property Type Modal */}
+      {showPropertyTypeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedPropertyType ? 'تعديل نوع العقار' : 'إضافة نوع عقار جديد'}
+            </h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (selectedPropertyType) {
+                updatePropertyType.mutate({
+                  propertyTypeId: selectedPropertyType.id,
+                  data: {
+                    propertyTypeId: selectedPropertyType.id,
+                    ...propertyTypeForm
+                  }
+                }, {
+                  onSuccess: () => {
+                    showSuccess('تم تحديث نوع العقار بنجاح');
+                    setShowPropertyTypeModal(false);
+                    setSelectedPropertyType(null);
+                    resetPropertyTypeForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في تحديث نوع العقار');
+                  }
+                });
+              } else {
+                createPropertyType.mutate(propertyTypeForm, {
+                  onSuccess: () => {
+                    showSuccess('تم إضافة نوع العقار بنجاح');
+                    setShowPropertyTypeModal(false);
+                    resetPropertyTypeForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في إضافة نوع العقار');
+                  }
+                });
+              }
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    اسم النوع
+                  </label>
+                  <input
+                    type="text"
+                    value={propertyTypeForm.name}
+                    onChange={(e) => setPropertyTypeForm({...propertyTypeForm, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الوصف
+                  </label>
+                  <textarea
+                    value={propertyTypeForm.description}
+                    onChange={(e) => setPropertyTypeForm({...propertyTypeForm, description: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    المرافق الافتراضية
+                  </label>
+                  <textarea
+                    value={propertyTypeForm.defaultAmenities}
+                    onChange={(e) => setPropertyTypeForm({...propertyTypeForm, defaultAmenities: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={2}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 space-x-reverse mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPropertyTypeModal(false);
+                    setSelectedPropertyType(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  {selectedPropertyType ? 'تحديث' : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Unit Type Modal */}
+      {showUnitTypeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedUnitType ? 'تعديل نوع الوحدة' : 'إضافة نوع وحدة جديد'}
+            </h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (selectedUnitType) {
+                updateUnitType.mutate({
+                  unitTypeId: selectedUnitType.id,
+                  data: {
+                    unitTypeId: selectedUnitType.id,
+                    name: unitTypeForm.name,
+                    maxCapacity: unitTypeForm.maxCapacity
+                  }
+                }, {
+                  onSuccess: () => {
+                    showSuccess('تم تحديث نوع الوحدة بنجاح');
+                    setShowUnitTypeModal(false);
+                    setSelectedUnitType(null);
+                    resetUnitTypeForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في تحديث نوع الوحدة');
+                  }
+                });
+              } else {
+                createUnitType.mutate(unitTypeForm, {
+                  onSuccess: () => {
+                    showSuccess('تم إضافة نوع الوحدة بنجاح');
+                    setShowUnitTypeModal(false);
+                    resetUnitTypeForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في إضافة نوع الوحدة');
+                  }
+                });
+              }
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    اسم النوع
+                  </label>
+                  <input
+                    type="text"
+                    value={unitTypeForm.name}
+                    onChange={(e) => setUnitTypeForm({...unitTypeForm, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    السعة القصوى
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={unitTypeForm.maxCapacity}
+                    onChange={(e) => setUnitTypeForm({...unitTypeForm, maxCapacity: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 space-x-reverse mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowUnitTypeModal(false);
+                    setSelectedUnitType(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  {selectedUnitType ? 'تحديث' : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Field Group Modal */}
+      {showFieldGroupModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedFieldGroup ? 'تعديل مجموعة الحقول' : 'إضافة مجموعة حقول جديدة'}
+            </h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (selectedFieldGroup) {
+                updateFieldGroup.mutate({
+                  groupId: selectedFieldGroup.groupId,
+                  ...fieldGroupForm
+                }, {
+                  onSuccess: () => {
+                    showSuccess('تم تحديث مجموعة الحقول بنجاح');
+                    setShowFieldGroupModal(false);
+                    setSelectedFieldGroup(null);
+                    resetFieldGroupForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في تحديث مجموعة الحقول');
+                  }
+                });
+              } else {
+                createFieldGroup.mutate(fieldGroupForm, {
+                  onSuccess: () => {
+                    showSuccess('تم إضافة مجموعة الحقول بنجاح');
+                    setShowFieldGroupModal(false);
+                    resetFieldGroupForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في إضافة مجموعة الحقول');
+                  }
+                });
+              }
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    اسم المجموعة
+                  </label>
+                  <input
+                    type="text"
+                    value={fieldGroupForm.groupName}
+                    onChange={(e) => setFieldGroupForm({...fieldGroupForm, groupName: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الاسم المعروض
+                  </label>
+                  <input
+                    type="text"
+                    value={fieldGroupForm.displayName}
+                    onChange={(e) => setFieldGroupForm({...fieldGroupForm, displayName: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الوصف
+                  </label>
+                  <textarea
+                    value={fieldGroupForm.description}
+                    onChange={(e) => setFieldGroupForm({...fieldGroupForm, description: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex items-center space-x-4 space-x-reverse">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldGroupForm.isCollapsible}
+                      onChange={(e) => setFieldGroupForm({...fieldGroupForm, isCollapsible: e.target.checked})}
+                      className="mr-2"
+                    />
+                    قابل للطي
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldGroupForm.isExpandedByDefault}
+                      onChange={(e) => setFieldGroupForm({...fieldGroupForm, isExpandedByDefault: e.target.checked})}
+                      className="mr-2"
+                    />
+                    مفتوح افتراضياً
+                  </label>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 space-x-reverse mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFieldGroupModal(false);
+                    setSelectedFieldGroup(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+                >
+                  {selectedFieldGroup ? 'تحديث' : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Field Modal */}
+      {showFieldModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedField ? 'تعديل الحقل' : 'إضافة حقل جديد'}
+            </h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (selectedField) {
+                updateUnitTypeField.mutate({
+                  fieldId: selectedField.fieldId,
+                  data: {
+                    fieldId: selectedField.fieldId,
+                    ...fieldForm
+                  }
+                }, {
+                  onSuccess: () => {
+                    showSuccess('تم تحديث الحقل بنجاح');
+                    setShowFieldModal(false);
+                    setSelectedField(null);
+                    resetFieldForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في تحديث الحقل');
+                  }
+                });
+              } else {
+                createUnitTypeField.mutate(fieldForm, {
+                  onSuccess: () => {
+                    showSuccess('تم إضافة الحقل بنجاح');
+                    setShowFieldModal(false);
+                    resetFieldForm();
+                  },
+                  onError: (error: any) => {
+                    showError(error.response?.data?.message || 'فشل في إضافة الحقل');
+                  }
+                });
+              }
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    نوع الحقل
+                  </label>
+                  <select
+                    value={fieldForm.fieldTypeId}
+                    onChange={(e) => setFieldForm({...fieldForm, fieldTypeId: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  >
+                    <option value="">اختر نوع الحقل</option>
+                    {fieldTypeOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.icon} {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    اسم الحقل
+                  </label>
+                  <input
+                    type="text"
+                    value={fieldForm.fieldName}
+                    onChange={(e) => setFieldForm({...fieldForm, fieldName: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الاسم المعروض
+                  </label>
+                  <input
+                    type="text"
+                    value={fieldForm.displayName}
+                    onChange={(e) => setFieldForm({...fieldForm, displayName: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الوصف
+                  </label>
+                  <textarea
+                    value={fieldForm.description}
+                    onChange={(e) => setFieldForm({...fieldForm, description: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الفئة
+                  </label>
+                  <input
+                    type="text"
+                    value={fieldForm.category}
+                    onChange={(e) => setFieldForm({...fieldForm, category: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldForm.isRequired}
+                      onChange={(e) => setFieldForm({...fieldForm, isRequired: e.target.checked})}
+                      className="mr-2"
+                    />
+                    مطلوب
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldForm.isSearchable}
+                      onChange={(e) => setFieldForm({...fieldForm, isSearchable: e.target.checked})}
+                      className="mr-2"
+                    />
+                    قابل للبحث
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldForm.isPublic}
+                      onChange={(e) => setFieldForm({...fieldForm, isPublic: e.target.checked})}
+                      className="mr-2"
+                    />
+                    عام
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={fieldForm.isForUnits}
+                      onChange={(e) => setFieldForm({...fieldForm, isForUnits: e.target.checked})}
+                      className="mr-2"
+                    />
+                    للوحدات
+                  </label>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 space-x-reverse mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFieldModal(false);
+                    setSelectedField(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveField}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                >
+                  {selectedField ? 'تحديث' : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

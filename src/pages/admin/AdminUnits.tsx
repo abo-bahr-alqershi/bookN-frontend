@@ -93,11 +93,11 @@ const AdminUnits = () => {
   const { unitsData, isLoading: isLoadingUnits, error: unitsError, createUnit, updateUnit, deleteUnit } = useAdminUnits(queryParams);
   const { propertiesData, isLoading: isLoadingProperties } = useAdminProperties({
     pageNumber: 1,
-    pageSize: 1000
+    pageSize: 100
   });
-  const { unitTypesData, isLoading: isLoadingUnitTypes } = useAdminUnitTypes({
+  const { data: unitTypesData, isLoading: isLoadingUnitTypes } = useAdminUnitTypes({
     pageNumber: 1,
-    pageSize: 1000
+    pageSize: 100
   });
   
   // جلب الحقول الديناميكية للوحدة المحددة في النموذج
@@ -467,6 +467,15 @@ const AdminUnits = () => {
           emptyMessage="لا توجد وحدات للعرض"
           emptyIcon="🏠"
           columns={3}
+          pagination={{
+            current: currentPage,
+            total: unitsData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
         />
       )}
 
@@ -488,13 +497,22 @@ const AdminUnits = () => {
               amount: unit.basePrice.amount,
               currency: unit.basePrice.currency
             }
-          }).filter(marker => marker.coordinates))}
+          })).filter(marker => marker.coordinates)}
           onMarkerClick={(marker) => {
             const unit = unitsWithLocation.find(u => u.id === marker.id);
             if (unit) handleViewDetails(unit);
           }}
           emptyMessage="لا توجد وحدات بمواقع محددة لعرضها على الخريطة"
           height="600px"
+          pagination={{
+            current: currentPage,
+            total: unitsData?.totalCount || 0,
+            pageSize,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
         />
       )}
 

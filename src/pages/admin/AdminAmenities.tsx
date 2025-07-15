@@ -36,7 +36,7 @@ const AdminAmenities = () => {
     assignAmenityToProperty,
   } = useAdminAmenities(queryParams);
   // جلب قائمة العقارات للربط
-  const { data: propertiesData } = useAdminProperties();
+  const { propertiesData } = useAdminProperties({});
 
   // State for modals
   const [showCreateModal, setShowCreateModal] = useState(false);

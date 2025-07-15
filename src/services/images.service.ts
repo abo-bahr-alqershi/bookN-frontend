@@ -27,10 +27,16 @@ export class ImagesService {
   private static readonly BASE_URL = '/api/images';
 
   /**
-   * رفع صورة واحدة
-   * Upload single image
+   * رفع صورة واحدة مع تتبع التقدم
+   * Upload single image with progress callback
+   * @param request طلب رفع الصورة
+   * @param onProgress دالة استدعاء لتعقب نسبة الرفع (0-100)
    */
-  static async uploadImage(request: UploadImageRequest): Promise<UploadImageResponse> {
+  static async uploadImage(
+    request: UploadImageRequest,
+    onProgress?: (percent: number) => void
+  ): Promise<UploadImageResponse> {
+    // إعداد FormData لرفع الصورة
     const formData = new FormData();
     formData.append('file', request.file);
     
@@ -46,27 +52,30 @@ export class ImagesService {
       `${this.BASE_URL}/upload`,
       formData,
       {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (event) => {
+          if (onProgress && event.total) {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            onProgress(percent);
+          }
+        }
       }
     );
-
     return response.data;
   }
 
   /**
-   * رفع صور متعددة
-   * Upload multiple images
+   * رفع صور متعددة وإرجاع مصفوفة استجابات
+   * Upload multiple images and return array of responses
    */
   static async uploadMultipleImages(
     files: File[],
     options: Omit<UploadImageRequest, 'file'>
   ): Promise<UploadImageResponse[]> {
-    const uploadPromises = files.map(file => 
+    // رفع كل ملف واستقبال UploadImageResponse لكل واحد
+    const uploadPromises = files.map(file =>
       this.uploadImage({ ...options, file })
     );
-
     return Promise.all(uploadPromises);
   }
 
@@ -125,7 +134,7 @@ export class ImagesService {
    * Delete multiple images
    */
   static async deleteImages(request: DeleteImagesRequest): Promise<void> {
-    await apiClient.post(`${this.BASE_URL}/bulk-delete`, request);
+    await apiClient.post(`${ImagesService.BASE_URL}/bulk-delete`, request);
   }
 
   /**
@@ -133,7 +142,7 @@ export class ImagesService {
    * Reorder images
    */
   static async reorderImages(request: ReorderImagesRequest): Promise<void> {
-    await apiClient.post(`${this.BASE_URL}/reorder`, request);
+    await apiClient.post(`${ImagesService.BASE_URL}/reorder`, request);
   }
 
   /**
@@ -141,7 +150,7 @@ export class ImagesService {
    * Set image as primary
    */
   static async setPrimaryImage(imageId: string, propertyId?: string, unitId?: string): Promise<void> {
-    await apiClient.post(`${this.BASE_URL}/${imageId}/set-primary`, {
+    await apiClient.post(`${ImagesService.BASE_URL}/${imageId}/set-primary`, {
       propertyId,
       unitId
     });

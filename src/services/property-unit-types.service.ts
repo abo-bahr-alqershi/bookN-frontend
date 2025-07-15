@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type {
   UnitTypeDto,
   CreateUnitTypeCommand,
@@ -18,23 +18,23 @@ const API_BASE = '/api/property/UnitTypes';
 export const PropertyUnitTypesService = {
   /** إنشاء نوع وحدة جديد */
   create: (data: CreateUnitTypeCommand) =>
-    axios.post<ResultDto<string>>(`${API_BASE}`, data).then(res => res.data),
+    apiClient.post<ResultDto<string>>(`${API_BASE}`, data).then(res => res.data),
 
   /** تحديث نوع الوحدة */
   update: (unitTypeId: string, data: UpdateUnitTypeCommand) =>
-    axios.put<ResultDto<boolean>>(`${API_BASE}/${unitTypeId}`, data).then(res => res.data),
+    apiClient.put<ResultDto<boolean>>(`${API_BASE}/${unitTypeId}`, data).then(res => res.data),
 
   /** حذف نوع وحدة */
   delete: (unitTypeId: string) =>
-    axios.delete<ResultDto<boolean>>(`${API_BASE}/${unitTypeId}`).then(res => res.data),
+    apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${unitTypeId}`).then(res => res.data),
 
   /** جلب نوع وحدة بواسطة المعرف */
   getById: (query: GetUnitTypeByIdQuery) =>
-    axios.get<ResultDto<UnitTypeDto>>(`${API_BASE}/${query.unitTypeId}`).then(res => res.data),
+    apiClient.get<ResultDto<UnitTypeDto>>(`${API_BASE}/${query.unitTypeId}`).then(res => res.data),
 
   /** جلب أنواع الوحدات حسب نوع العقار */
   getByPropertyType: (query: GetUnitTypesByPropertyTypeQuery) =>
-    axios
+    apiClient
       .get<PaginatedResult<UnitTypeDto>>(`${API_BASE}/property-type/${query.propertyTypeId}`, {
         params: { pageNumber: query.pageNumber, pageSize: query.pageSize },
       })

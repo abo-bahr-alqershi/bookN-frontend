@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type {
   PropertyTypeDto,
   GetAllPropertyTypesQuery,
@@ -12,9 +12,9 @@ const API_BASE = '/api/property/propertytypes';
 export const PropertyPropertyTypesService = {
   // جلب جميع أنواع العقارات مع الفلاتر والصفحات
   getAll: (params?: GetAllPropertyTypesQuery) =>
-    axios.get<PaginatedResult<PropertyTypeDto>>(`${API_BASE}`, { params }).then(res => res.data),
+    apiClient.get<PaginatedResult<PropertyTypeDto>>(`${API_BASE}`, { params }).then(res => res.data),
 
   // جلب بيانات نوع عقار بواسطة المعرف
   getById: (propertyTypeId: string) =>
-    axios.get<ResultDto<PropertyTypeDto>>(`${API_BASE}/${propertyTypeId}`).then(res => res.data),
+    apiClient.get<ResultDto<PropertyTypeDto>>(`${API_BASE}/${propertyTypeId}`).then(res => res.data),
 };

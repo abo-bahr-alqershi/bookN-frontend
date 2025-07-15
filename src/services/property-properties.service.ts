@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from './api.service';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 import type {
   PropertyDto,
@@ -26,23 +26,23 @@ const API_BASE = '/api/property/properties';
 export const PropertyPropertiesService = {
   /** Get property by ID */
   getById: (query: GetPropertyByIdQuery) =>
-    axios.get<ResultDto<PropertyDto>>(`${API_BASE}/${query.propertyId}`).then(res => res.data),
+    apiClient.get<ResultDto<PropertyDto>>(`${API_BASE}/${query.propertyId}`).then(res => res.data),
 
   /** Create a new property */
   create: (data: CreatePropertyCommand) =>
-    axios.post<ResultDto<string>>(API_BASE, data).then(res => res.data),
+    apiClient.post<ResultDto<string>>(API_BASE, data).then(res => res.data),
 
   /** Update an existing property */
   update: (propertyId: string, data: UpdatePropertyCommand) =>
-    axios.put<ResultDto<boolean>>(`${API_BASE}/${propertyId}`, data).then(res => res.data),
+    apiClient.put<ResultDto<boolean>>(`${API_BASE}/${propertyId}`, data).then(res => res.data),
 
   /** Delete a property */
   delete: (propertyId: string) =>
-    axios.delete<ResultDto<boolean>>(`${API_BASE}/${propertyId}`).then(res => res.data),
+    apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${propertyId}`).then(res => res.data),
 
   /** Get property details including units and dynamic fields */
   getDetails: (query: GetPropertyDetailsQuery) =>
-    axios
+    apiClient
       .get<ResultDto<PropertyDetailsDto>>(
         `${API_BASE}/${query.propertyId}/details`,
         { params: { includeUnits: query.includeUnits } }
@@ -51,25 +51,16 @@ export const PropertyPropertiesService = {
 
   /** Get property data for edit form */
   getForEdit: (query: GetPropertyForEditQuery) =>
-    axios
+    apiClient
       .get<ResultDto<PropertyEditDto>>(
         `${API_BASE}/${query.propertyId}/for-edit`,
         { params: { ownerId: query.ownerId } }
       )
       .then(res => res.data),
 
-  /** Get properties by city */
-  getByCity: (query: GetPropertiesByCityQuery) =>
-    axios
-      .get<PaginatedResult<PropertyDto>>(
-        `${API_BASE}/by-city`,
-        { params: { cityName: query.cityName, pageNumber: query.pageNumber, pageSize: query.pageSize } }
-      )
-      .then(res => res.data),
-
   /** Get property rating statistics */
   getRatingStats: (query: GetPropertyRatingStatsQuery) =>
-    axios
+    apiClient
       .get<ResultDto<PropertyRatingStatsDto>>(
         `${API_BASE}/${query.propertyId}/rating-stats`
       )
@@ -77,7 +68,7 @@ export const PropertyPropertiesService = {
 
   /** Get property amenities */
   getAmenities: (query: GetPropertyAmenitiesQuery) =>
-    axios
+    apiClient
       .get<ResultDto<AmenityDto[]>>(
         `${API_BASE}/${query.propertyId}/amenities`
       )

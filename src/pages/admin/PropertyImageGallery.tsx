@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useImages, useImageStatistics } from '../../hooks/useImages';
 import { ImageGallery } from '../../components/images/ImageGallery';
 import { ImageUploader } from '../../components/images/ImageUploader';
@@ -22,6 +22,7 @@ import type { Image as ImageType, ImageCategory } from '../../types/image.types'
  */
 const PropertyImageGallery: React.FC = () => {
   const { propertyId } = useParams<{ propertyId: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { loading, executeWithFeedback, showConfirmDialog, confirmDialog, hideConfirmDialog } = useUXHelpers();
 
@@ -32,8 +33,9 @@ const PropertyImageGallery: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<ImageCategory | 'all'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  // بيانات العقار الافتراضية - Default property data
-  const property = { title: `العقار ${propertyId}` };
+  // Default property data - get name from navigation state if available
+  const propertyName = (location.state as { propertyName?: string })?.propertyName;
+  const property = { title: propertyName || `العقار ${propertyId}` };
   const propertyLoading = false;
   const propertyError = null;
 
@@ -120,8 +122,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'thumbnail',
       title: 'الصورة',
-      label: 'الصورة',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div className="w-16 h-16 rounded overflow-hidden">
           <img
             src={image.thumbnails.small || image.url}
@@ -134,8 +135,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'filename',
       title: 'اسم الملف',
-      label: 'اسم الملف',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div>
           <p className="font-medium">{image.filename}</p>
           <p className="text-sm text-gray-500">{image.alt}</p>
@@ -145,8 +145,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'category',
       title: 'الفئة',
-      label: 'الفئة',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <StatusBadge
           status={
             image.category === 'exterior' ? 'خارجية' :
@@ -162,8 +161,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'size',
       title: 'الحجم / الأبعاد',
-      label: 'الحجم / الأبعاد',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div className="text-sm">
           <p>{Math.round(image.size / 1024)} كب</p>
           <p className="text-gray-500">{image.width}×{image.height}</p>
@@ -173,8 +171,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'status',
       title: 'الحالة',
-      label: 'الحالة',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div className="space-y-1">
           <StatusBadge
             status={image.processingStatus === 'ready' ? 'جاهزة' : 'معالجة'}
@@ -188,8 +185,7 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'uploadedAt',
       title: 'تاريخ الرفع',
-      label: 'تاريخ الرفع',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div className="text-sm">
           <p>{new Date(image.uploadedAt).toLocaleDateString('ar-SA')}</p>
           <p className="text-gray-500">{new Date(image.uploadedAt).toLocaleTimeString('ar-SA')}</p>
@@ -199,24 +195,19 @@ const PropertyImageGallery: React.FC = () => {
     {
       key: 'actions',
       title: 'الإجراءات',
-      label: 'الإجراءات',
-      render: (image: ImageType) => (
+      render: (_: any, image: ImageType) => (
         <div className="flex gap-1">
           <ActionButton
             variant="secondary"
             size="sm"
             onClick={() => handleEditImage(image)}
-            label="تحرير"
-          >
-            تحرير
+            label="تحرير">
           </ActionButton>
           <ActionButton
             variant="secondary"
             size="sm"
             onClick={() => setSelectedImages([image.id])}
-            label="حذف"
-          >
-            حذف
+            label="حذف">
           </ActionButton>
         </div>
       )
@@ -247,7 +238,6 @@ const PropertyImageGallery: React.FC = () => {
       <div className="text-center py-8">
         <p className="text-red-600 mb-4">حدث خطأ في تحميل بيانات العقار</p>
         <ActionButton onClick={() => navigate('/admin/properties')} variant="secondary" label="العودة للعقارات">
-          العودة للعقارات
         </ActionButton>
       </div>
     );
@@ -284,9 +274,7 @@ const PropertyImageGallery: React.FC = () => {
             <ActionButton
               variant="secondary"
               onClick={() => navigate(`/admin/properties/${propertyId}`)}
-              label="العودة للعقار"
-            >
-              العودة للعقار
+              label="العودة للعقار">
             </ActionButton>
           </div>
         </div>
@@ -396,9 +384,7 @@ const PropertyImageGallery: React.FC = () => {
                   <ActionButton
                     variant="primary"
                     onClick={() => setActiveTab('upload')}
-                    label="رفع صور جديدة"
-                  >
-                    رفع صور جديدة
+                    label="رفع صور جديدة">
                   </ActionButton>
                 </div>
               </div>

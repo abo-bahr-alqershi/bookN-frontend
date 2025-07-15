@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 
 export interface FilterOption {
   key: string;
   label: string;
-  type: 'select' | 'date' | 'dateRange' | 'number' | 'text' | 'boolean';
+  type: 'select' | 'date' | 'dateRange' | 'number' | 'text' | 'boolean' | 'custom';
   options?: { value: string; label: string }[];
   placeholder?: string;
+  /** Custom render function for custom filter types */
+  render?: (value: any, onChange: (value: any) => void) => ReactNode;
 }
 
 interface SearchAndFilterProps {
