@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminPaymentsService } from '../services/admin-payments.service';
-import type { PaymentDto, GetPaymentsByStatusQuery, RefundPaymentCommand, VoidPaymentCommand, UpdatePaymentStatusCommand } from '../types/payment.types';
+import type { PaymentDto, RefundPaymentCommand, VoidPaymentCommand, UpdatePaymentStatusCommand, GetAllPaymentsQuery } from '../types/payment.types';
 import type { PaginatedResult, ResultDto } from '../types/common.types';
 
 /**
@@ -9,21 +9,21 @@ import type { PaginatedResult, ResultDto } from '../types/common.types';
  * @param params معايير استعلام المدفوعات (الحالة، ترقيم الصفحات)
  * @returns بيانات المدفوعات وحالات التحميل والأخطاء ودوال الاسترداد والإبطال وتحديث الحالة
  */
-export const useAdminPayments = (params: GetPaymentsByStatusQuery) => {
+export const useAdminPayments = (params: GetAllPaymentsQuery) => {
   const queryClient = useQueryClient();
   const queryKey = ['admin-payments', params] as const;
 
   // جلب المدفوعات حسب الحالة مع الفلاتر والصفحات
   const { data: paymentsData, isLoading, error } = useQuery<PaginatedResult<PaymentDto>, Error>({
     queryKey,
-    queryFn: () => AdminPaymentsService.getByStatus(params)
+    queryFn: () => AdminPaymentsService.getAll(params)
   });
 
   // استرداد الدفعة
   const refundPayment = useMutation<ResultDto<boolean>, Error, RefundPaymentCommand>({
     mutationFn: (data) => AdminPaymentsService.refund(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -31,7 +31,7 @@ export const useAdminPayments = (params: GetPaymentsByStatusQuery) => {
   const voidPayment = useMutation<ResultDto<boolean>, Error, VoidPaymentCommand>({
     mutationFn: (data) => AdminPaymentsService.void(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -39,7 +39,7 @@ export const useAdminPayments = (params: GetPaymentsByStatusQuery) => {
   const updatePaymentStatus = useMutation<ResultDto<boolean>, Error, { paymentId: string; data: UpdatePaymentStatusCommand }>({
     mutationFn: ({ paymentId, data }) => AdminPaymentsService.updateStatus(paymentId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 

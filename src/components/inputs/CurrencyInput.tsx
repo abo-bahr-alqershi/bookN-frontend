@@ -195,6 +195,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         {/* اختيار العملة */}
         <div className="border-r border-gray-300">
           <select
+            style={{ direction: direction === 'rtl' ? 'rtl' : 'ltr' ,float: direction === 'rtl' ? 'right' : 'left'}}
             value={selectedCurrency}
             onChange={(e) => handleCurrencyChange(e.target.value)}
             disabled={disabled}

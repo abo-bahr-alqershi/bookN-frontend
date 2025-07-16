@@ -22,9 +22,13 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // استخدام AuthContext للحصول على بيانات المستخدم الحقيقية
-  const { user, isAuthenticated, logout } = useAuthContext();
+  const { user, isAuthenticated, isLoading, logout } = useAuthContext();
 
-  // إعادة توجيه إلى صفحة تسجيل الدخول إذا لم يكن المستخدم مسجل الدخول
+  // انتظر انتهاء فحص المصادقة قبل المتابعة
+  if (isLoading) {
+    return null; // أو عرض مؤشر تحميل
+  }
+  // إعادة توجيه إلى صفحة تسجيل الدخول إذا لم يكن المستخدم مصدقًا عليه
   if (!isAuthenticated || !user) {
     return <Navigate to="/auth/login" replace />;
   }
@@ -156,10 +160,10 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
       badge: '5'
     },
     
-    // التقارير والسجلات
+    // ادارة البلاغات
     {
       path: '/admin/reports',
-      label: 'التقارير',
+      label: 'البلاغات',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -237,7 +241,32 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
     }
   ];
 
-  const menuItems = isAdmin ? adminMenuItems : isPropertyOwner ? ownerMenuItems : [];
+  // Dynamically configure sidebar menu: hide image links for Admin, show for non-Admin with user's propertyId
+  let menuItems: MenuItem[];
+  // Admin sees all except image galleries
+  if (isAdmin) {
+    menuItems = adminMenuItems.filter(
+      item => item.label !== 'صور العقارات' && item.label !== 'صور الوحدات'
+    );
+  } else if (isPropertyOwner || user?.role === 'Staff') {
+    // Property owner or staff sees owner menu plus image galleries for their property
+    menuItems = [...ownerMenuItems];
+    if (user?.propertyId) {
+      // Property Images
+      menuItems.push({
+        path: `/admin/property-images/${user.propertyId}`,
+        label: 'صور العقارات',
+        icon: (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h4l1-2h8l1 2h4v13H3V7z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        )
+      });
+    }
+  } else {
+    menuItems = [];
+  }
 
   const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({ item, isActive }) => (
     <Link
@@ -365,11 +394,20 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
                 onClick={() => navigate('/profile')}
                 className="flex items-center p-2 rounded-xl hover:bg-gray-100 transition-colors duration-200"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
-                  <span className="text-white text-sm font-bold">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                {user?.profileImage
+                  ? (
+                    <img
+                      src={user.profileImage}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-xl object-cover shadow-md"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                      <span className="text-white text-sm font-bold">
+                        {user?.name?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 <div className="ml-3 hidden sm:block">
                   <div className="text-sm font-medium text-gray-900">{user?.name}</div>
                   <div className="text-xs text-gray-500">

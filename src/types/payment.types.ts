@@ -145,6 +145,24 @@ export interface GetPaymentsByMethodQuery {
   pageSize?: number;
 }
 
+/**
+ * استعلام جلب جميع المدفوعات مع دعم الفلاتر
+ */
+export interface GetAllPaymentsQuery {
+  status?: string;
+  method?: string;
+  bookingId?: string;
+  userId?: string;
+  propertyId?: string;
+  unitId?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  startDate?: string;
+  endDate?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
 export interface PaymentDetailsDto {
   payment: PaymentDto;
 }

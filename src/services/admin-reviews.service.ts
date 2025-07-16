@@ -7,7 +7,8 @@ import type {
   GetReviewByBookingQuery,
   GetReviewsByPropertyQuery,
   GetReviewsByUserQuery,
-  GetPendingReviewsQuery
+  GetPendingReviewsQuery,
+  GetAllReviewsQuery
 } from '../types/review.types';
 import { apiClient } from './api.service';
 import type { ResultDto } from '../types/common.types';
@@ -18,24 +19,42 @@ import type { ResultDto } from '../types/common.types';
 export class AdminReviewsService {
   /** جلب تقييم حسب الحجز */
   static async getByBooking(bookingId: string): Promise<ReviewDto> {
-    return fetch(`/api/admin/reviews/booking/${bookingId}`).then(res => res.json());
+    const response = await apiClient.get<ResultDto<ReviewDto>>(`/api/admin/reviews/booking/${bookingId}`);
+    return response.data.data!;
   }
 
   /** جلب تقييمات عقار مع التصفية والصفحات */
   static async getByProperty(query: GetReviewsByPropertyQuery): Promise<ReviewDto[]> {
-    const params = `?${Object.entries(query).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`).join('&')}`;
-    return fetch(`/api/admin/reviews/property/${query.propertyId}${params}`).then(res => res.json());
+    const response = await apiClient.get<ResultDto<ReviewDto[]>>(
+      `/api/admin/reviews/property/${query.propertyId}`,
+      { params: query }
+    );
+    return response.data.data || [];
   }
 
   /** جلب تقييمات مستخدم مع التصفية والصفحات */
   static async getByUser(query: GetReviewsByUserQuery): Promise<ReviewDto[]> {
-    const params = `?${Object.entries(query).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`).join('&')}`;
-    return fetch(`/api/admin/reviews/user/${query.userId}${params}`).then(res => res.json());
+    const response = await apiClient.get<ResultDto<ReviewDto[]>>(
+      `/api/admin/reviews/user/${query.userId}`,
+      { params: query }
+    );
+    return response.data.data || [];
   }
 
   /** جلب التقييمات المعلقة للموافقة */
   static async getPending(query?: GetPendingReviewsQuery): Promise<ReviewDto[]> {
-    return fetch('/api/admin/reviews/pending').then(res => res.json());
+    const response = await apiClient.get<ResultDto<ReviewDto[]>>( '/api/admin/reviews/pending', {
+      params: query,
+    });
+    return response.data.data || [];
+  }
+
+  /** جلب جميع التقييمات مع دعم التصفية */
+  static async getAll(query: GetAllReviewsQuery): Promise<ReviewDto[]> {
+    const response = await apiClient.get<ResultDto<ReviewDto[]>>('/api/admin/reviews', {
+      params: query,
+    });
+    return response.data.data || [];
   }
 
   /** الموافقة على تقييم */

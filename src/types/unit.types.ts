@@ -2,6 +2,7 @@
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
 import type { FieldValueDto, UnitFieldValueDto as UnitFieldValueDtoFull } from './unit-field-value.types';
+import type { FieldWithValueDto } from './unit-field-value.types';
 
 /**
  * بيانات الوحدة الأساسية
@@ -245,7 +246,16 @@ export interface MoneyDto {
 
 
 export interface FieldGroupWithValuesDto {
-  // ... أكمل حسب الحاجة
+  /** معرف المجموعة */
+  groupId: string;
+  /** اسم المجموعة */
+  groupName: string;
+  /** الاسم المعروض للمجموعة */
+  displayName: string;
+  /** وصف المجموعة */
+  description: string;
+  /** قيم الحقول ضمن هذه المجموعة */
+  fieldValues: FieldWithValueDto[];
 }
 
 /**

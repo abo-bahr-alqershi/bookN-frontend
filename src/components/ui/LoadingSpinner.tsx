@@ -5,6 +5,8 @@ interface LoadingSpinnerProps {
   text?: string;
   center?: boolean;
   className?: string;
+  /** optional spinner color (e.g. 'light' | 'dark') */
+  color?: string;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({

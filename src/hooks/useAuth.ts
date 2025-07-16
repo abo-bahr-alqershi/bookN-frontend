@@ -11,6 +11,11 @@ interface AuthUser {
   role: string;
   phone?: string;
   profileImage?: string;
+  propertyId?: string;
+  propertyName?: string;
+  staffId?: string;
+  settingsJson?: string;
+  favoritesJson?: string;
 }
 
 interface UseAuthReturn {
@@ -35,14 +40,12 @@ export const useAuth = (): UseAuthReturn => {
       const userData = localStorage.getItem('user');
 
       if (token && userData) {
+        const parsedUser = JSON.parse(userData); // استخدم بيانات المستخدم المخزنة محليًا للحفاظ على الدور
         try {
-          const parsedUser = JSON.parse(userData);
-          
-          // التحقق من صحة التوكن مع الخادم
+          // التحقق من صحة التوكن مع الخادم (لا حاجة لاستخدام result.data لبيانات المستخدم)
           const result = await CommonUsersService.getCurrentUser({});
-          
-          if (result.isSuccess && result.data) {
-            setUser(result.data);
+          if (result.isSuccess) {
+            setUser(parsedUser);
             setIsAuthenticated(true);
           } else {
             // محاولة تحديث التوكن إذا كان متوفراً
@@ -54,7 +57,6 @@ export const useAuth = (): UseAuthReturn => {
           }
         } catch (error) {
           console.error('خطأ في التحقق من الهوية:', error);
-          
           // محاولة تحديث التوكن في حالة الخطأ
           if (refreshToken) {
             await attemptTokenRefresh(refreshToken);
@@ -83,6 +85,11 @@ export const useAuth = (): UseAuthReturn => {
           email: auth.email,
           role: auth.role,
           profileImage: auth.profileImage,
+          propertyId: auth.propertyId,
+          propertyName: auth.propertyName,
+          staffId: auth.staffId,
+          settingsJson: auth.settingsJson,
+          favoritesJson: auth.favoritesJson,
         };
         localStorage.setItem('token', auth.accessToken);
         localStorage.setItem('refreshToken', auth.refreshToken);

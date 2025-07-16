@@ -132,7 +132,8 @@ const SearchAndFilter = ({
             />
           </div>
         );
-
+      case 'custom':
+        return filter.render ? filter.render(value, (val) => onFilterChange(filter.key, val)) : null;
       default:
         return null;
     }

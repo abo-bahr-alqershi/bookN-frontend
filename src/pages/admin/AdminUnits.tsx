@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdminUnits } from '../../hooks/useAdminUnits';
 import { useAdminProperties } from '../../hooks/useAdminProperties';
 import { useAdminUnitTypes } from '../../hooks/useAdminUnitTypes';
 import { useAdminUnitTypeFieldsByUnitType } from '../../hooks/useAdminUnitTypeFieldsByUnitType';
+import { useAdminUnitTypesByPropertyType } from '../../hooks/useAdminUnitTypesByPropertyType';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import CardView from '../../components/common/CardView';
 import MapView from '../../components/common/MapView';
@@ -30,7 +32,14 @@ interface UnitWithLocation extends UnitDto {
 }
 
 const AdminUnits = () => {
-  
+  const navigate = useNavigate();
+  const handleOpenGallery = (unit: UnitDto) => {
+    navigate(
+      `/admin/unit-images/${unit.propertyId}/${unit.id}`,
+      { state: { propertyName: unit.propertyName, unitName: unit.name } }
+    );
+  };
+
   // State for view and search
   const [currentView, setCurrentView] = useState<ViewType>('table');
   const [searchTerm, setSearchTerm] = useState('');
@@ -99,6 +108,13 @@ const AdminUnits = () => {
     pageNumber: 1,
     pageSize: 100
   });
+  // Fetch unit types based on selected property's type
+  const selectedCreateProperty = propertiesData?.items.find(p => p.id === createForm.propertyId);
+  const { unitTypesData: createUnitTypesData, isLoading: isLoadingCreateUnitTypes } = useAdminUnitTypesByPropertyType({
+    propertyTypeId: selectedCreateProperty?.typeId || '',
+    pageNumber: 1,
+    pageSize: 100,
+  });
   
   // جلب الحقول الديناميكية للوحدة المحددة في النموذج
   const { unitTypeFieldsData: createFields } = useAdminUnitTypeFieldsByUnitType({
@@ -133,6 +149,73 @@ const AdminUnits = () => {
       setEditDynamicFields(currentValues);
     }
   }, [selectedUnit, editFields]);
+
+  // Helper to validate dynamic field values before submitting
+  const validateDynamicFields = (fields: UnitTypeFieldDto[], values: Record<string, any>) => {
+    const errors: string[] = [];
+    fields.forEach(field => {
+      const rawValue = values[field.fieldId];
+      const val = rawValue !== undefined && rawValue !== null ? rawValue : '';
+      // Required check
+      if (field.isRequired) {
+        if (field.fieldTypeId === 'multiselect') {
+          if (!Array.isArray(val) || val.length === 0) {
+            errors.push(`${field.displayName} مطلوب.`);
+          }
+        } else if (String(val).trim() === '') {
+          errors.push(`${field.displayName} مطلوب.`);
+        }
+      }
+      // Type-specific checks
+      switch (field.fieldTypeId) {
+        case 'text':
+        case 'textarea':
+          const length = String(val).length;
+          if (field.validationRules.minLength && length < field.validationRules.minLength) {
+            errors.push(`${field.displayName} يجب أن يكون طوله على الأقل ${field.validationRules.minLength} أحرف.`);
+          }
+          if (field.validationRules.maxLength && length > field.validationRules.maxLength) {
+            errors.push(`${field.displayName} يجب ألا يزيد طوله عن ${field.validationRules.maxLength} أحرف.`);
+          }
+          if (field.validationRules.pattern) {
+            const regex = new RegExp(field.validationRules.pattern);
+            if (!regex.test(String(val))) {
+              errors.push(`${field.displayName} غير صالح.`);
+            }
+          }
+          break;
+        case 'number':
+        case 'currency':
+        case 'percentage':
+        case 'range':
+          const num = parseFloat(val) || 0;
+          if (field.validationRules.min != null && num < field.validationRules.min) {
+            errors.push(`${field.displayName} يجب أن يكون ≥ ${field.validationRules.min}.`);
+          }
+          if (field.validationRules.max != null && num > field.validationRules.max) {
+            errors.push(`${field.displayName} يجب أن يكون ≤ ${field.validationRules.max}.`);
+          }
+          break;
+        case 'select':
+          const options = field.fieldOptions.options || [];
+          if (val && !options.includes(val)) {
+            errors.push(`${field.displayName} غير صالح.`);
+          }
+          break;
+        case 'multiselect':
+          const moptions = field.fieldOptions.options || [];
+          if (Array.isArray(val)) {
+            val.forEach((item: string) => {
+              if (!moptions.includes(item)) {
+                errors.push(`${field.displayName} يحتوي على قيمة غير صالحة.`);
+              }
+            });
+          }
+          break;
+      }
+    });
+    return errors;
+  };
 
   // Helper functions
   const resetCreateForm = () => {
@@ -298,6 +381,12 @@ const AdminUnits = () => {
       icon: '👁️',
       color: 'blue' as const,
       onClick: handleViewDetails,
+    },
+    {
+      label: 'معرض الصور',
+      icon: '🖼️',
+      color: 'orange' as const,
+      onClick: handleOpenGallery,
     },
     {
       label: 'تعديل',
@@ -532,6 +621,11 @@ const AdminUnits = () => {
             </button>
             <button
               onClick={() => {
+                const createErrors = validateDynamicFields(createFields || [], createDynamicFields);
+                if (createErrors.length) {
+                  alert(createErrors.join('\n'));
+                  return;
+                }
                 const fieldValues: FieldValueDto[] = Object.entries(createDynamicFields).map(([fieldId, value]) => ({
                   fieldId,
                   fieldValue: Array.isArray(value) ? JSON.stringify(value) : String(value)
@@ -542,7 +636,12 @@ const AdminUnits = () => {
                   fieldValues
                 };
                 
-                createUnit.mutate(unitData);
+                createUnit.mutate(unitData, {
+                  onSuccess: () => {
+                    setShowCreateModal(false);
+                    resetCreateForm();
+                  },
+                });
               }}
               disabled={createUnit.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
@@ -559,7 +658,7 @@ const AdminUnits = () => {
             </label>
             <select
               value={createForm.propertyId}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, propertyId: e.target.value }))}
+              onChange={(e) => setCreateForm(prev => ({ ...prev, propertyId: e.target.value, unitTypeId: '' }))}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">اختر العقار</option>
@@ -581,10 +680,15 @@ const AdminUnits = () => {
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">اختر نوع الوحدة</option>
-              <option value="standard">قياسي</option>
-              <option value="deluxe">فاخر</option>
-              <option value="suite">جناح</option>
-              <option value="villa">فيلا</option>
+              {isLoadingCreateUnitTypes ? (
+                <option disabled>جارٍ التحميل...</option>
+              ) : (
+                createUnitTypesData?.items.map(type => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -692,6 +796,11 @@ const AdminUnits = () => {
             </button>
             <button
               onClick={() => {
+                const updateErrors = validateDynamicFields(editFields || [], editDynamicFields);
+                if (updateErrors.length) {
+                  alert(updateErrors.join('\n'));
+                  return;
+                }
                 const fieldValues: FieldValueDto[] = Object.entries(editDynamicFields).map(([fieldId, value]) => ({
                   fieldId,
                   fieldValue: Array.isArray(value) ? JSON.stringify(value) : String(value)
@@ -705,6 +814,11 @@ const AdminUnits = () => {
                 updateUnit.mutate({ 
                   unitId: editForm.unitId, 
                   data: unitData 
+                }, {
+                  onSuccess: () => {
+                    setShowEditModal(false);
+                    setSelectedUnit(null);
+                  },
                 });
               }}
               disabled={updateUnit.status === 'pending'}

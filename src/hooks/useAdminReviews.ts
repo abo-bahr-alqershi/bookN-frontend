@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminReviewsService } from '../services/admin-reviews.service';
 import type { ReviewDto } from '../types/review.types';
 import type { ResultDto } from '../types/common.types';
-import type { GetReviewsByPropertyQuery, GetReviewsByUserQuery } from '../types/review.types';
+import type { GetReviewsByPropertyQuery, GetReviewsByUserQuery, GetAllReviewsQuery } from '../types/review.types';
 
 /**
  * هوك لإدارة استعلامات وعمليات التقييمات للوحة الإدارة
@@ -12,34 +12,18 @@ import type { GetReviewsByPropertyQuery, GetReviewsByUserQuery } from '../types/
  */
 export const useAdminReviews = (params: Record<string, any>) => {
   const queryClient = useQueryClient();
-  // اختيار دالة الجلب بناءً على حالة الفلتر
-  const queryFn = () => {
-    if (params.status === 'pending') {
-      return AdminReviewsService.getPending();
-    }
-    if (params.propertyId) {
-      // جلب تقييمات العقار
-      return AdminReviewsService.getByProperty(params as GetReviewsByPropertyQuery);
-    }
-    if (params.userId) {
-      // جلب تقييمات المستخدم
-      return AdminReviewsService.getByUser(params as GetReviewsByUserQuery);
-    }
-    // الحالة الافتراضية
-    return AdminReviewsService.getPending();
-  };
 
-  // جلب التقييمات
+  // جلب جميع التقييمات مع تطبيق الفلاتر من السيرفر
   const { data: reviewsData, isLoading, error } = useQuery<ReviewDto[], Error>({
     queryKey: ['admin-reviews', params],
-    queryFn,
+    queryFn: () => AdminReviewsService.getAll(params as GetAllReviewsQuery),
   });
 
   // الموافقة على تقييم
   const approveReview = useMutation<ResultDto<boolean>, Error, string>({
     mutationFn: (reviewId) => AdminReviewsService.approve(reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-reviews', params] });
     },
   });
 
@@ -47,7 +31,7 @@ export const useAdminReviews = (params: Record<string, any>) => {
   const deleteReview = useMutation<ResultDto<boolean>, Error, string>({
     mutationFn: (reviewId) => AdminReviewsService.deleteReview(reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-reviews', params] });
     },
   });
 

@@ -35,7 +35,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
     
     setFieldValues(initialValues);
     onChange(initialValues);
-  }, [fields, values]);
+  }, [fields]);
 
   const getDefaultValue = (field: UnitTypeFieldDto) => {
     switch (field.fieldTypeId) {

@@ -91,6 +91,24 @@ export interface GetReviewsByUserQuery {
  */
 export interface GetPendingReviewsQuery {}
 
+// إضافة استعلام جلب جميع التقييمات مع دعم التصفية والصفحات
+/**
+ * استعلام جلب جميع التقييمات مع دعم التصفية والصفحات
+ */
+export interface GetAllReviewsQuery {
+  status?: string;
+  minRating?: number;
+  maxRating?: number;
+  hasImages?: boolean;
+  propertyId?: string;
+  unitId?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
 export interface ApproveReviewCommand {
     reviewId: string;
     adminId: string;

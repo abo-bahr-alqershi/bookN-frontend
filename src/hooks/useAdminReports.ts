@@ -4,7 +4,8 @@ import type {
   GetAllReportsQuery,
   CreateReportCommand,
   UpdateReportCommand,
-  DeleteReportCommand
+  DeleteReportCommand,
+  ReportStatsDto,
 } from '../types/report.types';
 
 // Extended interface for admin reports management
@@ -13,20 +14,6 @@ export interface ReportActionCommand {
   action: 'review' | 'resolve' | 'dismiss' | 'escalate' | 'investigate';
   actionNote?: string;
   adminId: string;
-}
-
-export interface ReportStatsDto {
-  totalReports: number;
-  pendingReports: number;
-  resolvedReports: number;
-  dismissedReports: number;
-  escalatedReports: number;
-  averageResolutionTime: number;
-  reportsByCategory: Record<string, number>;
-  reportsTrend: Array<{
-    date: string;
-    count: number;
-  }>;
 }
 
 export const useAdminReports = (query: GetAllReportsQuery) => {
@@ -72,15 +59,14 @@ export const useAdminReports = (query: GetAllReportsQuery) => {
 
   // Take action on report
   const takeReportAction = useMutation({
-    mutationFn: async (command: ReportActionCommand) => {
-      // This would be implemented in the backend
-      // For now, we'll update the report with the action
-      const updateCommand: UpdateReportCommand = {
+    mutationFn: (command: ReportActionCommand) =>
+      // تنفيذ إجراء البلاغ عبر الباك اند
+      AdminReportsService.action({
         id: command.id,
-        description: `${command.action}: ${command.actionNote || ''}`
-      };
-      return AdminReportsService.update(command.id, updateCommand);
-    },
+        action: command.action,
+        actionNote: command.actionNote,
+        adminId: command.adminId
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
     },
@@ -157,33 +143,7 @@ export const useReportsByUser = (userId: string, query?: any) => {
 export const useReportStats = () => {
   return useQuery({
     queryKey: ['report-stats'],
-    queryFn: async (): Promise<ReportStatsDto> => {
-      // Mock implementation - replace with actual API call
-      return {
-        totalReports: 324,
-        pendingReports: 45,
-        resolvedReports: 210,
-        dismissedReports: 69,
-        escalatedReports: 12,
-        averageResolutionTime: 2.5, // days
-        reportsByCategory: {
-          'سلوك غير لائق': 85,
-          'محتوى مضلل': 62,
-          'انتهاك الشروط': 45,
-          'مشكلة فنية': 38,
-          'أخرى': 94
-        },
-        reportsTrend: [
-          { date: '2024-01-01', count: 15 },
-          { date: '2024-01-02', count: 22 },
-          { date: '2024-01-03', count: 18 },
-          { date: '2024-01-04', count: 25 },
-          { date: '2024-01-05', count: 19 },
-          { date: '2024-01-06', count: 30 },
-          { date: '2024-01-07', count: 27 }
-        ]
-      };
-    },
+    queryFn: () => AdminReportsService.stats(),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };

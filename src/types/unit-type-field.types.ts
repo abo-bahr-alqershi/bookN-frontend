@@ -120,6 +120,8 @@ export interface UpdateUnitTypeFieldCommand {
   category?: string;
   /** يحدد ما إذا كان الحقل مخصص للوحدات */
   isForUnits?: boolean;
+  /** مجموعة الحقول المرتبطة (اختياري) */
+  groupId?: string;
 }
 
 /**

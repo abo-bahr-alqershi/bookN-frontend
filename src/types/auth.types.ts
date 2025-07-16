@@ -30,10 +30,14 @@ export interface AuthResultDto {
   role: string;
   /** رابط صورة الملف الشخصي للمستخدم */
   profileImage: string;
+  /** معرف العقار إذا كان مالكًا أو موظفًا */
+  propertyId?: string;
   /** اسم العقار إذا كان مالكًا أو موظفًا */
   propertyName?: string;
   /** إعدادات المستخدم بصيغة JSON */
   settingsJson: string;
+  /** معرف الموظف إذا كان موظفًا */
+  staffId?: string;
   /** قائمة المفضلة للمستخدم بصيغة JSON */
   favoritesJson: string;
 }

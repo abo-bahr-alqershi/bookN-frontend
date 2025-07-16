@@ -5,6 +5,9 @@ import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
+import PropertySelector from '../../components/selectors/PropertySelector';
+import UnitSelector from '../../components/selectors/UnitSelector';
+import UserSelector from '../../components/selectors/UserSelector';
 import type {
   ReviewDto,
   GetReviewsByPropertyQuery,
@@ -34,6 +37,7 @@ const AdminReviews = () => {
     userId: '',
     startDate: '',
     endDate: '',
+    unitId: '',
   });
 
   // State for modals
@@ -58,8 +62,10 @@ const AdminReviews = () => {
     maxRating: filterValues.maxRating ? parseFloat(filterValues.maxRating) : undefined,
     hasImages: filterValues.hasImages,
     propertyId: filterValues.propertyId || undefined,
+    unitId: filterValues.unitId || undefined,
     userId: filterValues.userId || undefined,
     reviewedAfter: filterValues.startDate || undefined,
+    reviewedBefore: filterValues.endDate || undefined,
     pageNumber: currentPage,
     pageSize,
   };
@@ -116,6 +122,7 @@ const AdminReviews = () => {
       userId: '',
       startDate: '',
       endDate: '',
+      unitId: '',
     });
     setSearchTerm('');
     setCurrentPage(1);
@@ -196,14 +203,43 @@ const AdminReviews = () => {
     {
       key: 'propertyId',
       label: 'العقار',
-      type: 'select',
-      options: propertiesData?.items.map(p => ({ value: p.id, label: p.name })) ?? [],
+      type: 'custom',
+      render: (value, onChange) => (
+        <PropertySelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر العقار"
+          className="w-full"
+        />
+      ),
+    },
+    {
+      key: 'unitId',
+      label: 'الوحدة',
+      type: 'custom',
+      render: (value, onChange) => (
+        <UnitSelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر الوحدة"
+          propertyId={filterValues.propertyId}
+          className="w-full"
+          disabled={!filterValues.propertyId}
+        />
+      ),
     },
     {
       key: 'userId',
       label: 'المستخدم',
-      type: 'select',
-      options: usersData?.items.map(u => ({ value: u.id, label: u.name })) ?? [],
+      type: 'custom',
+      render: (value, onChange) => (
+        <UserSelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر المستخدم"
+          className="w-full"
+        />
+      ),
     },
     {
       key: 'startDate',

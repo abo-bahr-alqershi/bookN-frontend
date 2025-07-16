@@ -8,6 +8,11 @@ export interface AuthUser {
   role: string;
   phone?: string;
   profileImage?: string;
+  propertyId?: string;
+  propertyName?: string;
+  staffId?: string;
+  settingsJson?: string;
+  favoritesJson?: string;
 }
 
 interface AuthContextType {

@@ -14,6 +14,7 @@ import type {
   GetUserLifetimeStatsQuery,
   GetUserNotificationsQuery,
   GetUserRolesQuery,
+  UserDetailsDto,
 } from '../types/user.types';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 
@@ -78,4 +79,8 @@ export const AdminUsersService = {
   /** جلب أدوار المستخدم */
   getRoles: (query: GetUserRolesQuery) =>
     apiClient.get<PaginatedResult<string>>(`/api/admin/Users/${query.userId}/roles`, { params: query }).then(res => res.data),
+
+  /** جلب تفاصيل مستخدم كاملة */
+  getDetails: (userId: string) =>
+    apiClient.get<ResultDto<UserDetailsDto>>(`/api/admin/Users/${userId}/details`).then(res => res.data),
 };

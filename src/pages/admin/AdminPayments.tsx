@@ -5,6 +5,8 @@ import SearchAndFilter, { type FilterOption } from '../../components/common/Sear
 import Modal from '../../components/common/Modal';
 import UserSelector from '../../components/selectors/UserSelector';
 import BookingSelector from '../../components/selectors/BookingSelector';
+import PropertySelector from '../../components/selectors/PropertySelector';
+import UnitSelector from '../../components/selectors/UnitSelector';
 import CurrencyInput from '../../components/inputs/CurrencyInput';
 import { LoadingSpinner, StatusBadge, ActionButton, ConfirmDialog, EmptyState, Tooltip } from '../../components/ui';
 import { useUXHelpers } from '../../hooks/useUXHelpers';
@@ -17,7 +19,8 @@ import type {
   VoidPaymentCommand,
   UpdatePaymentStatusCommand,
   GetPaymentsByStatusQuery,
-  MoneyDto
+  MoneyDto,
+  GetAllPaymentsQuery
 } from '../../types/payment.types';
 
 const AdminPayments = () => {
@@ -30,14 +33,16 @@ const AdminPayments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({
-    status: '',
-    method: '',
-    bookingId: '',
-    userId: '',
-    minAmount: '',
-    maxAmount: '',
-    startDate: '',
-    endDate: '',
+    status: undefined,
+    method: undefined,
+    bookingId: undefined,
+    userId: undefined,
+    propertyId: undefined,
+    unitId: undefined,
+    minAmount: undefined,
+    maxAmount: undefined,
+    startDate: undefined,
+    endDate: undefined,
   });
 
   // State for modals
@@ -61,8 +66,17 @@ const AdminPayments = () => {
   });
 
   // Build query params
-  const queryParams: GetPaymentsByStatusQuery = {
-    status: filterValues.status as PaymentStatus || 'Successful',
+  const queryParams: GetAllPaymentsQuery = {
+    status: filterValues.status,
+    method: filterValues.method,
+    bookingId: filterValues.bookingId,
+    userId: filterValues.userId,
+    propertyId: filterValues.propertyId,
+    unitId: filterValues.unitId,
+    minAmount: filterValues.minAmount ? parseFloat(filterValues.minAmount) : undefined,
+    maxAmount: filterValues.maxAmount ? parseFloat(filterValues.maxAmount) : undefined,
+    startDate: filterValues.startDate || undefined,
+    endDate: filterValues.endDate || undefined,
     pageNumber: currentPage,
     pageSize,
   };
@@ -77,14 +91,23 @@ const AdminPayments = () => {
     updatePaymentStatus
   } = useAdminPayments(queryParams);
 
+  // Remove client-side filtering
+  const dataToDisplay = paymentsData?.items ?? [];
+
   // تمت المعالجة عبر الهوك useAdminPayments
 
   // Filter payments on client side for additional filters
-  const filteredPayments = paymentsData?.items?.filter(payment => {
+  const filteredPayments = dataToDisplay?.filter(payment => {
     if (filterValues.bookingId && !payment.bookingId.includes(filterValues.bookingId)) return false;
     if (filterValues.minAmount && payment.amount.amount < parseFloat(filterValues.minAmount)) return false;
     if (filterValues.maxAmount && payment.amount.amount > parseFloat(filterValues.maxAmount)) return false;
-    if (searchTerm && !payment.transactionId.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      const matchesTransaction = payment.transactionId.toLowerCase().includes(lowerSearch);
+      const matchesAmount = payment.amount.amount.toString().includes(searchTerm)
+        || payment.amount.formattedAmount.toLowerCase().includes(lowerSearch);
+      if (!matchesTransaction && !matchesAmount) return false;
+    }
     return true;
   }) || [];
 
@@ -140,14 +163,16 @@ const AdminPayments = () => {
 
   const handleResetFilters = () => {
     setFilterValues({
-      status: '',
-      method: '',
-      bookingId: '',
-      userId: '',
-      minAmount: '',
-      maxAmount: '',
-      startDate: '',
-      endDate: '',
+      status: undefined,
+      method: undefined,
+      bookingId: undefined,
+      userId: undefined,
+      propertyId: undefined,
+      unitId: undefined,
+      minAmount: undefined,
+      maxAmount: undefined,
+      startDate: undefined,
+      endDate: undefined,
     });
     setSearchTerm('');
     setCurrentPage(1);
@@ -206,9 +231,7 @@ const AdminPayments = () => {
   // Filter options
   const filterOptions: FilterOption[] = [
     {
-      key: 'status',
-      label: 'حالة الدفع',
-      type: 'select',
+      key: 'status', label: 'حالة الدفع', type: 'select',
       options: [
         { value: 'Successful', label: 'ناجح' },
         { value: 'Failed', label: 'فاشل' },
@@ -219,66 +242,65 @@ const AdminPayments = () => {
       ],
     },
     {
-      key: 'method',
-      label: 'طريقة الدفع',
-      type: 'select',
+      key: 'method', label: 'طريقة الدفع', type: 'select',
       options: [
-        { value: '0', label: 'بطاقة ائتمان' },
-        { value: '1', label: 'PayPal' },
-        { value: '2', label: 'تحويل بنكي' },
-        { value: '3', label: 'نقداً' },
-        { value: '4', label: 'أخرى' },
+        { value: 'CreditCard', label: 'بطاقة ائتمان' },
+        { value: 'PayPal', label: 'PayPal' },
+        { value: 'BankTransfer', label: 'تحويل بنكي' },
+        { value: 'Cash', label: 'نقداً' },
+        { value: 'Other', label: 'أخرى' },
       ],
     },
     {
-      key: 'bookingId',
-      label: 'الحجز',
-      type: 'custom',
-      render: (value: string, onChange: (value: any) => void) => (
+      key: 'propertyId', label: 'العقار', type: 'custom',
+      render: (value, onChange) => (
+        <PropertySelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر العقار"
+          className="w-full"
+        />
+      ),
+    },
+    {
+      key: 'unitId', label: 'الوحدة', type: 'custom',
+      render: (value, onChange) => (
+        <UnitSelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          propertyId={filterValues.propertyId}
+          className="w-full"
+          disabled={!filterValues.propertyId}
+        />
+      ),
+    },
+    {
+      key: 'bookingId', label: 'الحجز', type: 'custom',
+      render: (value, onChange) => (
         <BookingSelector
           value={value}
-          onChange={(bookingId) => onChange(bookingId)}
+          onChange={(id) => onChange(id)}
           placeholder="اختر الحجز"
           className="w-full"
         />
       ),
     },
     {
-      key: 'userId',
-      label: 'المستخدم',
-      type: 'custom',
-      render: (value: string, onChange: (value: any) => void) => (
+      key: 'userId', label: 'المستخدم', type: 'custom',
+      render: (value, onChange) => (
         <UserSelector
           value={value}
-          onChange={(userId) => onChange(userId)}
+          onChange={(id) => onChange(id)}
           placeholder="اختر المستخدم"
           allowedRoles={['Customer']}
           className="w-full"
         />
       ),
     },
-    {
-      key: 'minAmount',
-      label: 'الحد الأدنى للمبلغ',
-      type: 'number',
-      placeholder: 'أدخل الحد الأدنى',
-    },
-    {
-      key: 'maxAmount',
-      label: 'الحد الأقصى للمبلغ',
-      type: 'number',
-      placeholder: 'أدخل الحد الأقصى',
-    },
-    {
-      key: 'startDate',
-      label: 'تاريخ البداية',
-      type: 'date',
-    },
-    {
-      key: 'endDate',
-      label: 'تاريخ النهاية',
-      type: 'date',
-    },
+    { key: 'minAmount', label: 'الحد الأدنى للمبلغ', type: 'number', placeholder: 'أدخل الحد الأدنى' },
+    { key: 'maxAmount', label: 'الحد الأقصى للمبلغ', type: 'number', placeholder: 'أدخل الحد الأقصى' },
+    { key: 'startDate', label: 'تاريخ البداية', type: 'date' },
+    { key: 'endDate', label: 'تاريخ النهاية', type: 'date' },
   ];
 
   // Table columns
@@ -657,6 +679,7 @@ const AdminPayments = () => {
                     }
                   }))
                 }
+                direction="rtl"
                 placeholder="0.00"
                 required={true}
                 min={0}

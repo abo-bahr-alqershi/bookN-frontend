@@ -34,7 +34,12 @@ const Login: React.FC = () => {
           name: auth.userName,
           email: auth.email,
           role: auth.role,
-          profileImage: auth.profileImage || undefined
+          profileImage: auth.profileImage || undefined,
+          propertyId: auth.propertyId,
+          propertyName: auth.propertyName,
+          staffId: auth.staffId,
+          settingsJson: auth.settingsJson,
+          favoritesJson: auth.favoritesJson
         };
         console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 

@@ -55,6 +55,10 @@ const AdminReports = () => {
     reporterUserId: filterValues.reporterUserId || undefined,
     reportedUserId: filterValues.reportedUserId || undefined,
     reportedPropertyId: filterValues.reportedPropertyId || undefined,
+    reason: filterValues.reason || undefined,
+    status: filterValues.status || undefined,
+    fromDate: filterValues.fromDate || undefined,
+    toDate: filterValues.toDate || undefined,
   };
 
   // Hooks

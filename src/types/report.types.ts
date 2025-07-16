@@ -61,6 +61,14 @@ export interface GetAllReportsQuery {
   reporterUserId?: string;
   reportedUserId?: string;
   reportedPropertyId?: string;
+  /** سبب البلاغ */
+  reason?: string;
+  /** حالة البلاغ */
+  status?: string;
+  /** من تاريخ */
+  fromDate?: string;
+  /** إلى تاريخ */
+  toDate?: string;
 }
 
 /**
@@ -85,4 +93,26 @@ export interface GetReportsByReportedUserQuery {
   pageNumber?: number;
   /** حجم الصفحة */
   pageSize?: number;
+}
+
+/**
+ * إحصائيات وتحليلات البلاغات
+ */
+export interface ReportStatsDto {
+  /** إجمالي عدد البلاغات */
+  totalReports: number;
+  /** عدد البلاغات المعلقة */
+  pendingReports: number;
+  /** عدد البلاغات المحلولة */
+  resolvedReports: number;
+  /** عدد البلاغات المرفوضة */
+  dismissedReports: number;
+  /** عدد البلاغات المصعّدة */
+  escalatedReports: number;
+  /** متوسط زمن حل البلاغ (بالأيام) */
+  averageResolutionTime: number;
+  /** عدد البلاغات حسب السبب */
+  reportsByCategory: Record<string, number>;
+  /** اتجاه البلاغات على مدى الأيام */
+  reportsTrend: Array<{ date: string; count: number }>;
 }

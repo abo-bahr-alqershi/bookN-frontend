@@ -11,6 +11,7 @@ import type {
   GetAllReportsQuery,
   GetReportsByPropertyQuery,
   GetReportsByReportedUserQuery,
+  ReportStatsDto,
 } from '../types/report.types';
 
 /**
@@ -60,5 +61,16 @@ export class AdminReportsService {
   static async getByReportedUser(reportedUserId: string, query?: any): Promise<ReportDto[]> {
     const response = await apiClient.get<PaginatedResult<ReportDto>>(`${this.API_BASE}/reported-user/${reportedUserId}`, { params: query });
     return response.data.items;
+  }
+
+  /** اتخاذ إجراء على البلاغ */
+  static async action(data: { id: string; action: string; actionNote?: string; adminId: string }): Promise<ResultDto<boolean>> {
+    const response = await apiClient.post<ResultDto<boolean>>(`${this.API_BASE}/${data.id}/action`, data);
+    return response.data;
+  }
+  /** جلب إحصائيات البلاغات */
+  static async stats(): Promise<ReportStatsDto> {
+    const response = await apiClient.get<ReportStatsDto>(`${this.API_BASE}/stats`);
+    return response.data;
   }
 }

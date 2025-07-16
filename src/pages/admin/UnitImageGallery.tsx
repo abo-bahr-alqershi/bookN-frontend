@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useImages, useImageStatistics } from '../../hooks/useImages';
 import { ImageGallery } from '../../components/images/ImageGallery';
 import { ImageUploader } from '../../components/images/ImageUploader';
@@ -15,6 +16,7 @@ import StatusBadge from '../../components/ui/StatusBadge';
 import DataTable from '../../components/common/DataTable';
 import { useUXHelpers } from '../../hooks/useUXHelpers';
 import type { Image as ImageType, ImageCategory } from '../../types/image.types';
+import { AdminUnitsService } from '../../services/admin-units.service';
 
 /**
  * صفحة إدارة معرض صور الوحدة
@@ -23,7 +25,17 @@ import type { Image as ImageType, ImageCategory } from '../../types/image.types'
 const UnitImageGallery: React.FC = () => {
   const { propertyId, unitId } = useParams<{ propertyId: string; unitId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading, executeWithFeedback, showConfirmDialog, confirmDialog, hideConfirmDialog } = useUXHelpers();
+
+  // Fetch detailed unit data including dynamic fields
+  const { data: unitDetailsResult, isLoading: isLoadingUnitDetails, error: unitDetailsError } = useQuery({
+    queryKey: ['admin-unit-details', unitId],
+    queryFn: () => AdminUnitsService.getDetails(unitId!),
+    enabled: !!unitId,
+  });
+  const unitDetails = unitDetailsResult?.data;
+  const flatFieldValues = unitDetails?.dynamicFields?.flatMap(group => group.fieldValues) || [];
 
   // الحالات المحلية - Local states
   const [activeTab, setActiveTab] = useState<'gallery' | 'upload' | 'statistics'>('gallery');
@@ -32,13 +44,15 @@ const UnitImageGallery: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<ImageCategory | 'all'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  // بيانات العقار الافتراضية - Default property data
-  const property = { title: `العقار ${propertyId}` };
+  // Default property data - get name from navigation state if available
+  const navState = (location.state as { propertyName?: string; unitName?: string }) || {};
+  const property = { title: navState.propertyName || `العقار ${propertyId}` };
   const propertyLoading = false;
+  const propertyError = null;
 
-  // بيانات الوحدة الافتراضية - Default unit data
-  const unit = { 
-    name: `الوحدة ${unitId}`,
+  // Default unit data - Default unit data
+  const unit = {
+    name: navState.unitName || `الوحدة ${unitId}`,
     unitType: { name: 'شقة' },
     area: 120,
     rooms: 3,
@@ -244,7 +258,7 @@ const UnitImageGallery: React.FC = () => {
     { value: 'gallery' as const, label: 'معرض عام', count: statistics?.byCategory.gallery || 0 }
   ];
 
-  if (propertyLoading || unitLoading) {
+  if (propertyLoading || isLoadingUnitDetails) {
     return (
       <div className="flex justify-center items-center h-64">
         <LoadingSpinner size="lg" />
@@ -252,13 +266,13 @@ const UnitImageGallery: React.FC = () => {
     );
   }
 
-  if (unitError || !unit || !property) {
+  if (unitDetailsError || !unitDetails || !property) {
     return (
       <div className="text-center py-8">
         <p className="text-red-600 mb-4">حدث خطأ في تحميل بيانات الوحدة</p>
         <ActionButton onClick={() => navigate('/admin/units')} variant="secondary" label="العودة للوحدات">
-          العودة للوحدات
-        </ActionButton>
+           العودة للوحدات
+         </ActionButton>
       </div>
     );
   }
@@ -312,40 +326,26 @@ const UnitImageGallery: React.FC = () => {
             <ActionButton
               variant="secondary"
               onClick={() => navigate(`/admin/units/${unitId}`)}
-              label="العودة للوحدة"
-            >
-              العودة للوحدة
+              label="العودة للوحدة">
             </ActionButton>
           </div>
         </div>
       </div>
 
-      {/* معلومات الوحدة - Unit Info */}
+      {/* Dynamic Unit Info */}
       <div className="bg-gradient-to-l from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Always show unit type and other dynamic fields */}
           <div className="text-center">
             <p className="text-sm text-gray-600">نوع الوحدة</p>
-            <p className="font-semibold text-gray-900">{unit.unitType?.name}</p>
+            <p className="font-semibold text-gray-900">{unitDetails.unitTypeName}</p>
           </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">المساحة</p>
-            <p className="font-semibold text-gray-900">{unit.area} م²</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">عدد الغرف</p>
-            <p className="font-semibold text-gray-900">{unit.rooms}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">الحالة</p>
-            <StatusBadge
-              status={
-                unit.status === 'available' ? 'متاحة' :
-                unit.status === 'occupied' ? 'مشغولة' :
-                unit.status === 'maintenance' ? 'صيانة' :
-                'محجوزة'
-              }
-            />
-          </div>
+          {flatFieldValues.slice(0, 3).map(fieldVal => (
+            <div key={fieldVal.fieldId} className="text-center">
+              <p className="text-sm text-gray-600">{fieldVal.displayName}</p>
+              <p className="font-semibold text-gray-900">{fieldVal.value}</p>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -393,7 +393,7 @@ const UnitImageGallery: React.FC = () => {
                   {/* تصفية حسب الفئة - Filter by category */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">الفئة:</label>
-                    <select
+                    <select style={{ direction: 'rtl' }}
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value as ImageCategory | 'all')}
                       className="px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -444,18 +444,14 @@ const UnitImageGallery: React.FC = () => {
                         variant="danger"
                         size="sm"
                         onClick={handleDeleteSelected}
-                        label="حذف المحددة"
-                      >
-                        حذف المحددة
+                        label="حذف المحددة">
                       </ActionButton>
                     </>
                   )}
                   <ActionButton
                     variant="primary"
                     onClick={() => setActiveTab('upload')}
-                    label="رفع صور جديدة"
-                  >
-                    رفع صور جديدة
+                    label="رفع صور جديدة">
                   </ActionButton>
                 </div>
               </div>
@@ -637,16 +633,12 @@ const UnitImageGallery: React.FC = () => {
               <ActionButton
                 variant="secondary"
                 onClick={hideConfirmDialog}
-                label="إلغاء"
-              >
-                إلغاء
+                label="إلغاء">
               </ActionButton>
               <ActionButton
                 variant="danger"
                 onClick={confirmDialog.onConfirm}
-                label="تأكيد"
-              >
-                تأكيد
+                label="تأكيد">
               </ActionButton>
             </div>
           </div>

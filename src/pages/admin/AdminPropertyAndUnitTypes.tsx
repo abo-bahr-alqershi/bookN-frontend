@@ -293,7 +293,7 @@ const AdminPropertyAndUnitTypes = () => {
   // Handler for creating or updating a dynamic field
   const handleSaveField = () => {
     if (selectedField) {
-      updateUnitTypeField.mutate({ fieldId: selectedField.fieldId, data: { fieldId: selectedField.fieldId, ...fieldForm } }, {
+      updateUnitTypeField.mutate({ fieldId: selectedField.fieldId, data: { fieldId: selectedField.fieldId, ...fieldForm, groupId: selectedFieldGroup?.groupId || '' } }, {
         onSuccess: () => {
           showSuccess('تم تحديث الحقل بنجاح');
           setShowFieldModal(false);
@@ -305,7 +305,7 @@ const AdminPropertyAndUnitTypes = () => {
         }
       });
     } else {
-      createUnitTypeField.mutate(fieldForm, {
+      createUnitTypeField.mutate({ ...fieldForm, unitTypeId: selectedUnitType!.id, groupId: selectedFieldGroup?.groupId || '' }, {
         onSuccess: () => {
           showSuccess('تم إضافة الحقل بنجاح');
           setShowFieldModal(false);
@@ -1212,7 +1212,8 @@ const AdminPropertyAndUnitTypes = () => {
                   fieldId: selectedField.fieldId,
                   data: {
                     fieldId: selectedField.fieldId,
-                    ...fieldForm
+                    ...fieldForm,
+                    groupId: selectedFieldGroup?.groupId || ''
                   }
                 }, {
                   onSuccess: () => {
