@@ -217,9 +217,44 @@ const Register: React.FC = () => {
 
   return (
     <PublicRoute restricted={true}>
-      <div className="min-h-screen bg-white flex">
+      <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+      {/* Mobile Header - Shows only on mobile */}
+      <div className="lg:hidden w-full bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden py-6 px-4">
+        <div className="relative z-10 text-center">
+          {selectedPropertyType ? (
+            <div className="space-y-3">
+              <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r ${currentTheme.gradient} text-white text-2xl shadow-lg transform transition-all duration-500 ${currentTheme.animation}`}>
+                {currentTheme.icon}
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white mb-1 leading-tight">
+                  {currentTheme.title}
+                </h2>
+                <p className="text-sm text-blue-100 leading-relaxed">
+                  {currentTheme.subtitle}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-2xl shadow-lg">
+                🏢
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white mb-1">
+                  منصة BookN
+                </h2>
+                <p className="text-sm text-blue-100">
+                  حلول ذكية وشاملة لإدارة جميع أنواع خدمات الحجوزات والتأجير
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Left Side - Registration Form */}
-      <div className="w-1/2 flex flex-col justify-center px-12 py-8 bg-white relative overflow-hidden">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-8 lg:px-12 py-4 lg:py-8 bg-white relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
@@ -229,20 +264,20 @@ const Register: React.FC = () => {
 
         <div className="relative z-10 max-w-md mx-auto w-full">
           {/* Logo and Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
-              BN
+          <div className="text-center mb-6 lg:mb-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-lg sm:text-2xl font-bold mx-auto mb-3 sm:mb-4 shadow-lg">
+              B
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">إنشاء حساب جديد</h1>
-            <p className="text-gray-600">انضم إلى منصة BookN واستمتع بإدارة احترافية</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">إنشاء حساب جديد</h1>
+            <p className="text-sm sm:text-base text-gray-600">انضم إلى منصة BookN واستمتع بإدارة احترافية</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
             {/* Personal Information Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">البيانات الشخصية</h3>
+            <div className="space-y-3 lg:space-y-4">
+              <h3 className="text-base lg:text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">البيانات الشخصية</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     الاسم الكامل
@@ -253,7 +288,7 @@ const Register: React.FC = () => {
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="أدخل اسمك الكامل"
                     disabled={registerMutation.isPending}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                       errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                     }`}
                   />
@@ -272,7 +307,7 @@ const Register: React.FC = () => {
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="781272968"
                     disabled={registerMutation.isPending}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
+                    className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
                       errors.phone ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                     }`}
                     dir="ltr"
@@ -292,7 +327,7 @@ const Register: React.FC = () => {
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="owner@example.com"
                     disabled={registerMutation.isPending}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
+                    className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
                       errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                     }`}
                     dir="ltr"
@@ -302,7 +337,7 @@ const Register: React.FC = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       كلمة المرور
@@ -314,7 +349,7 @@ const Register: React.FC = () => {
                         onChange={(e) => handleInputChange('password', e.target.value)}
                         placeholder="كلمة المرور"
                         disabled={registerMutation.isPending}
-                        className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
+                        className={`w-full px-3 py-2 lg:px-4 lg:py-3 pr-10 lg:pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
                           errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                         }`}
                         dir="ltr"
@@ -349,7 +384,7 @@ const Register: React.FC = () => {
                         }}
                         placeholder="تأكيد كلمة المرور"
                         disabled={registerMutation.isPending}
-                        className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
+                        className={`w-full px-3 py-2 lg:px-4 lg:py-3 pr-10 lg:pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-left ${
                           errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                         }`}
                         dir="ltr"
@@ -372,10 +407,10 @@ const Register: React.FC = () => {
             </div>
 
             {/* Property Information Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">بيانات الكيان</h3>
+            <div className="space-y-3 lg:space-y-4">
+              <h3 className="text-base lg:text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">بيانات الكيان</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     نوع الكيان
@@ -384,7 +419,7 @@ const Register: React.FC = () => {
                     value={formData.propertyTypeId}
                     onChange={(e) => handleInputChange('propertyTypeId', e.target.value)}
                     disabled={registerMutation.isPending || typesLoading}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                       errors.propertyTypeId ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                     }`}
                   >
@@ -418,7 +453,7 @@ const Register: React.FC = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       المدينة
@@ -429,7 +464,7 @@ const Register: React.FC = () => {
                       onChange={(e) => handleInputChange('city', e.target.value)}
                       placeholder="صنعاء"
                       disabled={registerMutation.isPending}
-                      className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                         errors.city ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                       }`}
                     />
@@ -446,7 +481,7 @@ const Register: React.FC = () => {
                       value={formData.starRating}
                       onChange={(e) => handleInputChange('starRating', parseInt(e.target.value))}
                       disabled={registerMutation.isPending}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     >
                       <option value={1}>نجمة واحدة</option>
                       <option value={2}>نجمتان</option>
@@ -467,7 +502,7 @@ const Register: React.FC = () => {
                     onChange={(e) => handleInputChange('address', e.target.value)}
                     placeholder="مثل : الاصبحي شارع المقالح"
                     disabled={registerMutation.isPending}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    className={`w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                       errors.address ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                     }`}
                   />
@@ -504,7 +539,7 @@ const Register: React.FC = () => {
                     placeholder="وصف مختصر عن الكيان وخدماته"
                     disabled={registerMutation.isPending}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>
               </div>
@@ -535,7 +570,7 @@ const Register: React.FC = () => {
             <button
               type="submit"
               disabled={registerMutation.isPending || !acceptTerms}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {registerMutation.isPending ? (
                 <div className="flex items-center justify-center">
@@ -562,8 +597,8 @@ const Register: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Side - Preview Section */}
-      <div className="w-1/2 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden flex items-center justify-center">
+      {/* Right Side - Preview Section (Desktop Only) */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden items-center justify-center">
         {/* Animated Background */}
         <div className="absolute inset-0">
           {/* Floating Shapes */}
