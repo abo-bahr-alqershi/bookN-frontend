@@ -58,9 +58,10 @@ const AdminPropertyServices = () => {
   });
 
   // جلب البيانات
+  // Fetch properties with maximum allowed page size (API supports up to 100)
   const { propertiesData: properties } = useAdminProperties({
     pageNumber: 1,
-    pageSize: 1000,
+    pageSize: 100,
   });
 
   const { data: propertyServices, isLoading: isLoadingPropertyServices } = usePropertyServices({

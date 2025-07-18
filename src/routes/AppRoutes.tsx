@@ -27,6 +27,7 @@ import AdminSettings from '../pages/admin/AdminSettings';
 import PropertyImageGallery from '../pages/admin/PropertyImageGallery';
 import UnitImageGallery from '../pages/admin/UnitImageGallery';
 import UserDetails from '../pages/admin/UserDetails';
+import AdminPropertyServices from '../pages/admin/AdminPropertyServices';
 
 // Property Owner Pages
 import PropertyOwnerDashboard from '../pages/property/PropertyOwnerDashboard';
@@ -62,6 +63,7 @@ const AppRoutes = () => {
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="amenities" element={<AdminAmenities />} />
+        <Route path="property-services" element={<AdminPropertyServices />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="notifications" element={<AdminNotifications />} />
         <Route path="reports" element={<AdminReports />} />

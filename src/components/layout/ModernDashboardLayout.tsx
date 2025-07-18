@@ -117,6 +117,17 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
         </svg>
       )
     },
+    {
+      path: '/admin/property-services',
+      label: 'الخدمات',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7.5L12 12l9-4.5v9L12 21l-9-4.5v-9z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12V3.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7.5l9 4.5 9-4.5" />
+        </svg>
+      )
+    },
     
     // إدارة الحجوزات والمدفوعات
     {
