@@ -27,7 +27,10 @@ import type {
 import type { MoneyDto } from '../../types/amenity.types';
 import DataTable from '../../components/common/DataTable';
 import Modal from '../../components/common/Modal';
+import PropertySelector from '../../components/selectors/PropertySelector';
+import CurrencyInput from '../../components/inputs/CurrencyInput';
 import ActionsDropdown from '../../components/ui/ActionsDropdown';
+import { useCurrencies } from '../../hooks/useCurrencies';
 
 const AdminPropertyServices = () => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
@@ -35,6 +38,9 @@ const AdminPropertyServices = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  // Fetch currencies for price component
+  const { currencies, loading: currenciesLoading } = useCurrencies();
+  const currencyCodes = currenciesLoading ? [] : currencies.map(c => c.code);
   
   // حالات المودالات
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -281,21 +287,12 @@ const AdminPropertyServices = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               العقار
             </label>
-            <select
+            <PropertySelector
               value={selectedPropertyId}
-              onChange={(e) => {
-                setSelectedPropertyId(e.target.value);
-                setSelectedServiceType('');
-              }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">اختر العقار</option>
-              {properties?.items?.map((property) => (
-                <option key={property.id} value={property.id}>
-                  {property.name}
-                </option>
-              ))}
-            </select>
+              onChange={(id) => { setSelectedPropertyId(id); setSelectedServiceType(''); }}
+              placeholder="اختر العقار"
+              className="w-full"
+            />
           </div>
 
           <div>
@@ -372,19 +369,12 @@ const AdminPropertyServices = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               العقار
             </label>
-            <select
+            <PropertySelector
               value={createForm.propertyId}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, propertyId: e.target.value }))}
+              onChange={(id) => setCreateForm(prev => ({ ...prev, propertyId: id }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">اختر العقار</option>
-              {properties?.items?.map((property) => (
-                <option key={property.id} value={property.id}>
-                  {property.name}
-                </option>
-              ))}
-            </select>
+              className="w-full"
+            />
           </div>
 
           <div>
@@ -405,54 +395,35 @@ const AdminPropertyServices = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 السعر
               </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
+              <CurrencyInput
                 value={createForm.price.amount}
-                onChange={(e) => setCreateForm(prev => ({
+                currency={createForm.price.currency}
+                supportedCurrencies={currencyCodes}
+                onValueChange={(amount, currency) => setCreateForm(prev => ({
                   ...prev,
-                  price: { ...prev.price, amount: parseFloat(e.target.value) || 0 }
+                  price: { amount, currency }
                 }))}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
+                min={0}
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                العملة
+                نموذج التسعير
               </label>
               <select
-                value={createForm.price.currency}
-                onChange={(e) => setCreateForm(prev => ({
-                  ...prev,
-                  price: { ...prev.price, currency: e.target.value }
-                }))}
+                value={createForm.pricingModel}
+                onChange={(e) => setCreateForm(prev => ({ ...prev, pricingModel: e.target.value }))}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="SAR">ريال سعودي</option>
-                <option value="USD">دولار أمريكي</option>
-                <option value="EUR">يورو</option>
+                {pricingModelOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              نموذج التسعير
-            </label>
-            <select
-              value={createForm.pricingModel}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, pricingModel: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {pricingModelOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div className="flex gap-2 pt-4">
@@ -498,59 +469,35 @@ const AdminPropertyServices = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 السعر
               </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={editForm.price?.amount || 0}
-                onChange={(e) => setEditForm(prev => ({
+              <CurrencyInput
+                value={editForm.price?.amount ?? 0}
+                currency={editForm.price?.currency ?? 'SAR'}
+                supportedCurrencies={currencyCodes}
+                onValueChange={(amount, currency) => setEditForm(prev => ({
                   ...prev,
-                  price: { 
-                    amount: parseFloat(e.target.value) || 0,
-                    currency: prev.price?.currency || 'SAR'
-                  }
+                  price: { amount, currency }
                 }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+                className="w-full"
+                min={0}
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                العملة
+                نموذج التسعير
               </label>
               <select
-                value={editForm.price?.currency || 'SAR'}
-                onChange={(e) => setEditForm(prev => ({
-                  ...prev,
-                  price: { 
-                    amount: prev.price?.amount || 0,
-                    currency: e.target.value
-                  }
-                }))}
+                value={editForm.pricingModel}
+                onChange={(e) => setEditForm(prev => ({ ...prev, pricingModel: e.target.value }))}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="SAR">ريال سعودي</option>
-                <option value="USD">دولار أمريكي</option>
-                <option value="EUR">يورو</option>
+                {pricingModelOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              نموذج التسعير
-            </label>
-            <select
-              value={editForm.pricingModel}
-              onChange={(e) => setEditForm(prev => ({ ...prev, pricingModel: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {pricingModelOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div className="flex gap-2 pt-4">
