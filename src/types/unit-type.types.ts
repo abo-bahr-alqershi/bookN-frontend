@@ -49,10 +49,10 @@ export interface GetUnitTypeByIdQuery {
 }
 
 /**
- * استعلام جلب أنواع الوحدات لنوع عقار معين
+ * استعلام جلب أنواع الوحدات لنوع كيان معين
  */
 export interface GetUnitTypesByPropertyTypeQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
   /** رقم الصفحة */
   pageNumber?: number;
@@ -66,7 +66,7 @@ export interface GetUnitTypesByPropertyTypeQuery {
 export interface FieldGroupDto {
   /** معرف المجموعة */
   groupId: string;
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
   /** اسم المجموعة */
   groupName: string;

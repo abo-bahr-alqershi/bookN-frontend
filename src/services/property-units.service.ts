@@ -18,7 +18,7 @@ import type {
   UpdateUnitAvailabilityCommand,
 } from '../types/unit.types';
 
-// خدمات الوحدات لأصحاب العقارات
+// خدمات الوحدات لأصحاب الكيانات
 const API_BASE = '/api/property/units';
 
 export const PropertyUnitsService = {
@@ -26,7 +26,7 @@ export const PropertyUnitsService = {
   getById: (query: GetUnitByIdQuery) =>
     apiClient.get<ResultDto<UnitDto>>(`${API_BASE}/${query.unitId}`).then(res => res.data),
 
-  /** جلب الوحدات الخاصة بعقار */
+  /** جلب الوحدات الخاصة بكيان */
   getByProperty: (query: GetUnitsByPropertyQuery) =>
     apiClient.get<PaginatedResult<UnitDto>>(`${API_BASE}/property/${query.propertyId}`, { params: { pageNumber: query.pageNumber, pageSize: query.pageSize } }).then(res => res.data),
 

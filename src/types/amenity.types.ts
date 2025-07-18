@@ -67,20 +67,26 @@ export interface GetAllAmenitiesQuery {
   pageSize?: number;
   /** مصطلح البحث */
   searchTerm?: string;
+  /** Filter by related property ID */
+  propertyId?: string;
+  /** Filter amenities assigned to property or globally */
+  isAssigned?: boolean;
+  /** Filter amenities free (extra cost == 0) */
+  isFree?: boolean;
 }
 
 /**
- * استعلام جلب مرافق عقار معين
+ * استعلام جلب مرافق كيان معين
  */
 export interface GetAmenitiesByPropertyQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 
 /**
- * استعلام جلب مرافق حسب نوع العقار
+ * استعلام جلب مرافق حسب نوع الكيان
  */
 export interface GetAmenitiesByPropertyTypeQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
 }

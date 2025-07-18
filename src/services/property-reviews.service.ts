@@ -10,7 +10,7 @@ import type {
   GetReviewsByUserQuery,
 } from '../types/review.types';
 
-// المسار الأساسي لتعاملات التقييمات لأصحاب العقارات
+// المسار الأساسي لتعاملات التقييمات لأصحاب الكيانات
 const API_BASE = '/api/property/reviews';
 
 export const PropertyReviewsService = {
@@ -30,7 +30,7 @@ export const PropertyReviewsService = {
   getByBooking: (query: GetReviewByBookingQuery) =>
     apiClient.get<ResultDto<ReviewDto>>(`${API_BASE}/booking/${query.bookingId}`).then(res => res.data),
 
-  // جلب تقييمات عقار معين
+  // جلب تقييمات كيان معين
   getByProperty: (query: GetReviewsByPropertyQuery) =>
     apiClient.get<ResultDto<ReviewDto[]>>(`${API_BASE}/property/${query.propertyId}`, { params: query }).then(res => res.data),
 

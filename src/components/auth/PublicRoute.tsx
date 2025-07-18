@@ -18,7 +18,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children, restricted = false 
       // إعادة التوجيه حسب دور المستخدم
       if (user.role === 'Admin') {
         return <Navigate to="/admin/dashboard" replace />;
-      } else if (user.role === 'PropertyOwner') {
+      } else if (user.role === 'Owner') {
         return <Navigate to="/property-owner/dashboard" replace />;
       } else {
         return <Navigate to="/dashboard" replace />;

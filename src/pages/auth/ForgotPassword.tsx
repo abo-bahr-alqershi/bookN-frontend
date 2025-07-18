@@ -17,7 +17,7 @@ const ForgotPassword: React.FC = () => {
   const forgotPasswordMutation = useMutation({
     mutationFn: CommonAuthService.forgotPassword,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         setIsEmailSent(true);
         showSuccess('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
       } else {
@@ -32,7 +32,7 @@ const ForgotPassword: React.FC = () => {
   const resendMutation = useMutation({
     mutationFn: CommonAuthService.resendPasswordResetLink,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم إعادة إرسال الرابط بنجاح');
       } else {
         showError(result.message || 'فشل في إعادة الإرسال');

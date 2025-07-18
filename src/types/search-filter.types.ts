@@ -46,10 +46,10 @@ export interface ToggleSearchFilterStatusCommand {
 }
 
 /**
- * استعلام جلب جميع فلاتر البحث لنوع عقار معين
+ * استعلام جلب جميع فلاتر البحث لنوع كيان معين
  */
 export interface GetSearchFiltersQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
   /** حالة التفعيل (اختياري) */
   isActive?: boolean;
@@ -64,9 +64,9 @@ export interface GetSearchFilterByIdQuery {
 }
 
 /**
- * استعلام جلب الحقول القابلة للبحث لنوع عقار معين
+ * استعلام جلب الحقول القابلة للبحث لنوع كيان معين
  */
 export interface GetSearchableFieldsQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
 } 

@@ -4,7 +4,7 @@ import { CommonUsersService } from '../../services/common-users.service';
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  requiredRole?: 'Admin' | 'PropertyOwner';
+  requiredRole?: 'Admin' | 'Owner';
   redirectTo?: string;
 }
 
@@ -30,7 +30,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
         // التحقق من صحة التوكن
         const result = await CommonUsersService.getCurrentUser({});
         
-        if (result.isSuccess && result.data) {
+        if (result.success && result.data) {
           setIsAuthenticated(true);
           setUserRole(result.data.role);
         } else {

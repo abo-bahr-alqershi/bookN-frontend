@@ -1,4 +1,4 @@
-// أنواع بيانات العقارات (Properties)
+// أنواع بيانات الكيانات (Properties)
 
 import type { UnitDto } from './unit.types';
 import type { AmenityDto } from './amenity.types';
@@ -18,7 +18,7 @@ export interface PropertyDto {
   description: string;
   isApproved: boolean;
   createdAt: string; // ISO date
-  /** تفاصيل صور العقار */
+  /** تفاصيل صور الكيان */
   images?: PropertyImageDto[];
   ownerName: string;
   typeName: string;
@@ -73,15 +73,15 @@ export interface GetAllPropertiesQuery {
 }
 
 /**
- * استعلام للحصول على بيانات عقار بواسطة المعرف
+ * استعلام للحصول على بيانات كيان بواسطة المعرف
  */
 export interface GetPropertyByIdQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 
 /**
- * استعلام للحصول على العقارات في انتظار الموافقة
+ * استعلام للحصول على الكيانات في انتظار الموافقة
  */
 export interface GetPendingPropertiesQuery {
   /** رقم الصفحة */
@@ -91,10 +91,10 @@ export interface GetPendingPropertiesQuery {
 }
 
 /**
- * استعلام جلب تفاصيل العقار مع خيارات الوحدات والحقول الديناميكية
+ * استعلام جلب تفاصيل الكيان مع خيارات الوحدات والحقول الديناميكية
  */
 export interface GetPropertyDetailsQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** تضمين الوحدات الفرعية */
   includeUnits?: boolean;
@@ -102,25 +102,25 @@ export interface GetPropertyDetailsQuery {
 }
 
 /**
- * استعلام جلب بيانات العقار للتحرير
+ * استعلام جلب بيانات الكيان للتحرير
  */
 export interface GetPropertyForEditQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** معرف المالك */
   ownerId: string;
 }
 
 /**
- * استعلام لجلب مرافق العقار
+ * استعلام لجلب مرافق الكيان
  */
 export interface GetPropertyAmenitiesQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 
 /**
- * استعلام لجلب العقارات حسب المدينة
+ * استعلام لجلب الكيانات حسب المدينة
  */
 export interface GetPropertiesByCityQuery {
   /** اسم المدينة */
@@ -132,7 +132,7 @@ export interface GetPropertiesByCityQuery {
 }
 
 /**
- * استعلام لجلب عقارات المالك
+ * استعلام لجلب كيانات المالك
  */
 export interface GetPropertiesByOwnerQuery {
   /** معرف المالك */
@@ -144,10 +144,10 @@ export interface GetPropertiesByOwnerQuery {
 }
 
 /**
- * استعلام لجلب العقارات حسب النوع
+ * استعلام لجلب الكيانات حسب النوع
  */
 export interface GetPropertiesByTypeQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
   /** رقم الصفحة */
   pageNumber?: number;
@@ -156,15 +156,15 @@ export interface GetPropertiesByTypeQuery {
 }
 
 /**
- * استعلام لإحصائيات تقييم العقار
+ * استعلام لإحصائيات تقييم الكيان
  */
 export interface GetPropertyRatingStatsQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 
 /**
- * بيانات إحصائيات تقييم العقار
+ * بيانات إحصائيات تقييم الكيان
  */
 export interface DestinationDto {
   city: string;
@@ -200,19 +200,19 @@ export interface PropertyRatingStatsDto {
   totalReviews: number;
 }
 
-// إضافة DTO لتفاصيل العقار الكامل
+// إضافة DTO لتفاصيل الكيان الكامل
 export interface PropertyDetailsDto extends PropertyDto {
-  /** قائمة الوحدات التابعة للعقار */
+  /** قائمة الوحدات التابعة للكيان */
   units: UnitDto[];
-  /** قائمة المرافق التابعة للعقار */
+  /** قائمة المرافق التابعة للكيان */
   amenities: AmenityDto[];
 }
 
-// إضافة DTO لبيانات تحرير العقار
+// إضافة DTO لبيانات تحرير الكيان
 export interface PropertyEditDto {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
-  /** اسم العقار */
+  /** اسم الكيان */
   name: string;
   /** العنوان الكامل */
   address: string;
@@ -224,9 +224,9 @@ export interface PropertyEditDto {
   longitude?: number;
   /** تقييم النجوم */
   starRating?: number;
-  /** وصف العقار */
+  /** وصف الكيان */
   description: string;
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   propertyTypeId: string;
   /** الحقول الديناميكية مع قيمها */
 }

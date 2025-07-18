@@ -149,10 +149,10 @@ export interface GetBookingByIdQuery {
 }
 
 /**
- * استعلام جلب الحجوزات حسب العقار مع خيارات فلترة وتصفح
+ * استعلام جلب الحجوزات حسب الكيان مع خيارات فلترة وتصفح
  */
 export interface GetBookingsByPropertyQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** تاريخ البداية (اختياري) */
   startDate?: string;
@@ -164,7 +164,7 @@ export interface GetBookingsByPropertyQuery {
   pageSize?: number;
   /** معرف المستخدم للفلترة (اختياري) */
   userId?: string;
-  /** معرف نوع العقار للفلترة (اختياري) */
+  /** معرف نوع الكيان للفلترة (اختياري) */
   propertyTypeId?: string;
   /** قائمة معرفات المرافق للفلترة (اختياري) */
   amenityIds?: string[];
@@ -280,7 +280,7 @@ export interface GetBookingReportQuery {
   startDate: string;
   /** تاريخ النهاية */
   endDate: string;
-  /** معرف العقار للفلترة (اختياري) */
+  /** معرف الكيان للفلترة (اختياري) */
   propertyId?: string;
 }
 
@@ -288,7 +288,7 @@ export interface GetBookingReportQuery {
  * استعلام اتجاهات الحجوزات كسلسلة زمنية
  */
 export interface GetBookingTrendsQuery {
-  /** معرف العقار (اختياري) */
+  /** معرف الكيان (اختياري) */
   propertyId?: string;
   /** تاريخ البداية */
   startDate: string;
@@ -297,10 +297,10 @@ export interface GetBookingTrendsQuery {
 }
 
 /**
- * استعلام تحليل نافذة الحجز لعقار معين
+ * استعلام تحليل نافذة الحجز لكيان معين
  */
 export interface GetBookingWindowAnalysisQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminAmenitiesService } from '../services/admin-amenities.service';
-import type { AmenityDto, CreateAmenityCommand, UpdateAmenityCommand, AssignAmenityToPropertyCommand } from '../types/amenity.types';
+import type { AmenityDto, CreateAmenityCommand, UpdateAmenityCommand, AssignAmenityToPropertyCommand, GetAllAmenitiesQuery } from '../types/amenity.types';
 import type { PaginatedResult, ResultDto } from '../types/common.types';
 
 /**
@@ -9,7 +9,7 @@ import type { PaginatedResult, ResultDto } from '../types/common.types';
  * @param params معايير الاستعلام (صفحات، بحث)
  * @returns بيانات المرافق، حالات التحميل والأخطاء، ودوال الإنشاء والتحديث والحذف والربط
  */
-export const useAdminAmenities = (params: { pageNumber?: number; pageSize?: number; searchTerm?: string }) => {
+export const useAdminAmenities = (params: GetAllAmenitiesQuery) => {
   const queryClient = useQueryClient();
   const queryKey = ['admin-amenities', params] as const;
 
@@ -45,7 +45,7 @@ export const useAdminAmenities = (params: { pageNumber?: number; pageSize?: numb
     },
   });
 
-  // ربط المرفق بعقار
+  // ربط المرفق بكيان
   const assignAmenityToProperty = useMutation<ResultDto<boolean>, Error, { amenityId: string; propertyId: string; data: AssignAmenityToPropertyCommand }>({
     mutationFn: ({ amenityId, propertyId, data }) =>
       AdminAmenitiesService.assignAmenityToProperty(amenityId, propertyId, data).then(res => res.data),

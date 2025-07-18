@@ -192,7 +192,7 @@ const MapSearch: React.FC<MapSearchProps> = ({ onLocationSelect, placeholder = '
  */
 const MapView: React.FC<MapViewWithPaginationProps> = ({
   markers = [],
-  center = { latitude: 24.7136, longitude: 46.6753 }, // الرياض كموقع افتراضي
+  center = { latitude: 15.279272, longitude: 44.227494 }, // صنعاء كموقع افتراضي
   zoom = 10,
   height = '500px',
   width = '100%',

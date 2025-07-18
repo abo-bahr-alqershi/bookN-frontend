@@ -4,6 +4,7 @@ import { useAdminProperties } from '../../hooks/useAdminProperties';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
+import PropertySelector from '../../components/selectors/PropertySelector';
 import type {
   AmenityDto,
   CreateAmenityCommand,
@@ -13,17 +14,30 @@ import type {
   UpdatePropertyAmenityCommand,
   MoneyDto
 } from '../../types/amenity.types';
+import CurrencyInput from '../../components/inputs/CurrencyInput';
+import { useCurrencies } from '../../hooks/useCurrencies';
 
 const AdminAmenities = () => {
+  // Fetch currencies for extra cost
+  const { currencies, loading: currenciesLoading } = useCurrencies();
+  const currencyCodes = currenciesLoading ? [] : currencies.map(c => c.code);
+
   // استخدام الهوكات لإدارة البيانات والعمليات
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({ category: '', isAssigned: undefined });
+  const [filterValues, setFilterValues] = useState<Record<string, any>>({ category: '', isAssigned: undefined, propertyId: undefined, isFree: undefined });
 
   // بناء معايير الاستعلام
-  const queryParams = { pageNumber: currentPage, pageSize, searchTerm: searchTerm || undefined };
+  const queryParams: GetAllAmenitiesQuery = {
+    pageNumber: currentPage,
+    pageSize,
+    searchTerm: searchTerm || undefined,
+    propertyId: filterValues.propertyId || undefined,
+    isAssigned: filterValues.isAssigned,
+    isFree: filterValues.isFree
+  };
   
   // استعلام المرافق عبر هوك مخصص
   const {
@@ -35,7 +49,7 @@ const AdminAmenities = () => {
     deleteAmenity,
     assignAmenityToProperty,
   } = useAdminAmenities(queryParams);
-  // جلب قائمة العقارات للربط
+  // جلب قائمة الكيانات للربط
   const { propertiesData } = useAdminProperties({});
 
   // State for modals
@@ -60,7 +74,7 @@ const AdminAmenities = () => {
 
   const [assignForm, setAssignForm] = useState({
     propertyId: '',
-    extraCost: { amount: 0, currency: 'SAR', formattedAmount: '' } as MoneyDto,
+    extraCost: { amount: 0, currency: 'YER', formattedAmount: '' } as MoneyDto,
     isAvailable: true,
     description: '',
   });
@@ -115,6 +129,8 @@ const AdminAmenities = () => {
     setFilterValues({
       category: '',
       isAssigned: undefined,
+      propertyId: undefined,
+      isFree: undefined
     });
     setSearchTerm('');
     setCurrentPage(1);
@@ -153,6 +169,29 @@ const AdminAmenities = () => {
   // Filter options
   const filterOptions: FilterOption[] = [
     {
+      key: 'propertyId',
+      label: 'الكيان',
+      type: 'custom',
+      render: (value, onChange) => (
+        <PropertySelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر الكيان"
+          className="w-full"
+        />
+      ),
+    },
+    {
+      key: 'isAssigned',
+      label: 'مربوط بكيانات',
+      type: 'boolean',
+    },
+    {
+      key: 'isFree',
+      label: 'مجاني',
+      type: 'boolean',
+    },
+    {
       key: 'category',
       label: 'فئة المرفق',
       type: 'select',
@@ -163,11 +202,6 @@ const AdminAmenities = () => {
         { value: 'services', label: 'خدمات' },
         { value: 'technology', label: 'تقنية' },
       ],
-    },
-    {
-      key: 'isAssigned',
-      label: 'مربوط بعقارات',
-      type: 'boolean',
     },
   ];
 
@@ -213,7 +247,7 @@ const AdminAmenities = () => {
       onClick: handleEdit,
     },
     {
-      label: 'ربط بعقار',
+      label: 'ربط بكيان',
       icon: '🔗',
       color: 'green' as const,
       onClick: handleAssignToProperty,
@@ -244,7 +278,7 @@ const AdminAmenities = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">إدارة المرافق</h1>
             <p className="text-gray-600 mt-1">
-              إنشاء وتحديث المرافق المتاحة في النظام وربطها بالعقارات المختلفة
+              إنشاء وتحديث المرافق المتاحة في النظام وربطها بالكيانات المختلفة
             </p>
           </div>
           <button
@@ -276,7 +310,7 @@ const AdminAmenities = () => {
               <span className="text-2xl">🔗</span>
             </div>
             <div className="mr-3">
-              <p className="text-sm font-medium text-gray-600">مربوطة بعقارات</p>
+              <p className="text-sm font-medium text-gray-600">مربوطة بكيانات</p>
               <p className="text-2xl font-bold text-green-600">-</p>
             </div>
           </div>
@@ -516,7 +550,7 @@ const AdminAmenities = () => {
                     معلومات إضافية
                   </h3>
                   <p className="mt-2 text-sm text-blue-700">
-                    يمكن ربط هذا المرفق بالعقارات مع تحديد تكلفة إضافية وحالة التوفر لكل عقار.
+                    يمكن ربط هذا المرفق بالكيانات مع تحديد تكلفة إضافية وحالة التوفر لكل كيان.
                   </p>
                 </div>
               </div>
@@ -531,7 +565,7 @@ const AdminAmenities = () => {
           setShowAssignModal(false);
           setSelectedAmenity(null);
         }}
-        title="ربط المرفق بعقار"
+        title="ربط المرفق بكيان"
         size="lg"
         footer={
           <div className="flex justify-end gap-3">
@@ -568,10 +602,10 @@ const AdminAmenities = () => {
                 </div>
                 <div className="mr-3">
                   <h3 className="text-sm font-medium text-green-800">
-                    ربط المرفق بعقار
+                    ربط المرفق بكيان
                   </h3>
                   <p className="mt-2 text-sm text-green-700">
-                    سيتم ربط المرفق "<strong>{selectedAmenity.name}</strong>" بالعقار المحدد مع إمكانية تحديد تكلفة إضافية.
+                    سيتم ربط المرفق "<strong>{selectedAmenity.name}</strong>" بالكيان المحدد مع إمكانية تحديد تكلفة إضافية.
                   </p>
                 </div>
               </div>
@@ -579,14 +613,14 @@ const AdminAmenities = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                معرف العقار *
+                معرف الكيان *
               </label>
               <select
                 value={assignForm.propertyId}
                 onChange={(e) => setAssignForm(prev => ({ ...prev, propertyId: e.target.value }))}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
-                <option value="">اختر عقار</option>
+                <option value="">اختر كيان</option>
                 {propertiesData?.items.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
@@ -598,32 +632,21 @@ const AdminAmenities = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   التكلفة الإضافية
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
+                <CurrencyInput
                   value={assignForm.extraCost.amount}
-                  onChange={(e) => setAssignForm(prev => ({ 
-                    ...prev, 
-                    extraCost: { 
-                      ...prev.extraCost, 
-                      amount: Number(e.target.value) 
-                    }
+                  currency={assignForm.extraCost.currency}
+                  onValueChange={(amount, currency) => setAssignForm(prev => ({
+                    ...prev,
+                    extraCost: { amount, currency }
                   }))}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="0"
+                  required={false}
+                  showSymbol={true}
+                  supportedCurrencies={currencyCodes}
+                  direction="ltr"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  العملة
-                </label>
-                <input
-                  type="text"
-                  value={assignForm.extraCost.currency}
-                  disabled
-                  className="block w-full rounded-md border-gray-300 shadow-sm bg-gray-50"
-                />
-              </div>
+              {/* currency is handled by CurrencyInput component */}
             </div>
 
             <div className="flex items-center">
@@ -635,7 +658,7 @@ const AdminAmenities = () => {
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="isAvailable" className="mr-2 block text-sm text-gray-900">
-                متاح في العقار
+                متاح في الكيان
               </label>
             </div>
 
@@ -648,7 +671,7 @@ const AdminAmenities = () => {
                 value={assignForm.description}
                 onChange={(e) => setAssignForm(prev => ({ ...prev, description: e.target.value }))}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="أدخل وصف إضافي للمرفق في هذا العقار (اختياري)"
+                placeholder="أدخل وصف إضافي للمرفق في هذا الكيان (اختياري)"
               />
             </div>
           </div>

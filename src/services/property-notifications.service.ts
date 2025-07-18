@@ -7,7 +7,7 @@ import type {
 } from '../types/notification.types';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 
-// خدمات الإشعارات لأصحاب العقارات (Property Notifications Service)
+// خدمات الإشعارات لأصحاب الكيانات (Property Notifications Service)
 export const PropertyNotificationsService = {
   /** إنشاء إشعار جديد */
   create: (data: CreateNotificationCommand) =>

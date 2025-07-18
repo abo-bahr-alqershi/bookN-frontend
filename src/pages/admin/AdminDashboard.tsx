@@ -54,7 +54,7 @@ const AdminDashboard = () => {
     {
       id: 2,
       type: 'property',
-      message: 'تم إضافة عقار جديد للمراجعة',
+      message: 'تم إضافة كيان جديد للمراجعة',
       time: 'منذ 15 دقيقة',
       user: 'سارة أحمد',
     },
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
           changeType="increase"
         />
         <StatsCard
-          title="العقارات المسجلة"
+          title="الكيانات المسجلة"
           value={stats.totalProperties}
           icon="🏢"
           color="green"
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
           </button>
           <button className="p-4 bg-green-50 rounded-lg text-center hover:bg-green-100 transition-colors">
             <div className="text-2xl mb-2">🏢</div>
-            <div className="text-sm font-medium text-green-700">موافقة على عقار</div>
+            <div className="text-sm font-medium text-green-700">موافقة على كيان</div>
           </button>
           <button className="p-4 bg-purple-50 rounded-lg text-center hover:bg-purple-100 transition-colors">
             <div className="text-2xl mb-2">📊</div>

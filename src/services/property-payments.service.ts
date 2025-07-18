@@ -13,7 +13,7 @@ import type {
   PaymentDto,
 } from '../types/payment.types';
 
-// خدمات الدفع لأصحاب العقارات (Property Payments Service)
+// خدمات الدفع لأصحاب الكيانات (Property Payments Service)
 export const PropertyPaymentsService = {
   /** معالجة الدفع */
   process: (data: ProcessPaymentCommand) =>

@@ -36,7 +36,7 @@ export const AdminUnitTypesService = {
   // حذف نوع وحدة
   delete: (unitTypeId: string) =>
     apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${unitTypeId}`).then(res => res.data),
-  /** جلب أنواع الوحدات حسب نوع العقار مع صفحات */
+  /** جلب أنواع الوحدات حسب نوع الكيان مع صفحات */
   getByPropertyType: (params: GetUnitTypesByPropertyTypeQuery) => {
     const { propertyTypeId, pageNumber, pageSize } = params;
     return apiClient

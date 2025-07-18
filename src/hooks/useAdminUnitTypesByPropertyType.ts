@@ -9,16 +9,16 @@ import type {
 import type { PaginatedResult, ResultDto } from '../types/common.types';
 
 /**
- * هوك لإدارة استعلامات وعمليات أنواع الوحدات المرتبطة بنوع عقار (CRUD) للوحة الإدارة
+ * هوك لإدارة استعلامات وعمليات أنواع الوحدات المرتبطة بنوع كيان (CRUD) للوحة الإدارة
  * يعزل التعامل مع react-query والخدمات في مكان واحد
- * @param params معايير استعلام أنواع الوحدات (معرف نوع العقار، رقم الصفحة، حجم الصفحة)
+ * @param params معايير استعلام أنواع الوحدات (معرف نوع الكيان، رقم الصفحة، حجم الصفحة)
  * @returns بيانات PaginatedResult لأنواع الوحدات، حالات التحميل والأخطاء، ودوال الإنشاء والتحديث والحذف
  */
 export const useAdminUnitTypesByPropertyType = (params: GetUnitTypesByPropertyTypeQuery) => {
   const queryClient = useQueryClient();
   const queryKey = ['admin-unit-types-by-property', params] as const;
 
-  // جلب أنواع الوحدات حسب نوع العقار
+  // جلب أنواع الوحدات حسب نوع الكيان
   const { data: unitTypesData, isLoading, error } = useQuery<PaginatedResult<UnitTypeDto>, Error>({
     queryKey,
     queryFn: () => AdminUnitTypesService.getByPropertyType(params),

@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
 import type { FieldValueDto } from '../../types/unit-field-value.types';
+import TagInput from '../inputs/TagInput';
+import CurrencyInput from '../inputs/CurrencyInput';
 
 interface DynamicFieldsFormProps {
   fields: UnitTypeFieldDto[];
   values?: FieldValueDto[];
   onChange: (fieldValues: Record<string, any>) => void;
   className?: string;
+  variant?: 'default' | 'modern' | 'minimal';
+  collapsible?: boolean;
+  showGroupIcons?: boolean;
 }
 
 const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
   fields,
   values = [],
   onChange,
-  className = ''
+  className = '',
+  variant = 'modern',
+  collapsible = true,
+  showGroupIcons = true
 }) => {
   const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   // Initialize field values from existing values
   useEffect(() => {
@@ -71,7 +80,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="text"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             minLength={field.validationRules?.minLength}
@@ -86,7 +95,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             minLength={field.validationRules?.minLength}
@@ -100,7 +109,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="number"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             min={field.validationRules?.min}
@@ -111,22 +120,17 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
 
       case 'currency':
         return (
-          <div className="relative">
-            <input
-              type="number"
-              value={value}
-              onChange={(e) => updateFieldValue(field.fieldId, parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={field.description || `أدخل ${field.displayName}`}
-              required={isRequired}
-              min={field.validationRules?.min || 0}
-              max={field.validationRules?.max}
-              step="0.01"
-            />
-            <span className="absolute left-3 top-2 text-gray-500">
-              {field.validationRules?.currency || 'ريال'}
-            </span>
-          </div>
+          <CurrencyInput
+            value={value || 0}
+            currency={field.validationRules?.currency || 'SAR'}
+            onValueChange={(amount, currency) => updateFieldValue(field.fieldId, amount)}
+            placeholder={field.description || `أدخل ${field.displayName}`}
+            required={isRequired}
+            min={field.validationRules?.min || 0}
+            max={field.validationRules?.max}
+            variant="modern"
+            size="md"
+          />
         );
 
       case 'percentage':
@@ -136,7 +140,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
               type="number"
               value={value}
               onChange={(e) => updateFieldValue(field.fieldId, parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`${getInputStyles()} pr-8`}
               placeholder={field.description || `أدخل ${field.displayName}`}
               required={isRequired}
               min={0}
@@ -149,15 +153,15 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
 
       case 'boolean':
         return (
-          <div className="flex items-center">
+          <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
             <input
               type="checkbox"
               checked={value}
               onChange={(e) => updateFieldValue(field.fieldId, e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
               required={isRequired && !value}
             />
-            <label className="mr-2 text-sm text-gray-700">
+            <label className="mr-3 text-sm text-gray-700 font-medium cursor-pointer">
               {field.description || 'نعم'}
             </label>
           </div>
@@ -169,7 +173,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
           <select
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             required={isRequired}
           >
             <option value="">اختر {field.displayName}</option>
@@ -185,9 +189,9 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
         const multiselectOptions = field.fieldOptions?.options || [];
         const selectedValues = Array.isArray(value) ? value : [];
         return (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {multiselectOptions.map((option: string, index: number) => (
-              <label key={index} className="flex items-center">
+              <label key={index} className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedValues.includes(option)}
@@ -197,9 +201,9 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
                       : selectedValues.filter(v => v !== option);
                     updateFieldValue(field.fieldId, newValues);
                   }}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
                 />
-                <span className="mr-2 text-sm text-gray-700">{option}</span>
+                <span className="mr-3 text-sm text-gray-700 font-medium">{option}</span>
               </label>
             ))}
           </div>
@@ -211,7 +215,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="date"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             required={isRequired}
             min={field.validationRules?.minDate}
             max={field.validationRules?.maxDate}
@@ -224,7 +228,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="datetime-local"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             required={isRequired}
             min={field.validationRules?.minDate}
             max={field.validationRules?.maxDate}
@@ -237,7 +241,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="time"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             required={isRequired}
           />
         );
@@ -248,7 +252,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="email"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             pattern={field.validationRules?.pattern}
@@ -261,7 +265,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="tel"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             pattern={field.validationRules?.pattern}
@@ -274,7 +278,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="url"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
             pattern={field.validationRules?.pattern}
@@ -283,126 +287,155 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
 
       case 'color':
         return (
-          <input
-            type="color"
-            value={value}
-            onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required={isRequired}
-          />
+          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <input
+              type="color"
+              value={value}
+              onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
+              className="w-12 h-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              required={isRequired}
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-700">{value || '#000000'}</div>
+              <div className="text-xs text-gray-500">انقر لاختيار لون</div>
+            </div>
+          </div>
         );
 
       case 'range':
         return (
-          <div className="space-y-2">
+          <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <input
               type="range"
               value={value}
               onChange={(e) => updateFieldValue(field.fieldId, parseFloat(e.target.value))}
-              className="w-full"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               min={field.validationRules?.min || 0}
               max={field.validationRules?.max || 100}
               step={field.validationRules?.step || 1}
               required={isRequired}
             />
-            <div className="text-center text-sm text-gray-600">
-              القيمة: {value}
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500">{field.validationRules?.min || 0}</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
+                <span className="text-sm font-semibold">القيمة: {value}</span>
+              </div>
+              <span className="text-xs text-gray-500">{field.validationRules?.max || 100}</span>
             </div>
           </div>
         );
 
       case 'rating':
         return (
-          <div className="flex items-center space-x-1 space-x-reverse">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => updateFieldValue(field.fieldId, star)}
-                className={`text-2xl ${
-                  star <= value ? 'text-yellow-400' : 'text-gray-300'
-                } hover:text-yellow-400`}
-              >
-                ⭐
-              </button>
-            ))}
-            <span className="mr-2 text-sm text-gray-600">({value}/5)</span>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-center space-x-1 space-x-reverse mb-3">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => updateFieldValue(field.fieldId, star)}
+                  className={`text-3xl transition-all duration-200 transform hover:scale-110 ${
+                    star <= value ? 'text-yellow-400 drop-shadow-sm' : 'text-gray-300'
+                  } hover:text-yellow-400`}
+                >
+                  ⭐
+                </button>
+              ))}
+            </div>
+            <div className="text-center">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                <span>التقييم: {value}/5</span>
+                {value > 0 && <span className="text-yellow-600">{'★'.repeat(value)}</span>}
+              </span>
+            </div>
           </div>
         );
 
       case 'file':
         return (
-          <input
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                updateFieldValue(field.fieldId, file.name);
-              }
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required={isRequired}
-            accept={field.validationRules?.allowedTypes?.map(type => `.${type}`).join(',')}
-          />
+          <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-400 transition-colors duration-200">
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  updateFieldValue(field.fieldId, file.name);
+                }
+              }}
+              className="hidden"
+              id={`file-${field.fieldId}`}
+              required={isRequired}
+              accept={field.validationRules?.allowedTypes?.map(type => `.${type}`).join(',')}
+            />
+            <label htmlFor={`file-${field.fieldId}`} className="cursor-pointer">
+              <div className="text-4xl mb-2">📎</div>
+              <div className="text-sm text-gray-600">
+                <span className="text-blue-600 hover:text-blue-800 font-medium">اختر ملف</span>
+                <div className="text-xs mt-1">
+                  {field.validationRules?.allowedTypes ? 
+                    `الصيغ المسموحة: ${field.validationRules.allowedTypes.join(', ')}` : 
+                    'جميع الصيغ مسموحة'
+                  }
+                </div>
+              </div>
+              {value && (
+                <div className="mt-2 text-xs text-green-600 bg-green-50 p-2 rounded">
+                  ✓ تم اختيار: {value}
+                </div>
+              )}
+            </label>
+          </div>
         );
 
       case 'image':
         return (
-          <input
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                updateFieldValue(field.fieldId, file.name);
-              }
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required={isRequired}
-            accept="image/*"
-          />
+          <div className="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-400 transition-colors duration-200">
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  updateFieldValue(field.fieldId, file.name);
+                }
+              }}
+              className="hidden"
+              id={`image-${field.fieldId}`}
+              required={isRequired}
+              accept="image/*"
+            />
+            <label htmlFor={`image-${field.fieldId}`} className="cursor-pointer">
+              <div className="text-5xl mb-3">🖼️</div>
+              <div className="text-sm text-gray-600">
+                <span className="text-blue-600 hover:text-blue-800 font-medium">اختر صورة</span>
+                <div className="text-xs mt-1">JPG, PNG, GIF</div>
+              </div>
+              {value && (
+                <div className="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
+                  ✓ تم اختيار: {value}
+                </div>
+              )}
+            </label>
+          </div>
         );
 
       case 'tag':
         const tags = Array.isArray(value) ? value : (value ? value.split(',') : []);
+        const tagsString = tags.join(',');
         return (
-          <div className="space-y-2">
-            <input
-              type="text"
-              placeholder="أدخل العلامات مفصولة بفاصلة"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                  e.preventDefault();
-                  const newTag = e.currentTarget.value.trim();
-                  if (newTag && !tags.includes(newTag)) {
-                    const newTags = [...tags, newTag];
-                    updateFieldValue(field.fieldId, newTags);
-                    e.currentTarget.value = '';
-                  }
-                }
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newTags = tags.filter((_, i) => i !== index);
-                      updateFieldValue(field.fieldId, newTags);
-                    }}
-                    className="mr-1 text-blue-600 hover:text-blue-800"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+          <TagInput
+            value={tagsString}
+            onChange={(newValue) => {
+              const newTags = newValue ? newValue.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
+              updateFieldValue(field.fieldId, newTags);
+            }}
+            placeholder={field.description || `أدخل ${field.displayName}`}
+            required={isRequired}
+            variant="modern"
+            size="md"
+            maxTags={field.validationRules?.maxItems || 20}
+            allowDuplicates={false}
+            suggestions={field.fieldOptions?.options || []}
+          />
         );
 
       default:
@@ -411,7 +444,7 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
             type="text"
             value={value}
             onChange={(e) => updateFieldValue(field.fieldId, e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={getInputStyles()}
             placeholder={field.description || `أدخل ${field.displayName}`}
             required={isRequired}
           />
@@ -431,6 +464,62 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
     return icons[fieldType] || '📝';
   };
 
+  const getGroupIcon = (category: string) => {
+    const icons: Record<string, string> = {
+      'معلومات أساسية': '📋',
+      'التفاصيل': '📄',
+      'المواصفات': '🔧',
+      'الأسعار': '💰',
+      'الميزات': '⭐',
+      'المعلومات الإضافية': '📝',
+      'الوسائط': '🖼️',
+      'الاتصال': '📞',
+      'التقييم': '⭐',
+      'عام': '📁'
+    };
+    return icons[category] || '📁';
+  };
+
+  const toggleGroup = (category: string) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  const getFieldWrapperStyles = () => {
+    switch (variant) {
+      case 'modern':
+        return 'bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200';
+      case 'minimal':
+        return 'bg-transparent border-b border-gray-100 pb-4 last:border-b-0';
+      default:
+        return 'bg-gray-50 border border-gray-200 rounded-lg p-3';
+    }
+  };
+
+  const getGroupHeaderStyles = () => {
+    switch (variant) {
+      case 'modern':
+        return 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 shadow-sm';
+      case 'minimal':
+        return 'border-b border-gray-200 pb-3 mb-4';
+      default:
+        return 'bg-gray-100 border border-gray-200 rounded-lg p-3';
+    }
+  };
+
+  const getInputStyles = () => {
+    switch (variant) {
+      case 'modern':
+        return 'w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-200 bg-white shadow-sm';
+      case 'minimal':
+        return 'w-full px-3 py-2 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent transition-colors duration-200';
+      default:
+        return 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500';
+    }
+  };
+
   // Group fields by category or group
   const groupedFields = fields.reduce((groups, field) => {
     const category = field.category || field.groupId || 'عام';
@@ -443,41 +532,93 @@ const DynamicFieldsForm: React.FC<DynamicFieldsFormProps> = ({
 
   if (fields.length === 0) {
     return (
-      <div className={`text-center py-8 text-gray-500 ${className}`}>
-        <div className="text-4xl mb-2">📝</div>
-        <p>لا توجد حقول ديناميكية لهذا النوع من الوحدات</p>
+      <div className={`text-center py-12 text-gray-500 ${className}`}>
+        <div className="text-6xl mb-4 opacity-50">📝</div>
+        <h3 className="text-lg font-medium text-gray-600 mb-2">لا توجد حقول ديناميكية</h3>
+        <p className="text-sm text-gray-500">لا توجد حقول ديناميكية محددة لهذا النوع من الوحدات</p>
       </div>
     );
   }
 
   return (
-    <div className={`space-y-6 ${className}`} dir="rtl">
-      {Object.entries(groupedFields).map(([category, categoryFields]) => (
-        <div key={category} className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
-            📁 {category}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {categoryFields.map((field) => (
-              <div key={field.fieldId} className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  <span className="flex items-center space-x-2 space-x-reverse">
-                    <span className="text-lg">{getFieldIcon(field.fieldTypeId)}</span>
-                    <span>{field.displayName}</span>
-                    {field.isRequired && <span className="text-red-500">*</span>}
-                  </span>
-                  {field.description && (
-                    <span className="text-xs text-gray-500 block mt-1">
-                      {field.description}
-                    </span>
+    <div className={`space-y-8 ${className}`} dir="rtl">
+      {Object.entries(groupedFields).map(([category, categoryFields]) => {
+        const isCollapsed = collapsedGroups[category];
+        return (
+          <div key={category} className="space-y-4">
+            {/* Group Header */}
+            <div className={getGroupHeaderStyles()}>
+              <div 
+                className={`flex items-center justify-between ${
+                  collapsible ? 'cursor-pointer' : ''
+                }`}
+                onClick={() => collapsible && toggleGroup(category)}
+              >
+                <div className="flex items-center gap-3">
+                  {showGroupIcons && (
+                    <span className="text-2xl">{getGroupIcon(category)}</span>
                   )}
-                </label>
-                {renderField(field)}
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {category}
+                  </h3>
+                  <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                    {categoryFields.length} حقل
+                  </span>
+                </div>
+                {collapsible && (
+                  <button className="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg 
+                      className={`w-5 h-5 transform transition-transform duration-200 ${
+                        isCollapsed ? 'rotate-180' : ''
+                      }`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                )}
               </div>
-            ))}
+            </div>
+
+            {/* Group Fields */}
+            {(!collapsible || !isCollapsed) && (
+              <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-300 ${
+                isCollapsed ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100'
+              }`}>
+                {categoryFields.map((field) => (
+                  <div key={field.fieldId} className={getFieldWrapperStyles()}>
+                    <label className="block space-y-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{getFieldIcon(field.fieldTypeId)}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-gray-800">
+                              {field.displayName}
+                            </span>
+                            {field.isRequired && (
+                              <span className="text-red-500 text-sm font-bold">*</span>
+                            )}
+                          </div>
+                          {field.description && (
+                            <span className="text-xs text-gray-500 block">
+                              {field.description}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        {renderField(field)}
+                      </div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

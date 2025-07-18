@@ -14,7 +14,7 @@ import { useUXHelpers } from '../../hooks/useUXHelpers';
 import { useNotifications } from '../../stores/appStore';
 
 interface ImageUploaderProps {
-  /** معرف العقار - Property ID */
+  /** معرف الكيان - Property ID */
   propertyId?: string;
   /** معرف الوحدة - Unit ID */
   unitId?: string;

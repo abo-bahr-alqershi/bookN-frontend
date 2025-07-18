@@ -10,6 +10,7 @@ import UnitSelector from '../../components/selectors/UnitSelector';
 import CurrencyInput from '../../components/inputs/CurrencyInput';
 import { LoadingSpinner, StatusBadge, ActionButton, ConfirmDialog, EmptyState, Tooltip } from '../../components/ui';
 import { useUXHelpers } from '../../hooks/useUXHelpers';
+import { useCurrencies } from '../../hooks/useCurrencies';
 // تم حذف استدعاء خدمة المدفوعات المباشر لاستخدام الهوك
 import type {
   PaymentDto,
@@ -27,6 +28,9 @@ const AdminPayments = () => {
   // UX Helpers
   const { loading, executeWithFeedback, showConfirmDialog, confirmDialog, hideConfirmDialog, copyToClipboard } = useUXHelpers();
   
+  const { currencies, loading: currenciesLoading, error: currenciesError } = useCurrencies();
+  const currencyCodes = currenciesLoading ? [] : currencies.map((c) => c.code);
+
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -56,7 +60,7 @@ const AdminPayments = () => {
   // State for forms
   const [refundForm, setRefundForm] = useState<RefundPaymentCommand>({
     paymentId: '',
-    refundAmount: { amount: 0, currency: 'SAR', formattedAmount: '' },
+    refundAmount: { amount: 0, currency: 'YER', formattedAmount: '' },
     refundReason: '',
   });
 
@@ -252,12 +256,12 @@ const AdminPayments = () => {
       ],
     },
     {
-      key: 'propertyId', label: 'العقار', type: 'custom',
+      key: 'propertyId', label: 'الكيان', type: 'custom',
       render: (value, onChange) => (
         <PropertySelector
           value={value}
           onChange={(id) => onChange(id)}
-          placeholder="اختر العقار"
+          placeholder="اختر الكيان"
           className="w-full"
         />
       ),
@@ -509,7 +513,7 @@ const AdminPayments = () => {
             </div>
             <div className="mr-3">
               <p className="text-sm font-medium text-gray-600">إجمالي المبلغ</p>
-              <p className="text-lg font-bold text-emerald-600">{stats.totalAmount.toLocaleString()} ر.س</p>
+              <p className="text-lg font-bold text-emerald-600">{stats.totalAmount.toLocaleString()} ر.ي</p>
             </div>
           </div>
         </div>
@@ -685,7 +689,7 @@ const AdminPayments = () => {
                 min={0}
                 max={selectedPayment?.amount.amount}
                 showSymbol={true}
-                supportedCurrencies={[refundForm.refundAmount.currency]}
+                supportedCurrencies={currencyCodes}
                 disabled={false}
               />
               {selectedPayment && (

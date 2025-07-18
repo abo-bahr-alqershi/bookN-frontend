@@ -16,7 +16,7 @@ import StatusBadge from '../ui/StatusBadge';
 import { useUXHelpers } from '../../hooks/useUXHelpers';
 
 interface ImageGalleryProps {
-  /** معرف العقار - Property ID */
+  /** معرف الكيان - Property ID */
   propertyId?: string;
   /** معرف الوحدة - Unit ID */
   unitId?: string;

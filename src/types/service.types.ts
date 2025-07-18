@@ -30,7 +30,7 @@ export interface CreateServiceCommand {
   description: string;
   type: string;
   details: Record<string, any>;
-  price: number;
+  price: MoneyDto;
 }
 
 /**
@@ -42,7 +42,7 @@ export interface UpdateServiceCommand {
   description: string;
   type: string;
   details: Record<string, any>;
-  price: number;
+  price: MoneyDto;
 }
 
 /**
@@ -53,21 +53,21 @@ export interface DeleteServiceCommand {
 }
 
 /**
- * أمر لإنشاء خدمة جديدة للعقار (Property Service)
+ * أمر لإنشاء خدمة جديدة للكيان (Property Service)
  */
 export interface CreatePropertyServiceCommand {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** اسم الخدمة */
   name: string;
   /** سعر الخدمة */
-  price: number;
+  price: MoneyDto;
   /** نموذج التسعير */
   pricingModel: string;
 }
 
 /**
- * أمر لتحديث خدمة عقار (Property Service)
+ * أمر لتحديث خدمة كيان (Property Service)
  */
 export interface UpdatePropertyServiceCommand {
   /** معرف الخدمة */
@@ -75,13 +75,13 @@ export interface UpdatePropertyServiceCommand {
   /** اسم الخدمة (اختياري) */
   name?: string;
   /** سعر الخدمة (اختياري) */
-  price?: number;
+  price?: MoneyDto;
   /** نموذج التسعير (اختياري) */
   pricingModel?: string;
 }
 
 /**
- * أمر لحذف خدمة عقار (Property Service)
+ * أمر لحذف خدمة كيان (Property Service)
  */
 export interface DeletePropertyServiceCommand {
   /** معرف الخدمة */
@@ -101,10 +101,10 @@ export interface ServiceDetailsDto {
 }
 
 /**
- * استعلام لجلب خدمات العقار
+ * استعلام لجلب خدمات الكيان
  */
 export interface GetPropertyServicesQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 

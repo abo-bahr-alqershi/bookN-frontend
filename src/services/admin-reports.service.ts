@@ -51,7 +51,7 @@ export class AdminReportsService {
     return response.data;
   }
 
-  /** جلب البلاغات حسب العقار */
+  /** جلب البلاغات حسب الكيان */
   static async getByProperty(propertyId: string, query?: any): Promise<ReportDto[]> {
     const response = await apiClient.get<PaginatedResult<ReportDto>>(`${this.API_BASE}/property/${propertyId}`, { params: query });
     return response.data.items;

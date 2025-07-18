@@ -1,6 +1,7 @@
 // أنواع بيانات الوحدات (Units)
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
+import type { PropertyImageDto } from './property-image.types';
 import type { FieldValueDto, UnitFieldValueDto as UnitFieldValueDtoFull } from './unit-field-value.types';
 import type { FieldWithValueDto } from './unit-field-value.types';
 
@@ -21,6 +22,7 @@ export interface UnitDto {
   fieldValues: UnitFieldValueDtoFull[];
   dynamicFields: FieldGroupWithValuesDto[];
   distanceKm?: number;
+  images?: PropertyImageDto[];
 }
 
 /**
@@ -60,6 +62,8 @@ export interface CreateUnitCommand {
   pricingMethod: PricingMethod;
   /** قيم الحقول الديناميكية للوحدة (اجباري في حال توفرت) */
   fieldValues?: FieldValueDto[];
+  /** روابط الصور المرفوعة مؤقتاً للوحدة */
+  images?: string[];
 }
 
 /**
@@ -73,6 +77,8 @@ export interface UpdateUnitCommand {
   pricingMethod?: PricingMethod;
   /** قيم الحقول الديناميكية للوحدة (اجباري في حال توفرت) */
   fieldValues?: FieldValueDto[];
+  /** روابط الصور المرفوعة مؤقتاً للوحدة */
+  images?: string[];
 }
 
 /**
@@ -90,7 +96,7 @@ export interface GetUnitByIdQuery {
 }
 
 /**
- * استعلام جلب الوحدات الخاصة بعقار معين
+ * استعلام جلب الوحدات الخاصة بكيان معين
  */
 export interface GetUnitsByPropertyQuery {
   propertyId: string;
@@ -154,7 +160,7 @@ export interface GetUnitImagesQuery {
  * أمر إنشاء وحدة مع قيم الحقول الديناميكية
  */
 export interface CreateUnitWithFieldValuesCommand {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** معرف نوع الوحدة */
   unitTypeId: string;

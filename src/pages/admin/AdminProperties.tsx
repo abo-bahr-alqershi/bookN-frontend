@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAdminProperties } from '../../hooks/useAdminProperties';
 import { useNavigate } from 'react-router-dom';
+import { useAdminPropertyTypes } from '../../hooks/useAdminPropertyTypes';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import CardView from '../../components/common/CardView';
 import MapView from '../../components/common/MapView';
@@ -16,6 +17,7 @@ import type {
   UpdatePropertyCommand, 
   GetAllPropertiesQuery 
 } from '../../types/property.types';
+import type { PropertyImageDto } from '../../types/property-image.types';
 
 // Extend PropertyDto to include coordinates for map view
 interface PropertyWithLocation extends Omit<PropertyDto, 'latitude' | 'longitude'> {
@@ -86,7 +88,7 @@ const AdminProperties = () => {
     hasActiveBookings: filterValues.hasActiveBookings,
   };
 
-  // استخدام الهوك لإدارة بيانات العقارات والعمليات
+  // استخدام الهوك لإدارة بيانات الكيانات والعمليات
   const {
     propertiesData,
     pendingPropertiesData,
@@ -99,6 +101,7 @@ const AdminProperties = () => {
     deleteProperty,
   } = useAdminProperties(queryParams);
   const navigate = useNavigate();
+  const { propertyTypesData, isLoading: typesLoading, error: typesError } = useAdminPropertyTypes({ pageNumber: 1, pageSize: 100 });
 
   const handleOpenGallery = (property: PropertyDto) => {
     navigate(`/admin/property-images/${property.id}`, { state: { propertyName: property.name } });
@@ -133,7 +136,7 @@ const AdminProperties = () => {
       longitude: property.longitude,
       city: property.city,
       starRating: property.starRating,
-      images: property.images?.values['url'] || [],
+      images: property.images?.map(img => img.url) || [],
     });
     setShowEditModal(true);
   };
@@ -144,19 +147,19 @@ const AdminProperties = () => {
   };
 
   const handleApprove = (property: PropertyDto) => {
-    if (confirm(`هل أنت متأكد من الموافقة على العقار "${property.name}"؟`)) {
+    if (confirm(`هل أنت متأكد من الموافقة على الكيان "${property.name}"؟`)) {
       approveProperty.mutate(property.id);
     }
   };
 
   const handleReject = (property: PropertyDto) => {
-    if (confirm(`هل أنت متأكد من رفض العقار "${property.name}"؟`)) {
+    if (confirm(`هل أنت متأكد من رفض الكيان "${property.name}"؟`)) {
       rejectProperty.mutate(property.id);
     }
   };
 
   const handleDelete = (property: PropertyDto) => {
-    if (confirm(`هل أنت متأكد من حذف العقار "${property.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
+    if (confirm(`هل أنت متأكد من حذف الكيان "${property.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
       deleteProperty.mutate(property.id);
     }
   };
@@ -183,7 +186,7 @@ const AdminProperties = () => {
   const filterOptions: FilterOption[] = [
     {
       key: 'propertyTypeId',
-      label: 'نوع العقار',
+      label: 'نوع الكيان',
       type: 'select',
       options: [
         { value: 'hotel', label: 'فندق' },
@@ -232,7 +235,7 @@ const AdminProperties = () => {
   const columns: Column<PropertyDto>[] = [
     {
       key: 'name',
-      title: 'اسم العقار',
+      title: 'اسم الكيان',
       sortable: true,
       render: (value: string, record: PropertyDto) => (
         <div className="flex flex-col">
@@ -322,69 +325,115 @@ const AdminProperties = () => {
     },
   ];
 
+  // Helper function to get main image
+  const getMainImage = (images?: PropertyImageDto[]) => {
+    if (!images || images.length === 0) return null;
+    // First try to find the main image
+    const mainImage = images.find(img => img.isMain);
+    // If no main image, use the first one
+    return mainImage || images[0];
+  };
+
   // Card renderer for card view
-  const renderPropertyCard = (property: PropertyDto) => (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{property.name}</h3>
-            <p className="text-sm text-gray-600">{property.address}</p>
-          </div>
-          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-            property.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
-            {property.isApproved ? 'معتمد' : 'في انتظار الموافقة'}
-          </span>
-        </div>
-        
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">المالك:</span>
-            <span className="text-sm text-gray-900">{property.ownerName}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">المدينة:</span>
-            <span className="text-sm text-gray-900">{property.city}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">التقييم:</span>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-900 ml-1">{property.starRating}</span>
-              <span className="text-yellow-400 text-sm">{'★'.repeat(property.starRating)}{'☆'.repeat(5 - property.starRating)}</span>
+  const renderPropertyCard = (property: PropertyDto) => {
+    const mainImage = getMainImage(property.images);
+    
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        {/* Property Image */}
+        <div className="relative h-48 bg-gray-200">
+          {mainImage ? (
+            <img
+              src={mainImage.url}
+              alt={mainImage.altText || property.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          {/* Fallback placeholder */}
+          <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${mainImage ? 'hidden' : ''}`}>
+            <div className="text-center">
+              <span className="text-4xl text-gray-400">🏢</span>
+              <p className="text-sm text-gray-500 mt-2">لا توجد صورة</p>
             </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">تاريخ الإنشاء:</span>
-            <span className="text-sm text-gray-900">{new Date(property.createdAt).toLocaleDateString('ar-SA')}</span>
+          
+          {/* Status badge overlay */}
+          <div className="absolute top-3 right-3">
+            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+              property.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              {property.isApproved ? 'معتمد' : 'في انتظار الموافقة'}
+            </span>
           </div>
-        </div>
-
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => handleViewDetails(property)}
-            className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
-          >
-            👁️ عرض التفاصيل
-          </button>
-          <button
-            onClick={() => handleEdit(property)}
-            className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
-          >
-            ✏️ تعديل
-          </button>
-          {!property.isApproved && (
-            <button
-              onClick={() => handleApprove(property)}
-              className="flex-1 px-3 py-2 text-sm bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
-            >
-              ✅ موافقة
-            </button>
+          
+          {/* Image count indicator */}
+          {property.images && property.images.length > 0 && (
+            <div className="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
+              📸 {property.images.length} صورة
+            </div>
           )}
         </div>
+
+        <div className="p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{property.name}</h3>
+            <p className="text-sm text-gray-600">{property.address}</p>
+          </div>
+          
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">المالك:</span>
+              <span className="text-sm text-gray-900">{property.ownerName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">المدينة:</span>
+              <span className="text-sm text-gray-900">{property.city}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">التقييم:</span>
+              <div className="flex items-center">
+                <span className="text-sm text-gray-900 ml-1">{property.starRating}</span>
+                <span className="text-yellow-400 text-sm">{'★'.repeat(property.starRating)}{'☆'.repeat(5 - property.starRating)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">تاريخ الإنشاء:</span>
+              <span className="text-sm text-gray-900">{new Date(property.createdAt).toLocaleDateString('ar-SA')}</span>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => handleViewDetails(property)}
+              className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+            >
+              👁️ عرض التفاصيل
+            </button>
+            <button
+              onClick={() => handleEdit(property)}
+              className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+            >
+              ✏️ تعديل
+            </button>
+            {!property.isApproved && (
+              <button
+                onClick={() => handleApprove(property)}
+                className="flex-1 px-3 py-2 text-sm bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+              >
+                ✅ موافقة
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Prepare properties with location data for map view
   const propertiesWithLocation: PropertyWithLocation[] = (propertiesData?.items || []).map(property => ({
@@ -398,7 +447,7 @@ const AdminProperties = () => {
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
         <div className="text-red-500 text-6xl mb-4">⚠️</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">خطأ في تحميل البيانات</h2>
-        <p className="text-gray-600">حدث خطأ أثناء تحميل بيانات العقارات. يرجى المحاولة مرة أخرى.</p>
+        <p className="text-gray-600">حدث خطأ أثناء تحميل بيانات الكيانات. يرجى المحاولة مرة أخرى.</p>
       </div>
     );
   }
@@ -409,9 +458,9 @@ const AdminProperties = () => {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">إدارة العقارات</h1>
+            <h1 className="text-2xl font-bold text-gray-900">إدارة الكيانات</h1>
             <p className="text-gray-600 mt-1">
-              مراجعة وموافقة العقارات الجديدة وإدارة العقارات المسجلة مع 3 طرق عرض مختلفة
+              مراجعة وموافقة الكيانات الجديدة وإدارة الكيانات المسجلة مع 3 طرق عرض مختلفة
             </p>
           </div>
           <div className="flex gap-3">
@@ -424,7 +473,7 @@ const AdminProperties = () => {
               onClick={() => setShowCreateModal(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              ➕ إضافة عقار جديد
+              ➕ إضافة كيان جديد
             </button>
           </div>
         </div>
@@ -437,10 +486,10 @@ const AdminProperties = () => {
             <span className="text-yellow-600 text-xl ml-3">⚠️</span>
             <div>
               <h3 className="text-sm font-medium text-yellow-800">
-                عقارات في انتظار الموافقة
+                كيانات في انتظار الموافقة
               </h3>
               <p className="text-sm text-yellow-700 mt-1">
-                يوجد {pendingPropertiesData.totalCount} عقار في انتظار المراجعة والموافقة
+                يوجد {pendingPropertiesData.totalCount} كيان في انتظار المراجعة والموافقة
               </p>
             </div>
           </div>
@@ -449,7 +498,7 @@ const AdminProperties = () => {
 
       {/* Search and Filters */}
       <SearchAndFilter
-        searchPlaceholder="البحث في العقارات..."
+        searchPlaceholder="البحث في الكيانات..."
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         filters={filterOptions}
@@ -489,7 +538,7 @@ const AdminProperties = () => {
           data={propertiesData?.items || []}
           loading={isLoadingProperties}
           renderCard={renderPropertyCard}
-          emptyMessage="لا توجد عقارات للعرض"
+          emptyMessage="لا توجد كيانات للعرض"
           emptyIcon="🏢"
           columns={3}
           pagination={{
@@ -524,7 +573,7 @@ const AdminProperties = () => {
             const property = (propertiesData?.items || []).find(p => p.id === marker.id);
             if (property) handleViewDetails(property);
           }}
-          emptyMessage="لا توجد عقارات بمواقع محددة لعرضها على الخريطة"
+          emptyMessage="لا توجد كيانات بمواقع محددة لعرضها على الخريطة"
           height="600px"
           pagination={{
             current: currentPage,
@@ -542,7 +591,7 @@ const AdminProperties = () => {
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title="إضافة عقار جديد"
+        title="إضافة كيان جديد"
         size="lg"
         footer={
           <div className="flex justify-end gap-3">
@@ -553,7 +602,7 @@ const AdminProperties = () => {
               إلغاء
             </button>
             <button
-              onClick={() => createProperty.mutate(createForm)}
+              onClick={() => createProperty.mutate(createForm, { onSuccess: () => { setShowCreateModal(false); resetCreateForm(); } })}
               disabled={createProperty.status === 'pending'}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
@@ -565,42 +614,43 @@ const AdminProperties = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              اسم العقار *
+              اسم الكيان *
             </label>
             <input
               type="text"
               value={createForm.name}
               onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل اسم العقار"
+              placeholder="أدخل اسم الكيان"
             />
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              نوع العقار *
+              نوع الكيان *
             </label>
             <select
               value={createForm.propertyTypeId}
               onChange={(e) => setCreateForm(prev => ({ ...prev, propertyTypeId: e.target.value }))}
+              disabled={typesLoading}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
-              <option value="">اختر نوع العقار</option>
-              <option value="hotel">فندق</option>
-              <option value="resort">منتجع</option>
-              <option value="apartment">شقة مفروشة</option>
-              <option value="villa">فيلا</option>
+              <option value="">اختر نوع الكيان</option>
+              {propertyTypesData?.items.map(type => (
+                <option key={type.id} value={type.id}>{type.name}</option>
+              ))}
             </select>
+            {typesError && <p className="mt-1 text-sm text-red-500">خطأ في تحميل أنواع الكيانات</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              مالك العقار *
+              مالك الكيان *
             </label>
             <UserSelector
               value={createForm.ownerId}
               onChange={(userId) => setCreateForm(prev => ({ ...prev, ownerId: userId }))}
-              placeholder="اختر مالك العقار"
+              placeholder="اختر مالك الكيان"
               allowedRoles={['Owner']}
               required={true}
               className=""
@@ -647,7 +697,7 @@ const AdminProperties = () => {
                   longitude: lng
                 }));
               }}
-              placeholder="حدد موقع العقار"
+              placeholder="حدد موقع الكيان"
               required={true}
               showMap={true}
               allowManualInput={true}
@@ -673,20 +723,20 @@ const AdminProperties = () => {
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              وصف العقار
+              وصف الكيان
             </label>
             <textarea
               rows={3}
               value={createForm.description}
               onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل وصف مفصل للعقار"
+              placeholder="أدخل وصف مفصل للكيان"
             />
           </div>
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              صور العقار
+              صور الكيان
             </label>
             <ImageUpload
               value={createForm.images || []}
@@ -695,7 +745,7 @@ const AdminProperties = () => {
               maxFiles={10}
               maxSize={5}
               showPreview={true}
-              placeholder="اضغط لرفع صور العقار أو اسحبها هنا"
+              placeholder="اضغط لرفع صور الكيان أو اسحبها هنا"
               uploadEndpoint="/api/images/upload"
             />
           </div>
@@ -709,7 +759,7 @@ const AdminProperties = () => {
           setShowEditModal(false);
           setSelectedProperty(null);
         }}
-        title="تعديل بيانات العقار"
+        title="تعديل بيانات الكيان"
         size="lg"
         footer={
           <div className="flex justify-end gap-3">
@@ -739,7 +789,7 @@ const AdminProperties = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                اسم العقار
+                اسم الكيان
               </label>
               <input
                 type="text"
@@ -787,7 +837,7 @@ const AdminProperties = () => {
                     longitude: lng
                   }));
                 }}
-                placeholder="حدث موقع العقار"
+                placeholder="حدث موقع الكيان"
                 showMap={true}
                 allowManualInput={true}
               />
@@ -812,7 +862,7 @@ const AdminProperties = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                وصف العقار
+                وصف الكيان
               </label>
               <textarea
                 rows={3}
@@ -824,10 +874,10 @@ const AdminProperties = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                صور العقار
+                صور الكيان
               </label>
               <ImageUpload
-                value={editForm.images || selectedProperty?.images?.values['url'] || []}
+                value={editForm.images || selectedProperty?.images?.map(img => img.url) || []}
                 onChange={(urls) => setEditForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
                 multiple={true}
                 maxFiles={10}
@@ -848,7 +898,7 @@ const AdminProperties = () => {
           setShowDetailsModal(false);
           setSelectedProperty(null);
         }}
-        title="تفاصيل العقار"
+        title="تفاصيل الكيان"
         size="xl"
       >
         {selectedProperty && (
@@ -856,11 +906,11 @@ const AdminProperties = () => {
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">اسم العقار</label>
+                <label className="block text-sm font-medium text-gray-700">اسم الكيان</label>
                 <p className="mt-1 text-sm text-gray-900">{selectedProperty.name}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">نوع العقار</label>
+                <label className="block text-sm font-medium text-gray-700">نوع الكيان</label>
                 <p className="mt-1 text-sm text-gray-900">{selectedProperty.typeName}</p>
               </div>
               <div>

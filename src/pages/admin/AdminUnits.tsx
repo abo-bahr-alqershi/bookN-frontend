@@ -5,6 +5,7 @@ import { useAdminProperties } from '../../hooks/useAdminProperties';
 import { useAdminUnitTypes } from '../../hooks/useAdminUnitTypes';
 import { useAdminUnitTypeFieldsByUnitType } from '../../hooks/useAdminUnitTypeFieldsByUnitType';
 import { useAdminUnitTypesByPropertyType } from '../../hooks/useAdminUnitTypesByPropertyType';
+import { useCurrencies } from '../../hooks/useCurrencies';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import CardView from '../../components/common/CardView';
 import MapView from '../../components/common/MapView';
@@ -12,7 +13,9 @@ import SearchAndFilter, { type FilterOption } from '../../components/common/Sear
 import ViewToggle, { type ViewType } from '../../components/common/ViewToggle';
 import Modal from '../../components/common/Modal';
 import DynamicFieldsForm from '../../components/forms/DynamicFieldsForm';
+import ImageUpload from '../../components/inputs/ImageUpload';
 import CurrencyInput from '../../components/inputs/CurrencyInput';
+import TagInput from '../../components/inputs/TagInput';
 import { AdminUnitsService } from '../../services/admin-units.service';
 import type { 
   UnitDto, 
@@ -23,6 +26,7 @@ import type {
 } from '../../types/unit.types';
 import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
 import type { FieldValueDto, UnitFieldValueDto } from '../../types/unit-field-value.types';
+import type { PropertyImageDto } from '../../types/property-image.types';
 
 // Extend UnitDto to include coordinates for map view
 interface UnitWithLocation extends UnitDto {
@@ -50,9 +54,11 @@ const AdminUnits = () => {
     propertyId: '',
     unitTypeId: '',
     isAvailable: undefined,
-    minBasePrice: '',
-    maxBasePrice: '',
+    minPrice: '',
+    maxPrice: '',
     pricingMethod: '',
+    checkInDate: '',
+    checkOutDate: ''
   });
 
   // State for modals
@@ -67,19 +73,21 @@ const AdminUnits = () => {
     propertyId: '',
     unitTypeId: '',
     name: '',
-    basePrice: { amount: 0, currency: 'SAR' },
+    basePrice: { amount: 0, currency: 'YER' },
     customFeatures: '',
     pricingMethod: 'Daily' as PricingMethod,
     fieldValues: [],
+    images: [],
   });
 
   const [editForm, setEditForm] = useState<UpdateUnitCommand>({
     unitId: '',
     name: '',
-    basePrice: { amount: 0, currency: 'SAR' },
+    basePrice: { amount: 0, currency: 'YER' },
     customFeatures: '',
     pricingMethod: 'Dynamic' as PricingMethod,
     fieldValues: [],
+    images: [],
   });
 
   // State for dynamic fields
@@ -94,8 +102,11 @@ const AdminUnits = () => {
     propertyId: filterValues.propertyId || undefined,
     unitTypeId: filterValues.unitTypeId || undefined,
     isAvailable: filterValues.isAvailable,
-    minBasePrice: filterValues.minBasePrice || undefined,
-    maxBasePrice: filterValues.maxBasePrice || undefined,
+    minPrice: filterValues.minPrice || undefined,
+    maxPrice: filterValues.maxPrice || undefined,
+    pricingMethod: filterValues.pricingMethod || undefined,
+    checkInDate: filterValues.checkInDate || undefined,
+    checkOutDate: filterValues.checkOutDate || undefined
   };
 
   // هوكات لإدارة البيانات
@@ -126,6 +137,10 @@ const AdminUnits = () => {
     unitTypeId: selectedUnit?.unitTypeId || '',
     isPublic: true
   });
+  
+  // جلب قائمة العملات من الباك إند
+  const { currencies, loading: currenciesLoading, error: currenciesError } = useCurrencies();
+  const currencyCodes = currenciesLoading ? [] : currencies.map(c => c.code);
 
   // دوال الإنشاء والتحديث والحذف من الهوك
   // createUnit.mutate(createForm), createUnit.isLoading للتحكم في الزر
@@ -223,10 +238,11 @@ const AdminUnits = () => {
       propertyId: '',
       unitTypeId: '',
       name: '',
-      basePrice: { amount: 0, currency: 'SAR' },
+      basePrice: { amount: 0, currency: 'YER' },
       customFeatures: '',
       pricingMethod: 'Daily' as PricingMethod,
       fieldValues: [],
+      images: [],
     });
     setCreateDynamicFields({});
   };
@@ -243,6 +259,7 @@ const AdminUnits = () => {
         fieldId: fv.fieldId,
         fieldValue: fv.fieldValue
       })) || [],
+      images: unit.images?.map(img => img.url) || [],
     });
     setShowEditModal(true);
   };
@@ -268,9 +285,11 @@ const AdminUnits = () => {
       propertyId: '',
       unitTypeId: '',
       isAvailable: undefined,
-      minBasePrice: '',
-      maxBasePrice: '',
+      minPrice: '',
+      maxPrice: '',
       pricingMethod: '',
+      checkInDate: '',
+      checkOutDate: ''
     });
     setSearchTerm('');
     setCurrentPage(1);
@@ -280,7 +299,7 @@ const AdminUnits = () => {
   const filterOptions: FilterOption[] = [
     {
       key: 'propertyId',
-      label: 'العقار',
+      label: 'الكيان',
       type: 'select',
       options: propertiesData?.items.map(p => ({ value: p.id, label: p.name })) ?? [],
     },
@@ -296,13 +315,13 @@ const AdminUnits = () => {
       type: 'boolean',
     },
     {
-      key: 'minBasePrice',
+      key: 'minPrice',
       label: 'الحد الأدنى للسعر',
       type: 'number',
       placeholder: 'أدخل الحد الأدنى',
     },
     {
-      key: 'maxBasePrice',
+      key: 'maxPrice',
       label: 'الحد الأقصى للسعر',
       type: 'number',
       placeholder: 'أدخل الحد الأقصى',
@@ -318,6 +337,32 @@ const AdminUnits = () => {
         { value: 'Monthly', label: 'شهري' },
       ],
     },
+    {
+      key: 'checkInDate',
+      label: 'متاح من',
+      type: 'custom',
+      render: (value: string, onChange: (val: any) => void) => (
+        <input
+          type="datetime-local"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+      )
+    },
+    {
+      key: 'checkOutDate',
+      label: 'متاح إلى',
+      type: 'custom',
+      render: (value: string, onChange: (val: any) => void) => (
+        <input
+          type="datetime-local"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+      )
+    }
   ];
 
   // Table columns
@@ -335,7 +380,7 @@ const AdminUnits = () => {
     },
     {
       key: 'propertyName',
-      title: 'العقار',
+      title: 'الكيان',
       sortable: true,
     },
     {
@@ -402,68 +447,114 @@ const AdminUnits = () => {
     },
   ];
 
+  // Helper function to get main image for unit
+  const getMainUnitImage = (images?: PropertyImageDto[]) => {
+    if (!images || images.length === 0) return null;
+    // First try to find the main image
+    const mainImage = images.find(img => img.isMain);
+    // If no main image, use the first one
+    return mainImage || images[0];
+  };
+
   // Card renderer for card view
-  const renderUnitCard = (unit: UnitDto) => (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{unit.name}</h3>
+  const renderUnitCard = (unit: UnitDto) => {
+    const mainImage = getMainUnitImage(unit.images);
+    
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        {/* Unit Image */}
+        <div className="relative h-48 bg-gray-200">
+          {mainImage ? (
+            <img
+              src={mainImage.url}
+              alt={mainImage.altText || unit.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          {/* Fallback placeholder */}
+          <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${mainImage ? 'hidden' : ''}`}>
+            <div className="text-center">
+              <span className="text-4xl text-gray-400">🏠</span>
+              <p className="text-sm text-gray-500 mt-2">لا توجد صورة</p>
+            </div>
+          </div>
+          
+          {/* Availability badge overlay */}
+          <div className="absolute top-3 right-3">
+            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+              unit.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
+              {unit.isAvailable ? 'متاحة' : 'غير متاحة'}
+            </span>
+          </div>
+          
+          {/* Image count indicator */}
+          {unit.images && unit.images.length > 0 && (
+            <div className="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
+              📸 {unit.images.length} صورة
+            </div>
+          )}
+        </div>
+
+        <div className="p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{unit.name}</h3>
             <p className="text-sm text-gray-600">{unit.unitTypeName}</p>
           </div>
-          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-            unit.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}>
-            {unit.isAvailable ? 'متاحة' : 'غير متاحة'}
-          </span>
-        </div>
-        
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">العقار:</span>
-            <span className="text-sm text-gray-900">{unit.propertyName}</span>
+          
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">الكيان:</span>
+              <span className="text-sm text-gray-900">{unit.propertyName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">السعر:</span>
+              <span className="text-sm text-gray-900 font-medium">
+                {unit.basePrice.amount} {unit.basePrice.currency}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-500">طريقة التسعير:</span>
+              <span className="text-sm text-gray-900">
+                {filterOptions.find(opt => opt.key === 'pricingMethod')?.options?.find(
+                  option => option.value === unit.pricingMethod
+                )?.label || unit.pricingMethod}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">السعر:</span>
-            <span className="text-sm text-gray-900 font-medium">
-              {unit.basePrice.amount} {unit.basePrice.currency}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">طريقة التسعير:</span>
-            <span className="text-sm text-gray-900">
-              {filterOptions.find(opt => opt.key === 'pricingMethod')?.options?.find(
-                option => option.value === unit.pricingMethod
-              )?.label || unit.pricingMethod}
-            </span>
-          </div>
-        </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleViewDetails(unit)}
-            className="flex-1 px-3 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded hover:bg-blue-100 transition-colors"
-          >
-            عرض التفاصيل
-          </button>
-          <button
-            onClick={() => handleEdit(unit)}
-            className="px-3 py-2 bg-gray-50 text-gray-700 text-sm font-medium rounded hover:bg-gray-100 transition-colors"
-          >
-            ✏️
-          </button>
-          <button
-            onClick={() => handleDelete(unit)}
-            className="px-3 py-2 bg-red-50 text-red-700 text-sm font-medium rounded hover:bg-red-100 transition-colors"
-          >
-            🗑️
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleViewDetails(unit)}
+              className="flex-1 px-3 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded hover:bg-blue-100 transition-colors"
+            >
+              عرض التفاصيل
+            </button>
+            <button
+              onClick={() => handleEdit(unit)}
+              className="px-3 py-2 bg-gray-50 text-gray-700 text-sm font-medium rounded hover:bg-gray-100 transition-colors"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => handleDelete(unit)}
+              className="px-3 py-2 bg-red-50 text-red-700 text-sm font-medium rounded hover:bg-red-100 transition-colors"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
-  // ربط الوحدات بإحداثيات العقارات الحقيقية
+  // ربط الوحدات بإحداثيات الكيانات الحقيقية
   const unitsWithLocation: UnitWithLocation[] = (unitsData?.items || []).map(unit => {
     const property = propertiesData?.items.find(p => p.id === unit.propertyId);
     return {
@@ -654,14 +745,14 @@ const AdminUnits = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              العقار *
+              الكيان *
             </label>
             <select
               value={createForm.propertyId}
               onChange={(e) => setCreateForm(prev => ({ ...prev, propertyId: e.target.value, unitTypeId: '' }))}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
-              <option value="">اختر العقار</option>
+              <option value="">اختر الكيان</option>
               {propertiesData?.items?.map(property => (
                 <option key={property.id} value={property.id}>
                   {property.name}
@@ -722,7 +813,7 @@ const AdminUnits = () => {
               required={true}
               min={0}
               showSymbol={true}
-              supportedCurrencies={['SAR', 'USD', 'EUR', 'AED']}
+              supportedCurrencies={currencyCodes}
             />
           </div>
 
@@ -743,15 +834,31 @@ const AdminUnits = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              الميزات المخصصة
-            </label>
-            <textarea
-              rows={3}
+            <TagInput
+              label="الميزات المخصصة"
               value={createForm.customFeatures}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, customFeatures: e.target.value }))}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="أدخل الميزات المخصصة للوحدة"
+              onChange={(value) => setCreateForm(prev => ({ ...prev, customFeatures: value }))}
+              placeholder="أدخل الميزات المخصصة واضغط Enter أو الفاصلة للإضافة..."
+              variant="modern"
+              size="md"
+              maxTags={15}
+              suggestions={[
+                'واي فاي مجاني',
+                'مكيف هواء',
+                'تلفزيون ذكي',
+                'مطبخ مجهز',
+                'شرفة خاصة',
+                'موقف سيارة',
+                'مسبح',
+                'جيم',
+                'خدمة تنظيف',
+                'أمن وحراسة',
+                'خدمة استقبال',
+                'صالة ألعاب',
+                'منطقة شواء',
+                'حديقة خاصة',
+                'جاكوزي'
+              ]}
             />
           </div>
 
@@ -771,6 +878,22 @@ const AdminUnits = () => {
               </div>
             </div>
           )}
+          {/* صور الوحدة */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              صور الوحدة
+            </label>
+            <ImageUpload
+              value={createForm.images || []}
+              onChange={(urls) => setCreateForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
+              multiple={true}
+              maxFiles={10}
+              maxSize={5}
+              showPreview={true}
+              placeholder="اضغط لرفع صور الوحدة أو اسحبها هنا"
+              uploadEndpoint="/api/images/upload"
+            />
+          </div>
         </div>
       </Modal>
 
@@ -849,7 +972,7 @@ const AdminUnits = () => {
               </label>
               <CurrencyInput
                 value={editForm.basePrice?.amount || 0}
-                currency={editForm.basePrice?.currency || 'SAR'}
+                currency={editForm.basePrice?.currency || 'YER'}
                 onValueChange={(amount, currency) => 
                   setEditForm(prev => ({ 
                     ...prev, 
@@ -859,7 +982,7 @@ const AdminUnits = () => {
                 placeholder="0.00"
                 min={0}
                 showSymbol={true}
-                supportedCurrencies={['SAR', 'USD', 'EUR', 'AED']}
+                supportedCurrencies={currencyCodes}
               />
             </div>
 
@@ -880,14 +1003,31 @@ const AdminUnits = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                الميزات المخصصة
-              </label>
-              <textarea
-                rows={3}
-                value={editForm.customFeatures}
-                onChange={(e) => setEditForm(prev => ({ ...prev, customFeatures: e.target.value }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              <TagInput
+                label="الميزات المخصصة"
+                value={editForm.customFeatures || ''}
+                onChange={(value) => setEditForm(prev => ({ ...prev, customFeatures: value }))}
+                placeholder="أدخل الميزات المخصصة واضغط Enter أو الفاصلة للإضافة..."
+                variant="modern"
+                size="md"
+                maxTags={15}
+                suggestions={[
+                  'واي فاي مجاني',
+                  'مكيف هواء',
+                  'تلفزيون ذكي',
+                  'مطبخ مجهز',
+                  'شرفة خاصة',
+                  'موقف سيارة',
+                  'مسبح',
+                  'جيم',
+                  'خدمة تنظيف',
+                  'أمن وحراسة',
+                  'خدمة استقبال',
+                  'صالة ألعاب',
+                  'منطقة شواء',
+                  'حديقة خاصة',
+                  'جاكوزي'
+                ]}
               />
             </div>
 
@@ -910,6 +1050,22 @@ const AdminUnits = () => {
                 </div>
               </div>
             )}
+            {/* صور الوحدة */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                صور الوحدة
+              </label>
+              <ImageUpload
+                value={editForm.images || selectedUnit?.images?.map(img => img.url) || []}
+                onChange={(urls) => setEditForm(prev => ({ ...prev, images: Array.isArray(urls) ? urls : [urls] }))}
+                multiple={true}
+                maxFiles={10}
+                maxSize={5}
+                showPreview={true}
+                placeholder="اضغط لرفع صور جديدة للوحدة أو اسحبها هنا"
+                uploadEndpoint="/api/images/upload"
+              />
+            </div>
           </div>
         )}
       </Modal>
@@ -936,7 +1092,7 @@ const AdminUnits = () => {
                 <p className="mt-1 text-sm text-gray-900">{selectedUnit.unitTypeName}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">العقار</label>
+                <label className="block text-sm font-medium text-gray-700">الكيان</label>
                 <p className="mt-1 text-sm text-gray-900">{selectedUnit.propertyName}</p>
               </div>
               <div>
@@ -964,10 +1120,21 @@ const AdminUnits = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">الميزات المخصصة</label>
-              <p className="mt-1 text-sm text-gray-900">
-                {selectedUnit.customFeatures || 'لا توجد ميزات مخصصة'}
-              </p>
+              <label className="block text-sm font-medium text-gray-700 mb-2">الميزات المخصصة</label>
+              {selectedUnit.customFeatures ? (
+                <div className="flex flex-wrap gap-1">
+                  {selectedUnit.customFeatures.split(',').map((feature, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium"
+                    >
+                      ✨ {feature.trim()}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">لا توجد ميزات مخصصة</p>
+              )}
             </div>
 
             {/* عرض الحقول الديناميكية */}

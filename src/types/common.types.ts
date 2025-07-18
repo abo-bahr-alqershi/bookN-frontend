@@ -1,12 +1,7 @@
 export interface ResultDto<T> {
   success: boolean;
-  data?: T;
   message?: string;
-  errors: string[];
-  errorCode?: string;
-  timestamp: string;
-  isSuccess: boolean;
-  code?: string;
+  data: T;
 }
 
 export interface PaginatedResult<T> {

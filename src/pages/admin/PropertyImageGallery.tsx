@@ -1,5 +1,5 @@
 /**
- * صفحة إدارة معرض صور العقارات - صفحة شاملة لإدارة صور العقارات
+ * صفحة إدارة معرض صور الكيانات - صفحة شاملة لإدارة صور الكيانات
  * Property Image Gallery Management Page - Comprehensive property images management page
  */
 
@@ -17,7 +17,7 @@ import { useUXHelpers } from '../../hooks/useUXHelpers';
 import type { Image as ImageType, ImageCategory } from '../../types/image.types';
 
 /**
- * صفحة إدارة معرض صور العقار
+ * صفحة إدارة معرض صور الكيان
  * Property Image Gallery Management Page
  */
 const PropertyImageGallery: React.FC = () => {
@@ -35,7 +35,7 @@ const PropertyImageGallery: React.FC = () => {
 
   // Default property data - get name from navigation state if available
   const propertyName = (location.state as { propertyName?: string })?.propertyName;
-  const property = { title: propertyName || `العقار ${propertyId}` };
+  const property = { title: propertyName || `الكيان ${propertyId}` };
   const propertyLoading = false;
   const propertyError = null;
 
@@ -236,8 +236,8 @@ const PropertyImageGallery: React.FC = () => {
   if (propertyError || !property) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">حدث خطأ في تحميل بيانات العقار</p>
-        <ActionButton onClick={() => navigate('/admin/properties')} variant="secondary" label="العودة للعقارات">
+        <p className="text-red-600 mb-4">حدث خطأ في تحميل بيانات الكيان</p>
+        <ActionButton onClick={() => navigate('/admin/properties')} variant="secondary" label="العودة للكيانات">
         </ActionButton>
       </div>
     );
@@ -254,7 +254,7 @@ const PropertyImageGallery: React.FC = () => {
                 onClick={() => navigate('/admin/properties')}
                 className="hover:text-blue-600 transition-colors"
               >
-                العقارات
+                الكيانات
               </button>
               <span>/</span>
               <button
@@ -266,7 +266,7 @@ const PropertyImageGallery: React.FC = () => {
               <span>/</span>
               <span>معرض الصور</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">معرض صور العقار</h1>
+            <h1 className="text-2xl font-bold text-gray-900">معرض صور الكيان</h1>
             <p className="text-gray-600 mt-1">{property.title}</p>
           </div>
 
@@ -274,7 +274,7 @@ const PropertyImageGallery: React.FC = () => {
             <ActionButton
               variant="secondary"
               onClick={() => navigate(`/admin/properties/${propertyId}`)}
-              label="العودة للعقار">
+              label="العودة للكيان">
             </ActionButton>
           </div>
         </div>
@@ -431,7 +431,7 @@ const PropertyImageGallery: React.FC = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">رفع صور جديدة</h3>
                 <p className="text-gray-600">
-                  اختر الصور لرفعها وربطها بهذا العقار. يمكنك تحديد فئة كل صورة والتحكم في ترتيبها.
+                  اختر الصور لرفعها وربطها بهذا الكيان. يمكنك تحديد فئة كل صورة والتحكم في ترتيبها.
                 </p>
               </div>
 
@@ -454,7 +454,7 @@ const PropertyImageGallery: React.FC = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">إحصائيات الصور</h3>
                 <p className="text-gray-600">
-                  نظرة عامة على صور هذا العقار والمساحة المستخدمة.
+                  نظرة عامة على صور هذا الكيان والمساحة المستخدمة.
                 </p>
               </div>
 

@@ -21,7 +21,7 @@ interface UserSettings {
   };
   preferences: {
     dateFormat: 'dd/mm/yyyy' | 'mm/dd/yyyy' | 'yyyy-mm-dd';
-    currency: 'SAR' | 'USD' | 'EUR';
+    currency: 'YER' | 'USD' | 'EUR';
     timezone: string;
   };
 }
@@ -45,7 +45,7 @@ const Settings: React.FC = () => {
     },
     preferences: {
       dateFormat: 'dd/mm/yyyy',
-      currency: 'SAR',
+      currency: 'YER',
       timezone: 'Asia/Riyadh'
     }
   });
@@ -62,7 +62,7 @@ const Settings: React.FC = () => {
   const updateSettingsMutation = useMutation({
     mutationFn: CommonUsersService.updateUserSettings,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم حفظ الإعدادات بنجاح');
       } else {
         showError(result.message || 'فشل في حفظ الإعدادات');
@@ -401,7 +401,7 @@ const Settings: React.FC = () => {
                         onChange={(e) => updateSetting('preferences', 'currency', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        <option value="SAR">ريال سعودي (SAR)</option>
+                        <option value="YER">ريال يمني (YER)</option>
                         <option value="USD">دولار أمريكي (USD)</option>
                         <option value="EUR">يورو (EUR)</option>
                       </select>
@@ -417,7 +417,7 @@ const Settings: React.FC = () => {
                         onChange={(e) => updateSetting('preferences', 'timezone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        <option value="Asia/Riyadh">الرياض (GMT+3)</option>
+                        <option value="Asia/Riyadh">صنعاء (GMT+3)</option>
                         <option value="Asia/Dubai">دبي (GMT+4)</option>
                         <option value="Europe/London">لندن (GMT+0)</option>
                         <option value="America/New_York">نيويورك (GMT-5)</option>

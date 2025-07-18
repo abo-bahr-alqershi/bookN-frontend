@@ -10,7 +10,7 @@ const API_BASE = '/api/admin/system-settings';
 export const SystemSettingsService = {
   /** جلب إعدادات النظام */
   getSettings: () =>
-    apiClient.get<ResultDto<SystemSettingsDto>>(API_BASE).then(res => res.data),
+    apiClient.get<ResultDto<SystemSettingsDto>>('/api/common/system-settings').then(res => res.data),
 
   /** حفظ أو تحديث إعدادات النظام */
   saveSettings: (settings: SystemSettingsDto) =>

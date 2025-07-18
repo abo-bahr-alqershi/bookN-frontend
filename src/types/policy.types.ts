@@ -2,7 +2,7 @@
 // جميع الحقول موثقة بالعربي لضمان الوضوح والتوافق مع الباك اند
 
 /**
- * بيانات سياسة العقار الأساسية
+ * بيانات سياسة الكيان الأساسية
  */
 export interface PolicyDto {
   id: string;
@@ -35,10 +35,10 @@ export interface PolicyDetailsDto {
 }
 
 /**
- * أمر إنشاء سياسة جديدة للعقار
+ * أمر إنشاء سياسة جديدة للكيان
  */
 export interface CreatePropertyPolicyCommand {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** نوع السياسة */
   policyType: string;
@@ -49,7 +49,7 @@ export interface CreatePropertyPolicyCommand {
 }
 
 /**
- * أمر لتحديث سياسة العقار
+ * أمر لتحديث سياسة الكيان
  */
 export interface UpdatePropertyPolicyCommand {
   /** معرف السياسة */
@@ -63,7 +63,7 @@ export interface UpdatePropertyPolicyCommand {
 }
 
 /**
- * أمر حذف سياسة العقار
+ * أمر حذف سياسة الكيان
  */
 export interface DeletePropertyPolicyCommand {
   /** معرف السياسة */
@@ -79,10 +79,10 @@ export interface GetPolicyByIdQuery {
 }
 
 /**
- * استعلام جلب جميع سياسات لعقار معين
+ * استعلام جلب جميع سياسات لكيان معين
  */
 export interface GetPropertyPoliciesQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
 }
 

@@ -61,6 +61,8 @@ export interface GetAllReportsQuery {
   reporterUserId?: string;
   reportedUserId?: string;
   reportedPropertyId?: string;
+  /** نص البحث */
+  searchTerm?: string;
   /** سبب البلاغ */
   reason?: string;
   /** حالة البلاغ */
@@ -72,10 +74,10 @@ export interface GetAllReportsQuery {
 }
 
 /**
- * استعلام جلب التقارير المبلّغ عنها لعقار
+ * استعلام جلب التقارير المبلّغ عنها لكيان
  */
 export interface GetReportsByPropertyQuery {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** رقم الصفحة */
   pageNumber?: number;

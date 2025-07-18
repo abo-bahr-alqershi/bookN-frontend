@@ -55,7 +55,7 @@ export interface SearchStatisticsDto {
 }
 
 /**
- * استعلام بحث عن العقارات بناءً على معايير متعددة
+ * استعلام بحث عن الكيانات بناءً على معايير متعددة
  */
 export interface SearchPropertiesQuery {
     location?: string;
@@ -79,7 +79,7 @@ export interface SearchPropertiesQuery {
 }
 
 /**
- * أمر بحث عن العقارات بناءً على معايير متعددة
+ * أمر بحث عن الكيانات بناءً على معايير متعددة
  */
 export interface SearchPropertiesCommand {
     city?: string;

@@ -11,9 +11,9 @@ import type {
   GetPoliciesByTypeQuery,
 } from '../types/policy.types';
 
-// خدمات إدارة سياسات العقارات للمدراء (Policies Service)
+// خدمات إدارة سياسات الكيانات للمدراء (Policies Service)
 export const AdminPropertyPoliciesService = {
-  /** جلب جميع سياسات عقار معين */
+  /** جلب جميع سياسات كيان معين */
   getByProperty: (query: GetPropertyPoliciesQuery) =>
     apiClient.get<ResultDto<PolicyDto[]>>('/api/admin/PropertyPolicies', { params: query }).then(res => res.data),
 
@@ -21,7 +21,7 @@ export const AdminPropertyPoliciesService = {
   getById: (query: GetPolicyByIdQuery) =>
     apiClient.get<ResultDto<PolicyDetailsDto>>(`/api/admin/PropertyPolicies/${query.policyId}`).then(res => res.data),
 
-  /** إنشاء سياسة جديدة للعقار */
+  /** إنشاء سياسة جديدة للكيان */
   create: (data: CreatePropertyPolicyCommand) =>
     apiClient.post<ResultDto<string>>('/api/admin/PropertyPolicies', data).then(res => res.data),
 

@@ -21,23 +21,23 @@ export const AdminAmenitiesService = {
   getAllAmenities: (query?: GetAllAmenitiesQuery) =>
     apiClient.get<PaginatedResult<AmenityDto>>(`${API_BASE}`, { params: query }),
 
-  // جلب مرافق بناءً على معرف العقار
+  // جلب مرافق بناءً على معرف الكيان
   getAmenitiesByProperty: (query: GetAmenitiesByPropertyQuery) =>
     apiClient.get<ResultDto<AmenityDto[]>>(`${API_BASE}/property/${query.propertyId}`, { params: query }),
 
-  // جلب مرافق بناءً على نوع العقار
+  // جلب مرافق بناءً على نوع الكيان
   getAmenitiesByPropertyType: (query: GetAmenitiesByPropertyTypeQuery) =>
     apiClient.get<ResultDto<AmenityDto[]>>(`${API_BASE}/type/${query.propertyTypeId}`, { params: query }),
 
-  // إسناد مرفق لعقار
+  // إسناد مرفق لكيان
   assignAmenityToProperty: (amenityId: string, propertyId: string, data: AssignAmenityToPropertyCommand) =>
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/${amenityId}/assign/property/${propertyId}`, data),
 
-  // تخصيص مرفق لنوع العقار
+  // تخصيص مرفق لنوع الكيان
   assignAmenityToPropertyType: (amenityId: string, propertyTypeId: string, data: AssignAmenityToPropertyTypeCommand) =>
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/${amenityId}/assign/property-type/${propertyTypeId}`, data),
 
-  // تحديث حالة وتكلفة المرفق لعقار
+  // تحديث حالة وتكلفة المرفق لكيان
   updatePropertyAmenity: (amenityId: string, propertyId: string, data: UpdatePropertyAmenityCommand) =>
     apiClient.put<ResultDto<boolean>>(`${API_BASE}/${amenityId}/update/property/${propertyId}`, data),
 };

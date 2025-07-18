@@ -11,32 +11,32 @@ import type {
   DeletePropertyServiceCommand,
 } from '../types/service.types';
 
-// المسار الأساسي لخدمة خدمات العقار للإدمن
+// المسار الأساسي لخدمة خدمات الكيان للإدمن
 const API_BASE = '/api/admin/propertyservices';
 
 /**
- * خدمات إدارة خدمات العقارات للإدمن
+ * خدمات إدارة خدمات الكيانات للإدمن
  */
 export const AdminPropertyServicesService = {
-  /** إنشاء خدمة جديدة لعقار */
+  /** إنشاء خدمة جديدة لكيان */
   create: (data: CreatePropertyServiceCommand) =>
     apiClient.post<ResultDto<string>>(API_BASE, data).then(res => res.data),
 
-  /** تحديث خدمة عقار */
+  /** تحديث خدمة كيان */
   update: (serviceId: string, data: UpdatePropertyServiceCommand) =>
     apiClient.put<ResultDto<boolean>>(`${API_BASE}/${serviceId}`, data).then(res => res.data),
 
-  /** حذف خدمة عقار */
+  /** حذف خدمة كيان */
   delete: (serviceId: string) =>
     apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${serviceId}`).then(res => res.data),
 
-  /** جلب خدمات عقار معين */
+  /** جلب خدمات كيان معين */
   getByProperty: (query: GetPropertyServicesQuery) =>
     apiClient.get<ResultDto<ServiceDto[]>>(
       `${API_BASE}/property/${query.propertyId}`
     ).then(res => res.data),
 
-  /** جلب خدمة عقار بحسب المعرف */
+  /** جلب خدمة كيان بحسب المعرف */
   getById: (query: GetServiceByIdQuery) =>
     apiClient.get<ResultDto<ServiceDetailsDto>>(
       `${API_BASE}/${query.serviceId}`

@@ -14,7 +14,7 @@ import type {
 } from '../types/property-image.types';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 
-// خدمات صور العقارات والوحدات لأصحاب العقارات
+// خدمات صور الكيانات والوحدات لأصحاب الكيانات
 export const PropertyImagesService = {
   /** إنشاء صورة جديدة */
   create: (data: CreatePropertyImageCommand) =>
@@ -28,7 +28,7 @@ export const PropertyImagesService = {
   delete: (imageId: string) =>
     apiClient.delete<ResultDto<boolean>>(`/api/property/PropertyImages/${imageId}`).then(res => res.data),
 
-  /** تعيين صورة لعقار */
+  /** تعيين صورة لكيان */
   assignToProperty: (imageId: string, propertyId: string, data: AssignPropertyImageToPropertyCommand) =>
     apiClient.post<ResultDto<boolean>>(`/api/property/PropertyImages/${imageId}/assign/property/${propertyId}`, data).then(res => res.data),
 
@@ -37,7 +37,7 @@ export const PropertyImagesService = {
     apiClient.post<ResultDto<boolean>>(`/api/property/PropertyImages/${imageId}/assign/unit/${unitId}`, data).then(res => res.data),
 
   /**
-   * تعيين صور متعددة لعقارات
+   * تعيين صور متعددة لكيانات
    */
   bulkAssignToProperties: (data: BulkAssignImageToPropertyCommand) =>
     apiClient.post<ResultDto<boolean>>(`/api/property/PropertyImages/bulk-assign/property`, data).then(res => res.data),
@@ -52,11 +52,11 @@ export const PropertyImagesService = {
   getAll: (query: GetPropertyImagesQuery) =>
     apiClient.get<ResultDto<PaginatedResult<PropertyImageDto>>>(`/api/property/PropertyImages`, { params: query }).then(res => res.data),
 
-  /** جلب إحصائيات صور عقار */
+  /** جلب إحصائيات صور كيان */
   getStats: (propertyId: string) =>
     apiClient.get<ResultDto<PropertyImageStatsDto>>(`/api/property/PropertyImages/${propertyId}/stats`).then(res => res.data),
 
-  /** إعادة ترتيب صور العقار */
+  /** إعادة ترتيب صور الكيان */
   reorder: (data: ReorderPropertyImagesCommand) =>
     apiClient.put<ResultDto<boolean>>(`/api/property/PropertyImages/order`, data).then(res => res.data),
 }; 

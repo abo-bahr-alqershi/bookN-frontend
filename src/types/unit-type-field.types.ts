@@ -258,7 +258,7 @@ export interface FieldGroupWithFieldsDto {
  * استعلام لجلب الحقول غير المجمعة ضمن أي مجموعة
  */
 export interface GetUngroupedFieldsQuery {
-  /** معرف نوع العقار */
+  /** معرف نوع الكيان */
   unitTypeId: string;
   /** قابل للبحث فقط (اختياري) */
   isSearchable?: boolean;

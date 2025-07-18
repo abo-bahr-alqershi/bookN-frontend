@@ -59,7 +59,7 @@ export interface GetReviewByBookingQuery {
 }
 
 /**
- * استعلام جلب تقييمات عقار مع التصفية والصفحات
+ * استعلام جلب تقييمات كيان مع التصفية والصفحات
  */
 export interface GetReviewsByPropertyQuery {
   propertyId: string;

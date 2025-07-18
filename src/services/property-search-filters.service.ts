@@ -2,7 +2,7 @@ import { apiClient } from './api.service';
 import type { SearchFilterDto, GetSearchFiltersQuery, GetSearchFilterByIdQuery, GetSearchableFieldsQuery } from '../types/search-filter.types';
 import type { UnitTypeFieldDto } from '../types/unit-type-field.types';
 
-// خدمات فلاتر البحث لأصحاب العقارات (Property Search Filters Service)
+// خدمات فلاتر البحث لأصحاب الكيانات (Property Search Filters Service)
 export const PropertySearchFiltersService = {
   /** جلب جميع فلاتر البحث */
   getAll: (query: GetSearchFiltersQuery) =>

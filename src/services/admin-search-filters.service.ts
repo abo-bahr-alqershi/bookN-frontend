@@ -32,7 +32,7 @@ export const AdminSearchFiltersService = {
   toggleStatus: (filterId: string, data: ToggleSearchFilterStatusCommand) =>
     apiClient.patch<ResultDto<boolean>>(`${API_BASE}/${filterId}/toggle-status`, data).then(res => res.data),
 
-  // جلب جميع فلاتر البحث لنوع عقار معين
+  // جلب جميع فلاتر البحث لنوع كيان معين
   getAll: (params?: GetSearchFiltersQuery) =>
     apiClient.get<SearchFilterDto[]>(`${API_BASE}`, { params }).then(res => res.data),
 
@@ -40,7 +40,7 @@ export const AdminSearchFiltersService = {
   getById: (filterId: string) =>
     apiClient.get<ResultDto<SearchFilterDto>>(`${API_BASE}/${filterId}`).then(res => res.data),
 
-  // جلب الحقول القابلة للبحث لنوع عقار معين
+  // جلب الحقول القابلة للبحث لنوع كيان معين
   getSearchableFields: (params?: GetSearchableFieldsQuery) =>
     apiClient.get<UnitTypeFieldDto[]>(`${API_BASE}/searchable-fields`, { params }).then(res => res.data),
 };

@@ -24,7 +24,7 @@ export interface PropertyTypeDto {
 }
 
 /**
- * استعلام جلب جميع أنواع العقارات مع الترتيب والصفحة
+ * استعلام جلب جميع أنواع الكيانات مع الترتيب والصفحة
  */
 export interface GetAllPropertyTypesQuery {
     pageNumber: number;
@@ -32,7 +32,7 @@ export interface GetAllPropertyTypesQuery {
 }
 
 /**
- * استعلام جلب نوع عقار بالمعرف
+ * استعلام جلب نوع كيان بالمعرف
  */
 export interface GetPropertyTypeByIdQuery {
     propertyTypeId: string;

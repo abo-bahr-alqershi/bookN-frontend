@@ -23,7 +23,7 @@ export class AdminReviewsService {
     return response.data.data!;
   }
 
-  /** جلب تقييمات عقار مع التصفية والصفحات */
+  /** جلب تقييمات كيان مع التصفية والصفحات */
   static async getByProperty(query: GetReviewsByPropertyQuery): Promise<ReviewDto[]> {
     const response = await apiClient.get<ResultDto<ReviewDto[]>>(
       `/api/admin/reviews/property/${query.propertyId}`,

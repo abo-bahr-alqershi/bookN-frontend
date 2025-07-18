@@ -82,7 +82,7 @@ const defaultState: AppState = {
   settings: {
     theme: 'light',
     language: 'ar',
-    currency: 'SAR',
+    currency: 'YER',
     timezone: 'Asia/Riyadh',
     pageSize: 20,
     dateFormat: 'DD/MM/YYYY',

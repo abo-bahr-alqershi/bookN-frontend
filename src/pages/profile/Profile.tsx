@@ -43,7 +43,7 @@ const Profile: React.FC = () => {
   const updateProfilePictureMutation = useMutation({
     mutationFn: CommonUsersService.updateProfilePicture,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم تحديث الصورة الشخصية بنجاح');
         refetch();
       } else {
@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
   const updateProfileMutation = useMutation({
     mutationFn: CommonUsersService.updateUserSettings,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم تحديث الملف الشخصي بنجاح');
         refetch();
       } else {
@@ -75,7 +75,7 @@ const Profile: React.FC = () => {
   const changePasswordMutation = useMutation({
     mutationFn: CommonAuthService.changePassword,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم تغيير كلمة المرور بنجاح');
         setPasswordData({
           userId: passwordData.userId,

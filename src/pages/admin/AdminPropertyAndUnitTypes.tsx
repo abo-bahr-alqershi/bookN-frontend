@@ -70,7 +70,7 @@ const AdminPropertyAndUnitTypes = () => {
   const [filterByPublic, setFilterByPublic] = useState<boolean | null>(null);
   const [filterByFieldType, setFilterByFieldType] = useState<string>('');
 
-  // استخدام الهوك لإدارة أنواع العقارات
+  // استخدام الهوك لإدارة أنواع الكيانات
   const PAGE_SIZE = 1000;
   const {
     propertyTypesData,
@@ -82,7 +82,7 @@ const AdminPropertyAndUnitTypes = () => {
   } = useAdminPropertyTypes({ pageNumber: 1, pageSize: PAGE_SIZE });
   const propertyTypes = propertyTypesData?.items || [];
 
-  // استخدام الهوك لإدارة أنواع الوحدات لنوع العقار المحدد
+  // استخدام الهوك لإدارة أنواع الوحدات لنوع الكيان المحدد
   const {
     unitTypesData,
     isLoading: unitTypesLoading,
@@ -324,8 +324,8 @@ const AdminPropertyAndUnitTypes = () => {
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">إدارة أنواع العقارات والوحدات والحقول الديناميكية</h1>
-            <p className="text-gray-600">إدارة شاملة متدرجة لأنواع العقارات وأنواع الوحدات ومجموعات الحقول والحقول الديناميكية</p>
+            <h1 className="text-2xl font-bold text-gray-900">إدارة أنواع الكيانات والوحدات والحقول الديناميكية</h1>
+            <p className="text-gray-600">إدارة شاملة متدرجة لأنواع الكيانات وأنواع الوحدات ومجموعات الحقول والحقول الديناميكية</p>
           </div>
         </div>
 
@@ -335,7 +335,7 @@ const AdminPropertyAndUnitTypes = () => {
             <div className="flex items-center">
               <div className="text-blue-600 text-2xl ml-3">🏢</div>
               <div>
-                <p className="text-sm text-blue-600">أنواع العقارات</p>
+                <p className="text-sm text-blue-600">أنواع الكيانات</p>
                 <p className="text-2xl font-bold text-blue-900">{propertyTypes.length}</p>
               </div>
             </div>
@@ -376,7 +376,7 @@ const AdminPropertyAndUnitTypes = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              🏢 أنواع العقارات
+              🏢 أنواع الكيانات
             </h2>
             <button
               onClick={() => {
@@ -454,8 +454,8 @@ const AdminPropertyAndUnitTypes = () => {
               {propertyTypes.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <div className="text-3xl mb-2">🏢</div>
-                  <p className="text-sm">لا توجد أنواع عقارات</p>
-                  <p className="text-xs">قم بإضافة نوع عقار للبدء</p>
+                  <p className="text-sm">لا توجد أنواع كيانات</p>
+                  <p className="text-xs">قم بإضافة نوع كيان للبدء</p>
                 </div>
               )}
             </div>
@@ -471,7 +471,7 @@ const AdminPropertyAndUnitTypes = () => {
             <button
               onClick={() => {
                 if (!selectedPropertyType) {
-                  alert("يرجى اختيار نوع عقار أولاً");
+                  alert("يرجى اختيار نوع كيان أولاً");
                   return;
                 }
                 resetUnitTypeForm();
@@ -487,7 +487,7 @@ const AdminPropertyAndUnitTypes = () => {
           {!selectedPropertyType ? (
             <div className="text-center py-8 text-gray-500">
               <div className="text-3xl mb-2">🏠</div>
-              <p className="text-sm">اختر نوع عقار لعرض الوحدات</p>
+              <p className="text-sm">اختر نوع كيان لعرض الوحدات</p>
             </div>
           ) : unitTypesLoading ? (
             <div className="flex justify-center py-8">
@@ -896,7 +896,7 @@ const AdminPropertyAndUnitTypes = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">
-              {selectedPropertyType ? 'تعديل نوع العقار' : 'إضافة نوع عقار جديد'}
+              {selectedPropertyType ? 'تعديل نوع الكيان' : 'إضافة نوع كيان جديد'}
             </h3>
             <form onSubmit={(e) => {
               e.preventDefault();
@@ -909,24 +909,24 @@ const AdminPropertyAndUnitTypes = () => {
                   }
                 }, {
                   onSuccess: () => {
-                    showSuccess('تم تحديث نوع العقار بنجاح');
+                    showSuccess('تم تحديث نوع الكيان بنجاح');
                     setShowPropertyTypeModal(false);
                     setSelectedPropertyType(null);
                     resetPropertyTypeForm();
                   },
                   onError: (error: any) => {
-                    showError(error.response?.data?.message || 'فشل في تحديث نوع العقار');
+                    showError(error.response?.data?.message || 'فشل في تحديث نوع الكيان');
                   }
                 });
               } else {
                 createPropertyType.mutate(propertyTypeForm, {
                   onSuccess: () => {
-                    showSuccess('تم إضافة نوع العقار بنجاح');
+                    showSuccess('تم إضافة نوع الكيان بنجاح');
                     setShowPropertyTypeModal(false);
                     resetPropertyTypeForm();
                   },
                   onError: (error: any) => {
-                    showError(error.response?.data?.message || 'فشل في إضافة نوع العقار');
+                    showError(error.response?.data?.message || 'فشل في إضافة نوع الكيان');
                   }
                 });
               }

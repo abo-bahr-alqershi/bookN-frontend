@@ -52,12 +52,12 @@ export interface MapMarker extends MapItem {
   isSelected?: boolean;
   /** هل العلامة مميزة */
   isFeatured?: boolean;
-  /** السعر (للعقارات) */
+  /** السعر (للكيانات) */
   price?: {
     amount: number;
     currency: string;
   };
-  /** التقييم (للعقارات) */
+  /** التقييم (للكيانات) */
   rating?: number;
   /** حالة التوفر */
   isAvailable?: boolean;

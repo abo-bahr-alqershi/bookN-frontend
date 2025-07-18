@@ -46,7 +46,7 @@ const UnitImageGallery: React.FC = () => {
 
   // Default property data - get name from navigation state if available
   const navState = (location.state as { propertyName?: string; unitName?: string }) || {};
-  const property = { title: navState.propertyName || `العقار ${propertyId}` };
+  const property = { title: navState.propertyName || `الكيان ${propertyId}` };
   const propertyLoading = false;
   const propertyError = null;
 
@@ -70,6 +70,7 @@ const UnitImageGallery: React.FC = () => {
     reorderImagesAsync,
     refetch: refetchImages
   } = useImages({
+    propertyId,
     unitId,
     category: filterCategory === 'all' ? undefined : filterCategory,
     sortBy: 'order',
@@ -81,7 +82,10 @@ const UnitImageGallery: React.FC = () => {
     data: statistics,
     isLoading: statisticsLoading,
     refetch: refetchStatistics
-  } = useImageStatistics(undefined, unitId);
+  } = useImageStatistics(
+    propertyId,
+    unitId
+  );
 
   // معالجة اختيار الصور - Handle image selection
   const handleSelectionChange = useCallback((selectedIds: string[]) => {
@@ -288,7 +292,7 @@ const UnitImageGallery: React.FC = () => {
                 onClick={() => navigate('/admin/properties')}
                 className="hover:text-blue-600 transition-colors"
               >
-                العقارات
+                الكيانات
               </button>
               <span>/</span>
               <button
@@ -459,6 +463,7 @@ const UnitImageGallery: React.FC = () => {
               {/* معرض الصور أو الجدول - Gallery or Table */}
               {viewMode === 'grid' ? (
                 <ImageGallery
+                  propertyId={propertyId}
                   unitId={unitId}
                   category={filterCategory === 'all' ? undefined : filterCategory}
                   editable={true}
@@ -503,6 +508,7 @@ const UnitImageGallery: React.FC = () => {
               </div>
 
               <ImageUploader
+                propertyId={propertyId}
                 unitId={unitId}
                 defaultCategory="interior"
                 multiple={true}

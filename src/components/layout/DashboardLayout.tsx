@@ -13,16 +13,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isAdmin = user?.role === 'Admin';
-  const isPropertyOwner = user?.role === 'PropertyOwner';
+  const isPropertyOwner = user?.role === 'Owner';
 
   const adminMenuItems = [
     { path: '/admin/dashboard', label: 'لوحة التحكم', icon: 'dashboard' },
     { path: '/admin/users', label: 'المستخدمون', icon: 'users' },
-    { path: '/admin/properties', label: 'العقارات', icon: 'building' },
+    { path: '/admin/properties', label: 'الكيانات', icon: 'building' },
     { path: '/admin/bookings', label: 'الحجوزات', icon: 'calendar' },
     { path: '/admin/payments', label: 'المدفوعات', icon: 'credit-card' },
     { path: '/admin/reports', label: 'التقارير', icon: 'chart' },
-    { path: '/admin/property-types', label: 'أنواع العقارات', icon: 'tag' },
+    { path: '/admin/property-types', label: 'أنواع الكيانات', icon: 'tag' },
     { path: '/admin/amenities', label: 'المرافق', icon: 'star' },
     { path: '/admin/reviews', label: 'المراجعات', icon: 'message' },
     { path: '/admin/units', label: 'الوحدات', icon: 'home' }
@@ -30,7 +30,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   const ownerMenuItems = [
     { path: '/owner/dashboard', label: 'لوحة التحكم', icon: 'dashboard' },
-    { path: '/owner/properties', label: 'عقاراتي', icon: 'building' },
+    { path: '/owner/properties', label: 'كياناتي', icon: 'building' },
     { path: '/owner/bookings', label: 'الحجوزات', icon: 'calendar' },
     { path: '/owner/units', label: 'الوحدات', icon: 'home' },
     { path: '/owner/payments', label: 'المدفوعات', icon: 'credit-card' },
@@ -129,7 +129,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 />
                 <div className="mr-3">
                   <div className="text-sm font-medium text-gray-700">{user?.name}</div>
-                  <div className="text-xs text-gray-500">{user?.role === 'Admin' ? 'مدير' : 'مالك عقار'}</div>
+                  <div className="text-xs text-gray-500">{user?.role === 'Admin' ? 'مدير' : 'مالك كيان'}</div>
                 </div>
               </div>
               

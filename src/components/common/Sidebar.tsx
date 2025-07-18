@@ -17,7 +17,7 @@ const Sidebar = ({ menuItems, userRole }: SidebarProps) => {
       case 'admin':
         return 'لوحة الإدارة';
       case 'property-owner':
-        return 'لوحة مالك العقار';
+        return 'لوحة مالك الكيان';
       default:
         return 'لوحة التحكم';
     }

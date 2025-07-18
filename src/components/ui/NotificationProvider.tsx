@@ -1,6 +1,7 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useNotifications } from '../../hooks/useNotifications';
 import type { NotificationItem } from '../../hooks/useNotifications';
+import api from '../../services/api.service';
 
 interface NotificationContextType {
   notifications: NotificationItem[];
@@ -20,11 +21,38 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const notifications = useNotifications();
+  //统一 معالجة الرسائل من API
+  useEffect(() => {
+    const interceptorId = api.interceptors.response.use(
+      response => {
+        const data = response.data;
+        // إذا كان الرد من نوع ResultDto
+        if (data && typeof data.success === 'boolean') {
+          if (!data.success) {
+            notifications.showError(data.message || 'حدث خطأ في العملية');
+            return Promise.reject(data);
+          }
+          if (data.success && data.message) {
+            notifications.showSuccess(data.message);
+          }
+        }
+        return response;
+      },
+      error => {
+        notifications.showError(error.message || 'خطأ في الاتصال بالخادم');
+        return Promise.reject(error);
+      }
+    );
+    return () => api.interceptors.response.eject(interceptorId);
+  }, [notifications]);
 
   return (
     <NotificationContext.Provider value={notifications}>
       {children}
-      <NotificationContainer notifications={notifications.notifications} onRemove={notifications.removeNotification} />
+      <NotificationContainer
+        notifications={notifications.notifications}
+        onRemove={notifications.removeNotification}
+      />
     </NotificationContext.Provider>
   );
 };

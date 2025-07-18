@@ -9,7 +9,7 @@ import type { SearchUnitsQuery } from '../types/unit-search.types';
 const API_BASE = '/api/common/search';
 
 export const CommonSearchService = {
-  // البحث في العقارات بناءً على المعايير الديناميكية والفرز والتصفح
+  // البحث في الكيانات بناءً على المعايير الديناميكية والفرز والتصفح
   searchProperties: (command: SearchPropertiesCommand) =>
     apiClient.post<PaginatedResult<PropertyDto>>(`${API_BASE}/properties`, command).then(res => res.data),
 

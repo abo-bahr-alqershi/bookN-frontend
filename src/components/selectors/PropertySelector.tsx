@@ -17,7 +17,7 @@ interface PropertySelectorProps {
 const PropertySelector: React.FC<PropertySelectorProps> = ({
   value = '',
   onChange,
-  placeholder = 'اختر العقار',
+  placeholder = 'اختر الكيان',
   className = '',
   disabled = false,
   ownerId,
@@ -41,7 +41,7 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({
 
   const { propertiesData, isLoading } = useAdminProperties(searchParams);
 
-  // العثور على العقار المحدد
+  // العثور على الكيان المحدد
   useEffect(() => {
     if (value && propertiesData?.items) {
       const property = propertiesData.items.find(p => p.id === value);
@@ -167,13 +167,13 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="البحث في العقارات..."
+              placeholder="البحث في الكيانات..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               autoFocus
             />
           </div>
 
-          {/* قائمة العقارات */}
+          {/* قائمة الكيانات */}
           <div className="max-h-60 overflow-y-auto">
             {isLoading ? (
               <div className="p-4 text-center text-gray-500">
@@ -208,13 +208,13 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({
                   </div>
                   <div className="flex-shrink-0 text-left">
                     <p className="text-sm font-medium text-gray-900">{property.typeName}</p>
-                    <p className="text-xs text-gray-500">نوع العقار</p>
+                    <p className="text-xs text-gray-500">نوع الكيان</p>
                   </div>
                 </button>
               ))
             ) : (
               <div className="p-4 text-center text-gray-500">
-                {searchTerm ? `لا توجد نتائج للبحث "${searchTerm}"` : 'لا توجد عقارات'}
+                {searchTerm ? `لا توجد نتائج للبحث "${searchTerm}"` : 'لا توجد كيانات'}
               </div>
             )}
           </div>
@@ -222,7 +222,7 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({
           {/* إجمالي النتائج */}
           {propertiesData?.items && propertiesData.items.length > 0 && (
             <div className="p-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 text-center">
-              {propertiesData.items.length} من {propertiesData.totalCount || 0} عقار
+              {propertiesData.items.length} من {propertiesData.totalCount || 0} كيان
             </div>
           )}
         </div>

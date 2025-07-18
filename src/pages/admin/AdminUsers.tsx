@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
@@ -9,6 +10,8 @@ import type { UserDto, CreateUserCommand, UpdateUserCommand, GetAllUsersQuery } 
 import type { UserRole } from '../../types/role.types';
 
 const AdminUsers = () => {
+  const navigate = useNavigate();
+  
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -121,8 +124,8 @@ const AdminUsers = () => {
       type: 'select',
       options: [
         { value: 'ADMIN', label: 'مدير' },
-        { value: 'HOTEL_OWNER', label: 'مالك عقار' },
-        { value: 'HOTEL_MANAGER', label: 'مدير عقار' },
+        { value: 'HOTEL_OWNER', label: 'مالك كيان' },
+        { value: 'HOTEL_MANAGER', label: 'مدير كيان' },
         { value: 'RECEPTIONIST', label: 'موظف استقبال' },
         { value: 'CUSTOMER', label: 'عميل' },
       ],
@@ -195,8 +198,19 @@ const AdminUsers = () => {
     },
   ];
 
+  // Navigation functions
+  const handleViewDetails = (user: UserDto) => {
+    navigate(`/admin/users/${user.id}`);
+  };
+
   // Table actions
   const tableActions = [
+    {
+      label: 'عرض التفاصيل',
+      icon: '👁️',
+      color: 'blue' as const,
+      onClick: handleViewDetails,
+    },
     {
       label: 'تعديل',
       icon: '✏️',

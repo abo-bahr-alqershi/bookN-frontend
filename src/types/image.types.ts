@@ -31,7 +31,7 @@ export interface Image {
   order: number;
   /** هل الصورة رئيسية - Is primary image */
   isPrimary: boolean;
-  /** معرف العقار المرتبط - Associated property ID */
+  /** معرف الكيان المرتبط - Associated property ID */
   propertyId?: string;
   /** معرف الوحدة المرتبطة - Associated unit ID */
   unitId?: string;
@@ -92,7 +92,7 @@ export interface ImageThumbnails {
 export interface UploadImageRequest {
   /** الملف - File */
   file: File;
-  /** معرف العقار (اختياري) - Property ID (optional) */
+  /** معرف الكيان (اختياري) - Property ID (optional) */
   propertyId?: string;
   /** معرف الوحدة (اختياري) - Unit ID (optional) */
   unitId?: string;
@@ -149,7 +149,7 @@ export interface UpdateImageRequest {
  * Get images request
  */
 export interface GetImagesRequest {
-  /** معرف العقار - Property ID */
+  /** معرف الكيان - Property ID */
   propertyId?: string;
   /** معرف الوحدة - Unit ID */
   unitId?: string;
@@ -202,7 +202,7 @@ export interface DeleteImagesRequest {
 export interface ReorderImagesRequest {
   /** قائمة معرفات الصور بالترتيب الجديد - Image IDs in new order */
   imageIds: string[];
-  /** معرف العقار - Property ID */
+  /** معرف الكيان - Property ID */
   propertyId?: string;
   /** معرف الوحدة - Unit ID */
   unitId?: string;

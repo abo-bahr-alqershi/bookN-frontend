@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminUsersService } from '../services/admin-users.service';
-import type { UserDto, CreateUserCommand, UpdateUserCommand, GetAllUsersQuery } from '../types/user.types';
+import type { UserDto, CreateUserCommand, UpdateUserCommand, GetAllUsersQuery, UserDetailsDto } from '../types/user.types';
 import type { PaginatedResult, ResultDto } from '../types/common.types';
 
 /**
@@ -52,4 +52,28 @@ export const useAdminUsers = (params: GetAllUsersQuery) => {
   });
 
   return { usersData, isLoading, error, createUser, updateUser, activateUser, deactivateUser };
+};
+
+/**
+ * هوك لجلب تفاصيل مستخدم واحد
+ * @param userId معرف المستخدم
+ * @returns تفاصيل المستخدم وحالات التحميل والأخطاء
+ */
+export const useUserDetails = (userId: string) => {
+  const queryKey = ['user-details', userId] as const;
+
+  const { data, isLoading, error, refetch } = useQuery<ResultDto<UserDetailsDto>, Error>({
+    queryKey,
+    queryFn: () => AdminUsersService.getDetails(userId),
+    enabled: !!userId,
+  });
+
+  return { 
+    userDetails: data?.data || null, 
+    isLoading, 
+    error, 
+    refetch,
+    isSuccess: data?.success || false,
+    message: data?.message || null
+  };
 }; 

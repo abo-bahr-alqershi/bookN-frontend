@@ -26,6 +26,7 @@ import AdminAuditLogs from '../pages/admin/AdminAuditLogs';
 import AdminSettings from '../pages/admin/AdminSettings';
 import PropertyImageGallery from '../pages/admin/PropertyImageGallery';
 import UnitImageGallery from '../pages/admin/UnitImageGallery';
+import UserDetails from '../pages/admin/UserDetails';
 
 // Property Owner Pages
 import PropertyOwnerDashboard from '../pages/property/PropertyOwnerDashboard';
@@ -40,16 +41,19 @@ const AppRoutes = () => {
       {/* Auth Routes */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route index element={<Navigate to="login" replace />} />
       </Route>
+
+      {/* Register Route - Full Width */}
+      <Route path="/auth/register" element={<Register />} />
 
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="users/:userId" element={<UserDetails />} />
         <Route path="properties" element={<AdminProperties />} />
         <Route path="property-types" element={<AdminPropertyAndUnitTypes />} />
         <Route path="units" element={<AdminUnits />} />

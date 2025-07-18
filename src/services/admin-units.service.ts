@@ -36,7 +36,7 @@ export const AdminUnitsService = {
   // حذف وحدة
   delete: (unitId: string) =>
     apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${unitId}`).then(res => res.data),
-  /** جلب الوحدات حسب العقار مع صفحات وفلاتر */
+  /** جلب الوحدات حسب الكيان مع صفحات وفلاتر */
   getByProperty: (params: { propertyId: string; isAvailable?: boolean; minBasePrice?: number; maxBasePrice?: number; minCapacity?: number; nameContains?: string; pageNumber?: number; pageSize?: number }) =>
     apiClient.get<PaginatedResult<UnitDto>>(`${API_BASE}/property/${params.propertyId}`, { params }).then(res => res.data),
   /** تحديث متعدد لتوفر الوحدات ضمن نطاق زمني */

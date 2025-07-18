@@ -34,7 +34,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
   }
 
   const isAdmin = user.role === 'Admin';
-  const isPropertyOwner = user.role === 'PropertyOwner';
+  const isPropertyOwner = user.role === 'Owner';
 
   const adminMenuItems: MenuItem[] = [
     // الرئيسية
@@ -60,10 +60,10 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
       badge: '24'
     },
     
-    // إدارة العقارات
+    // إدارة الكيانات
     {
       path: '/admin/properties',
-      label: 'العقارات',
+      label: 'الكيانات',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -72,7 +72,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
     },
     {
       path: '/admin/property-types',
-      label: 'أنواع العقارات',
+      label: 'أنواع الكيانات',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -90,7 +90,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
     },
     {
       path: '/admin/property-images',
-      label: 'صور العقارات',
+      label: 'صور الكيانات',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h4l1-2h8l1 2h4v13H3V7z" />
@@ -205,7 +205,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
     },
     {
       path: '/property-owner/properties',
-      label: 'عقاراتي',
+      label: 'كياناتي',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -246,7 +246,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
   // Admin sees all except image galleries
   if (isAdmin) {
     menuItems = adminMenuItems.filter(
-      item => item.label !== 'صور العقارات' && item.label !== 'صور الوحدات'
+      item => item.label !== 'صور الكيانات' && item.label !== 'صور الوحدات'
     );
   } else if (isPropertyOwner || user?.role === 'Staff') {
     // Property owner or staff sees owner menu plus image galleries for their property
@@ -255,7 +255,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
       // Property Images
       menuItems.push({
         path: `/admin/property-images/${user.propertyId}`,
-        label: 'صور العقارات',
+        label: 'صور الكيانات',
         icon: (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h4l1-2h8l1 2h4v13H3V7z" />
@@ -411,7 +411,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
                 <div className="ml-3 hidden sm:block">
                   <div className="text-sm font-medium text-gray-900">{user?.name}</div>
                   <div className="text-xs text-gray-500">
-                    {user?.role === 'Admin' ? 'مدير النظام' : 'مالك عقار'}
+                    {user?.role === 'Admin' ? 'مدير النظام' : 'مالك كيان'}
                   </div>
                 </div>
               </button>

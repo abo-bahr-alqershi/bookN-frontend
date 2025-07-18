@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: CommonAuthService.login,
     onSuccess: (result) => {
-      if (result.isSuccess && result.data) {
+      if (result.success && result.data) {
         const auth = result.data;
         console.log("سسسسسسسسسسسسسسسسس");
 
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
         showSuccess('تم تسجيل الدخول بنجاح');
         
         // التوجيه بناءً على الدور
-        if (auth.role === 'PropertyOwner') {
+        if (auth.role === 'Owner') {
           navigate('/owner/dashboard');
         } else if (auth.role === 'Admin') {
           navigate('/admin/dashboard');
@@ -202,7 +202,7 @@ const Login: React.FC = () => {
         <div className="mt-8 text-center space-y-4">
           <div className="border-t border-gray-200 pt-6">
             <p className="text-sm text-gray-600">
-              مالك عقار جديد؟{' '}
+              مالك كيان جديد؟{' '}
               <Link
                 to="/auth/register"
                 className="font-medium text-blue-600 hover:text-blue-500"

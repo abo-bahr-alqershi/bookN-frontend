@@ -44,7 +44,7 @@ export const useAuth = (): UseAuthReturn => {
         try {
           // التحقق من صحة التوكن مع الخادم (لا حاجة لاستخدام result.data لبيانات المستخدم)
           const result = await CommonUsersService.getCurrentUser({});
-          if (result.isSuccess) {
+          if (result.success) {
             setUser(parsedUser);
             setIsAuthenticated(true);
           } else {
@@ -77,7 +77,7 @@ export const useAuth = (): UseAuthReturn => {
       const refreshCommand: RefreshTokenCommand = { refreshToken };
       const result = await CommonAuthService.refreshToken(refreshCommand);
       
-      if (result.isSuccess && result.data) {
+      if (result.success && result.data) {
         const auth = result.data;
         const newUser: AuthUser = {
           id: auth.userId,

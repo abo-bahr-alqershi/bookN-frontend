@@ -197,7 +197,7 @@ export interface FinancialSummaryDto {
 }
 
 /**
- * مؤشرات أداء العقار
+ * مؤشرات أداء الكيان
  */
 export interface PropertyPerformanceDto {
   occupancyRate: number;
@@ -213,7 +213,7 @@ export interface PropertyPerformanceDto {
 }
 
 /**
- * مقارنة أداء العقار
+ * مقارنة أداء الكيان
  */
 export interface PerformanceComparisonDto {
   currentPeriodRevenue: number;
@@ -222,7 +222,7 @@ export interface PerformanceComparisonDto {
 }
 
 /**
- * استعلام نسبة إشغال العقار
+ * استعلام نسبة إشغال الكيان
  */
 export interface GetOccupancyRateQuery {
   propertyId: string;
@@ -327,14 +327,14 @@ export interface ReviewSentimentDto {
 }
 
 /**
- * استعلام أفضل العقارات أداءً
+ * استعلام أفضل الكيانات أداءً
  */
 export interface GetTopPerformingPropertiesQuery {
   count: number;
 }
 
 /**
- * نوع بيانات العقار لأفضل أداء
+ * نوع بيانات الكيان لأفضل أداء
  */
 export interface CategoricalDataDto {
   category: string;
@@ -361,7 +361,7 @@ export interface GetPropertyPerformanceQuery {
 }
 
 /**
- * استعلام للحصول على مقارنة أداء العقار بين فترتين زمنيتين
+ * استعلام للحصول على مقارنة أداء الكيان بين فترتين زمنيتين
  */
 export interface GetPropertyPerformanceComparisonQuery {
   propertyId: string;

@@ -24,8 +24,8 @@ interface LocationSelectorProps {
 }
 
 const LocationSelector: React.FC<LocationSelectorProps> = ({
-  latitude = 24.7136,
-  longitude = 46.6753, // الرياض كموقع افتراضي
+  latitude = 15.279272,
+  longitude = 44.227494, // صنعاء كموقع افتراضي
   onChange,
   className = '',
   disabled = false,
@@ -249,7 +249,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         <input
           type="text"
           name="search"
-          placeholder="ابحث عن موقع (مثل: الرياض، شارع الملك فهد)"
+          placeholder="ابحث عن موقع (مثل: صنعاء، الاصبحي شارع المقالح)"
           disabled={disabled}
           className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
@@ -276,7 +276,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               onChange={(e) => handleManualCoordinateChange('lat', e.target.value)}
               disabled={disabled}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="24.7136"
+              placeholder="15.279272"
               min="-90"
               max="90"
             />
@@ -292,7 +292,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               onChange={(e) => handleManualCoordinateChange('lng', e.target.value)}
               disabled={disabled}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="46.6753"
+              placeholder="44.227494"
               min="-180"
               max="180"
             />

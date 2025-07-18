@@ -14,7 +14,7 @@ const Header = ({ userRole }: HeaderProps) => {
       case 'admin':
         return 'مدير النظام';
       case 'property-owner':
-        return 'مالك العقار';
+        return 'مالك الكيان';
       default:
         return 'مستخدم';
     }

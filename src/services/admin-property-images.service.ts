@@ -16,21 +16,21 @@ import type {
 
 const API_BASE = '/api/admin/propertyimages';
 
-// خدمات إدارة صور العقارات للمدراء (Admin Property Images Service)
+// خدمات إدارة صور الكيانات للمدراء (Admin Property Images Service)
 export const AdminPropertyImagesService = {
-  /** إنشاء صورة عقار جديدة */
+  /** إنشاء صورة كيان جديدة */
   create: (data: CreatePropertyImageCommand) =>
     apiClient.post<ResultDto<string>>(`${API_BASE}`, data).then(res => res.data),
 
-  /** تحديث بيانات صورة عقار */
+  /** تحديث بيانات صورة كيان */
   update: (imageId: string, data: UpdatePropertyImageCommand) =>
     apiClient.put<ResultDto<boolean>>(`${API_BASE}/${imageId}`, data).then(res => res.data),
 
-  /** حذف صورة عقار */
+  /** حذف صورة كيان */
   delete: (imageId: string) =>
     apiClient.delete<ResultDto<boolean>>(`${API_BASE}/${imageId}`).then(res => res.data),
 
-  /** إسناد الصورة لعقار */
+  /** إسناد الصورة لكيان */
   assignToProperty: (imageId: string, propertyId: string, data: AssignPropertyImageToPropertyCommand) =>
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/${imageId}/assign/property/${propertyId}`, data).then(res => res.data),
 
@@ -39,7 +39,7 @@ export const AdminPropertyImagesService = {
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/${imageId}/assign/unit/${unitId}`, data).then(res => res.data),
 
   /**
-   * تعيين صور متعددة لعقارات
+   * تعيين صور متعددة لكيانات
    */
   bulkAssignToProperties: (data: BulkAssignImageToPropertyCommand) =>
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/bulk-assign/property`, data).then(res => res.data),
@@ -50,15 +50,15 @@ export const AdminPropertyImagesService = {
   bulkAssignToUnits: (data: BulkAssignImageToUnitCommand) =>
     apiClient.post<ResultDto<boolean>>(`${API_BASE}/bulk-assign/unit`, data).then(res => res.data),
 
-  /** جلب جميع صور العقار */
+  /** جلب جميع صور الكيان */
   getAll: (query: GetPropertyImagesQuery) =>
     apiClient.get<ResultDto<PaginatedResult<PropertyImageDto>>>(`${API_BASE}`, { params: query }).then(res => res.data),
 
-  /** جلب إحصائيات صور عقار */
+  /** جلب إحصائيات صور كيان */
   getStats: (propertyId: string) =>
     apiClient.get<ResultDto<PropertyImageStatsDto>>(`${API_BASE}/${propertyId}/stats`).then(res => res.data),
 
-  /** إعادة ترتيب صور العقار */
+  /** إعادة ترتيب صور الكيان */
   reorder: (data: ReorderPropertyImagesCommand) =>
     apiClient.put<ResultDto<boolean>>(`${API_BASE}/order`, data).then(res => res.data),
 }; 

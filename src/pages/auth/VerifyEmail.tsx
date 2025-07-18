@@ -21,7 +21,7 @@ const VerifyEmail: React.FC = () => {
   const verifyEmailMutation = useMutation({
     mutationFn: CommonAuthService.verifyEmail,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         setVerificationStatus('success');
         showSuccess('تم تأكيد البريد الإلكتروني بنجاح');
         setTimeout(() => {
@@ -41,7 +41,7 @@ const VerifyEmail: React.FC = () => {
   const resendVerificationMutation = useMutation({
     mutationFn: CommonAuthService.resendEmailVerification,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم إرسال رابط التأكيد مرة أخرى إلى بريدك الإلكتروني');
       } else {
         showError(result.message || 'فشل في إرسال رابط التأكيد');

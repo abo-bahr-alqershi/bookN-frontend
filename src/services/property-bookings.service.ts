@@ -31,7 +31,7 @@ import type {
 // المسار الأساسي لخدمة حجوزات المالك
 const API_BASE = '/api/property/bookings';
 
-// خدمات الحجوزات لأصحاب العقارات (Property Bookings Service)
+// خدمات الحجوزات لأصحاب الكيانات (Property Bookings Service)
 export const PropertyBookingsService = {
   /** إنشاء حجز جديد */
   create: (data: CreateBookingCommand) =>
@@ -69,7 +69,7 @@ export const PropertyBookingsService = {
   update: (bookingId: string, data: UpdateBookingCommand) =>
     apiClient.put<ResultDto<boolean>>(`${API_BASE}/${bookingId}/update`, data).then(res => res.data),
 
-  /** جلب حجوزات العقار مع الفلاتر والصفحات */
+  /** جلب حجوزات الكيان مع الفلاتر والصفحات */
   getByProperty: (query: GetBookingsByPropertyQuery) =>
     apiClient.get<PaginatedResult<BookingDto>>(`${API_BASE}`, { params: query }).then(res => res.data),
 

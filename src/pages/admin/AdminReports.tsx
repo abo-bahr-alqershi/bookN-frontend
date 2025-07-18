@@ -52,6 +52,7 @@ const AdminReports = () => {
   const queryParams = {
     pageNumber: currentPage,
     pageSize,
+    searchTerm: searchTerm || undefined,
     reporterUserId: filterValues.reporterUserId || undefined,
     reportedUserId: filterValues.reportedUserId || undefined,
     reportedPropertyId: filterValues.reportedPropertyId || undefined,
@@ -75,14 +76,6 @@ const AdminReports = () => {
   } = useAdminReports(queryParams);
 
   const { data: stats, isLoading: isLoadingStats } = useReportStats();
-
-  // Filter reports on client side for additional filters
-  const filteredReports = reportsData?.items?.filter(report => {
-    if (searchTerm && !report.reason.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !report.description.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-    if (filterValues.reason && !report.reason.toLowerCase().includes(filterValues.reason.toLowerCase())) return false;
-    return true;
-  }) || [];
 
   // Helper functions
   const handleViewDetails = (report: ReportDto) => {
@@ -212,13 +205,13 @@ const AdminReports = () => {
     },
     {
       key: 'reportedPropertyId',
-      label: 'العقار المبلغ عنه',
+      label: 'الكيان المبلغ عنه',
       type: 'custom',
       render: (value: string, onChange: (value: any) => void) => (
         <PropertySelector
           value={value}
           onChange={(propertyId) => onChange(propertyId)}
-          placeholder="اختر العقار"
+          placeholder="اختر الكيان"
           className="w-full"
         />
       ),
@@ -311,7 +304,7 @@ const AdminReports = () => {
     },
     {
       key: 'reportedPropertyName',
-      title: 'العقار المبلغ عنه',
+      title: 'الكيان المبلغ عنه',
       render: (value: string) => (
         <span className="text-sm text-gray-900">{value || '-'}</span>
       ),
@@ -483,7 +476,7 @@ const AdminReports = () => {
       />
 
       {/* Reports Table */}
-      {!isLoadingReports && filteredReports.length === 0 ? (
+      {!isLoadingReports && (reportsData?.items?.length || 0) === 0 ? (
         <div className="bg-white rounded-lg shadow-sm">
           <EmptyState
             icon="📋"
@@ -495,7 +488,7 @@ const AdminReports = () => {
         </div>
       ) : (
         <DataTable
-          data={filteredReports}
+          data={reportsData?.items || []}
           columns={columns}
           loading={isLoadingReports}
           pagination={{
@@ -563,7 +556,7 @@ const AdminReports = () => {
               )}
               {selectedReport.reportedPropertyName && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">العقار المبلغ عنه</label>
+                  <label className="block text-sm font-medium text-gray-700">الكيان المبلغ عنه</label>
                   <p className="mt-1 text-sm text-gray-900">{selectedReport.reportedPropertyName}</p>
                 </div>
               )}

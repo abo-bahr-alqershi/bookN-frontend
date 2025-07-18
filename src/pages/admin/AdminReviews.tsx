@@ -78,7 +78,7 @@ const AdminReviews = () => {
     approveReview,
     deleteReview,
   } = useAdminReviews(queryParams);
-  // جلب بيانات العقارات لفلتر الاختيار
+  // جلب بيانات الكيانات لفلتر الاختيار
   const {
     propertiesData,
     isLoading: isLoadingProperties,
@@ -202,13 +202,13 @@ const AdminReviews = () => {
     },
     {
       key: 'propertyId',
-      label: 'العقار',
+      label: 'الكيان',
       type: 'custom',
       render: (value, onChange) => (
         <PropertySelector
           value={value}
           onChange={(id) => onChange(id)}
-          placeholder="اختر العقار"
+          placeholder="اختر الكيان"
           className="w-full"
         />
       ),

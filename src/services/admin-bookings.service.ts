@@ -55,7 +55,7 @@ export const AdminBookingsService = {
       `${API_BASE}/${query.bookingId}`
     ).then(res => res.data),
 
-  /** جلب الحجوزات حسب العقار مع فلترة وتصفح */
+  /** جلب الحجوزات حسب الكيان مع فلترة وتصفح */
   getByProperty: (query: GetBookingsByPropertyQuery) => {
     const { propertyId, ...params } = query;
     return apiClient.get<PaginatedResult<BookingDto>>(
@@ -109,7 +109,7 @@ export const AdminBookingsService = {
       { params: query }
     ).then(res => res.data),
 
-  /** استعلام تحليل نافذة الحجز لعقار */
+  /** استعلام تحليل نافذة الحجز لكيان */
   getWindowAnalysis: (query: GetBookingWindowAnalysisQuery) =>
     apiClient.get<BookingWindowDto>(
       `${API_BASE}/window-analysis/${query.propertyId}`

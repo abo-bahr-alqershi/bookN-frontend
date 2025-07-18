@@ -9,11 +9,11 @@ import type {
 } from '../types/unit-type.types';
 import type { ResultDto, PaginatedResult } from '../types/common.types';
 
-// المسار الأساسي لتعاملات أنواع الوحدات لأصحاب العقارات
+// المسار الأساسي لتعاملات أنواع الوحدات لأصحاب الكيانات
 const API_BASE = '/api/property/UnitTypes';
 
 /**
- * جميع خدمات أنواع الوحدات لأصحاب العقارات
+ * جميع خدمات أنواع الوحدات لأصحاب الكيانات
  */
 export const PropertyUnitTypesService = {
   /** إنشاء نوع وحدة جديد */
@@ -32,7 +32,7 @@ export const PropertyUnitTypesService = {
   getById: (query: GetUnitTypeByIdQuery) =>
     apiClient.get<ResultDto<UnitTypeDto>>(`${API_BASE}/${query.unitTypeId}`).then(res => res.data),
 
-  /** جلب أنواع الوحدات حسب نوع العقار */
+  /** جلب أنواع الوحدات حسب نوع الكيان */
   getByPropertyType: (query: GetUnitTypesByPropertyTypeQuery) =>
     apiClient
       .get<PaginatedResult<UnitTypeDto>>(`${API_BASE}/property-type/${query.propertyTypeId}`, {

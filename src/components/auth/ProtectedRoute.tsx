@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'Admin' | 'PropertyOwner';
+  requiredRole?: 'Admin' | 'Owner';
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
         // إعادة توجيه حسب دور المستخدم
         if (user.role === 'Admin') {
           return <Navigate to="/admin/dashboard" replace />;
-        } else if (user.role === 'PropertyOwner') {
+        } else if (user.role === 'Owner') {
           return <Navigate to="/owner/dashboard" replace />;
         } else {
           return <Navigate to="/dashboard" replace />;

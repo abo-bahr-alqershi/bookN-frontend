@@ -237,7 +237,7 @@ export class ImagesService {
   }
 
   /**
-   * نسخ صورة لعقار أو وحدة أخرى
+   * نسخ صورة لكيان أو وحدة أخرى
    * Copy image to another property or unit
    */
   static async copyImage(

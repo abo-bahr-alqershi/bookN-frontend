@@ -1,4 +1,4 @@
-// أنواع بيانات صور العقارات (Property Images)
+// أنواع بيانات صور الكيانات (Property Images)
 // جميع الحقول موثقة بالعربي لضمان التوافق التام مع الباك اند
 
 /**
@@ -12,12 +12,12 @@ export type ImageCategory = 'Exterior' | 'Interior' | 'Room' | 'Facility';
 export type ImageStatus = 'Pending' | 'Approved' | 'Rejected';
 
 /**
- * بيانات صورة العقار
+ * بيانات صورة الكيان
  */
 export interface PropertyImageDto {
   /** معرف الصورة */
   id: string;
-  /** معرف العقار (إن وجد) */
+  /** معرف الكيان (إن وجد) */
   propertyId?: string;
   /** معرف الوحدة (إن وجد) */
   unitId?: string;
@@ -51,10 +51,10 @@ export interface PropertyImageDto {
 }
 
 /**
- * أمر إنشاء صورة جديدة للعقار أو الوحدة
+ * أمر إنشاء صورة جديدة للكيان أو الوحدة
  */
 export interface CreatePropertyImageCommand {
-  /** معرف العقار (اختياري) */
+  /** معرف الكيان (اختياري) */
   propertyId?: string;
   /** معرف الوحدة (اختياري) */
   unitId?: string;
@@ -97,12 +97,12 @@ export interface DeletePropertyImageCommand {
 }
 
 /**
- * أمر لتعيين صورة إلى عقار
+ * أمر لتعيين صورة إلى كيان
  */
 export interface AssignPropertyImageToPropertyCommand {
   /** معرف الصورة */
   imageId: string;
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** تعيين كصورة رئيسية */
   setAsMain?: boolean;
@@ -121,10 +121,10 @@ export interface AssignPropertyImageToUnitCommand {
 }
 
 /**
- * أمر لتعيين صور متعددة لعقارات
+ * أمر لتعيين صور متعددة لكيانات
  */
 export interface BulkAssignImageToPropertyCommand {
-  /** قائمة التعيينات: معرف العقار ومعرف الصورة */
+  /** قائمة التعيينات: معرف الكيان ومعرف الصورة */
   assignments: Array<{ propertyId: string; imageId: string }>;
 }
 
@@ -146,10 +146,10 @@ export interface ReorderPropertyImagesCommand {
 }
 
 /**
- * استعلام جلب صور العقار/الوحدة مع الترقيم
+ * استعلام جلب صور الكيان/الوحدة مع الترقيم
  */
 export interface GetPropertyImagesQuery {
-  /** معرف العقار (اختياري) */
+  /** معرف الكيان (اختياري) */
   propertyId?: string;
   /** معرف الوحدة (اختياري) */
   unitId?: string;
@@ -160,10 +160,10 @@ export interface GetPropertyImagesQuery {
 }
 
 /**
- * إحصائيات صور العقار
+ * إحصائيات صور الكيان
  */
 export interface PropertyImageStatsDto {
-  /** معرف العقار */
+  /** معرف الكيان */
   propertyId: string;
   /** إجمالي عدد الصور */
   totalImages: number;

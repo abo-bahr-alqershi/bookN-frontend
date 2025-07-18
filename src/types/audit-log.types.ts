@@ -6,9 +6,16 @@ export interface AuditLogDto {
   tableName: string;
   action: string;
   recordId: string;
+  recordName: string;
   userId: string;
+  username: string;
   changes: string;
   timestamp: string;
+  notes: string;
+  oldValues?: Record<string, any>;
+  newValues?: Record<string, any>;
+  metadata?: Record<string, any>;
+  isSlowOperation: boolean;
 }
 
 /**
@@ -45,7 +52,7 @@ export interface GetCustomerActivityLogsQuery {
  * استعلام جلب سجلات نشاط المالك والموظفين
  */
 export interface GetPropertyActivityLogsQuery {
-  /** معرف العقار (اختياري) */
+  /** معرف الكيان (اختياري) */
   propertyId?: string;
   /** رقم الصفحة */
   pageNumber?: number;

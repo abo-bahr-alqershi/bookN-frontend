@@ -21,7 +21,7 @@ export const AdminAuditLogsService = {
   getCustomerActivityLogs: (query: GetCustomerActivityLogsQuery) =>
     apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/customer-activity-logs`, { params: query }).then(res => res.data),
 
-  /** جلب سجلات نشاط العقارات */
+  /** جلب سجلات نشاط الكيانات */
   getPropertyActivityLogs: (query: GetPropertyActivityLogsQuery) =>
     apiClient.get<PaginatedResult<AuditLogDto>>(`${API_BASE}/property-activity-logs`, { params: query }).then(res => res.data),
 }; 

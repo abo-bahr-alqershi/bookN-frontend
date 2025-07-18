@@ -26,7 +26,7 @@ const ResetPassword: React.FC = () => {
   const resetPasswordMutation = useMutation({
     mutationFn: CommonAuthService.resetPassword,
     onSuccess: (result) => {
-      if (result.isSuccess) {
+      if (result.success) {
         showSuccess('تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول');
         navigate('/auth/login');
       } else {
