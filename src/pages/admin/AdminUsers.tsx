@@ -153,6 +153,8 @@ const AdminUsers = () => {
       key: 'profileImage',
       title: 'الصورة',
       width: '80px',
+      priority: 'high',
+      mobileLabel: 'الصورة',
       render: (value: string, record: UserDto) => (
         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
           {value ? (
@@ -169,19 +171,27 @@ const AdminUsers = () => {
       key: 'name',
       title: 'الاسم',
       sortable: true,
+      priority: 'high',
+      mobileLabel: 'الاسم',
     },
     {
       key: 'email',
       title: 'البريد الإلكتروني',
       sortable: true,
+      priority: 'medium',
+      mobileLabel: 'البريد',
     },
     {
       key: 'phone',
       title: 'رقم الهاتف',
+      priority: 'medium',
+      mobileLabel: 'الهاتف',
     },
     {
       key: 'isActive',
       title: 'الحالة',
+      priority: 'high',
+      mobileLabel: 'الحالة',
       render: (value: boolean) => (
         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
           value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -194,6 +204,9 @@ const AdminUsers = () => {
       key: 'createdAt',
       title: 'تاريخ التسجيل',
       sortable: true,
+      priority: 'low',
+      mobileLabel: 'التاريخ',
+      hideOnMobile: true,
       render: (value: string) => new Date(value).toLocaleDateString('ar-SA'),
     },
   ];
@@ -297,7 +310,10 @@ const AdminUsers = () => {
           onChange: setSelectedRows,
         }}
         actions={tableActions}
-        onRowClick={(record) => console.log('Row clicked:', record)}
+        onRowClick={(record) => handleViewDetails(record)}
+        mobileCardTitle={(record) => record.name}
+        mobileCardSubtitle={(record) => record.email}
+        mobileCardImage={(record) => record.profileImage}
       />
 
       {/* Create User Modal */}

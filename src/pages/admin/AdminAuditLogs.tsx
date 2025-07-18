@@ -61,7 +61,7 @@ const AdminAuditLogs = () => {
       header: 'التوقيت',
       title: 'التوقيت',
       key: 'timestamp',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <div className="flex items-center gap-2">
           <ClockIcon />
           <div>
@@ -79,7 +79,7 @@ const AdminAuditLogs = () => {
       header: 'المستخدم',
       title: 'المستخدم',
       key: 'username',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <div className="flex items-center gap-2">
           <UserIcon />
           <div>
@@ -93,7 +93,7 @@ const AdminAuditLogs = () => {
       header: 'العملية',
       title: 'العملية',
       key: 'action',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <div className="flex items-center gap-2">
           <DatabaseIcon />
           <div>
@@ -107,7 +107,7 @@ const AdminAuditLogs = () => {
       header: 'السجل المتأثر',
       title: 'السجل المتأثر',
       key: 'recordName',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <div>
           <div className="text-sm font-medium">{log.recordName}</div>
           <div className="text-xs text-gray-500">{log.recordId}</div>
@@ -118,7 +118,7 @@ const AdminAuditLogs = () => {
       header: 'التغييرات',
       title: 'التغييرات',
       key: 'changes',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <div className="max-w-xs">
           <div className="text-sm text-gray-700 truncate">{log.changes}</div>
           {log.isSlowOperation && (
@@ -133,7 +133,7 @@ const AdminAuditLogs = () => {
       header: 'الإجراءات',
       title: 'الإجراءات',
       key: 'actions',
-      render: (log: AuditLogDto) => (
+      render: (_value: any, log: AuditLogDto) => (
         <button
           onClick={() => handleViewDetails(log)}
           className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"

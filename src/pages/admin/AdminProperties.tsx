@@ -237,6 +237,8 @@ const AdminProperties = () => {
       key: 'name',
       title: 'اسم الكيان',
       sortable: true,
+      priority: 'high',
+      mobileLabel: 'الاسم',
       render: (value: string, record: PropertyDto) => (
         <div className="flex flex-col">
           <span className="font-medium text-gray-900">{value}</span>
@@ -248,15 +250,21 @@ const AdminProperties = () => {
       key: 'ownerName',
       title: 'المالك',
       sortable: true,
+      priority: 'medium',
+      mobileLabel: 'المالك',
     },
     {
       key: 'city',
       title: 'المدينة',
       sortable: true,
+      priority: 'medium',
+      mobileLabel: 'المدينة',
     },
     {
       key: 'starRating',
       title: 'تقييم النجوم',
+      priority: 'high',
+      mobileLabel: 'التقييم',
       render: (value: number) => (
         <div className="flex items-center">
           <span className="ml-1">{value}</span>
@@ -267,6 +275,8 @@ const AdminProperties = () => {
     {
       key: 'isApproved',
       title: 'حالة الموافقة',
+      priority: 'high',
+      mobileLabel: 'الحالة',
       render: (value: boolean) => (
         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
           value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
@@ -279,6 +289,9 @@ const AdminProperties = () => {
       key: 'createdAt',
       title: 'تاريخ الإنشاء',
       sortable: true,
+      priority: 'low',
+      mobileLabel: 'التاريخ',
+      hideOnMobile: true,
       render: (value: string) => new Date(value).toLocaleDateString('ar-SA'),
     },
   ];
@@ -530,6 +543,12 @@ const AdminProperties = () => {
           }}
           actions={tableActions}
           onRowClick={handleViewDetails}
+          mobileCardTitle={(record) => record.name}
+          mobileCardSubtitle={(record) => `${record.typeName} - ${record.city}`}
+          mobileCardImage={(record) => {
+            const mainImage = record.images?.find(img => img.isMain);
+            return mainImage ? mainImage.imageUrl : (record.images?.[0]?.imageUrl || '');
+          }}
         />
       )}
 
