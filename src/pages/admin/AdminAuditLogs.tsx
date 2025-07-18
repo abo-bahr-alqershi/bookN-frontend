@@ -10,6 +10,8 @@ import { useAuditLogs } from '../../hooks/useAdminAuditLogs';
 import type { AuditLogDto, AuditLogsQuery } from '../../types/audit-log.types';
 import DataTable from '../../components/common/DataTable';
 import Modal from '../../components/common/Modal';
+import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
+import UserSelector from '../../components/selectors/UserSelector';
 
 const AdminAuditLogs = () => {
   const [query, setQuery] = useState<AuditLogsQuery>({
@@ -18,38 +20,33 @@ const AdminAuditLogs = () => {
   });
   const [selectedLog, setSelectedLog] = useState<AuditLogDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    searchTerm: '',
-    userId: '',
-    from: '',
-    to: '',
-    operationType: '',
-  });
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filterValues, setFilterValues] = useState({ userId: '', from: '', to: '', operationType: '' });
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
+
+  // Define filter options for SearchAndFilter
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'userId',
+      label: 'المستخدم',
+      type: 'custom',
+      render: (value, onChange) => (
+        <UserSelector
+          value={value}
+          onChange={(id) => onChange(id)}
+          placeholder="اختر المستخدم"
+          className="w-full"
+        />
+      ),
+    },
+    { key: 'from', label: 'من تاريخ', type: 'date' },
+    { key: 'to', label: 'إلى تاريخ', type: 'date' },
+    { key: 'operationType', label: 'نوع العملية', type: 'text', placeholder: 'نوع العملية' },
+  ];
 
   const { data, isLoading, error } = useAuditLogs(query);
 
-  const handleSearch = () => {
-    setQuery(prev => ({
-      ...prev,
-      pageNumber: 1,
-      ...filters,
-    }));
-  };
-
-  const handleClearFilters = () => {
-    const clearedFilters = {
-      searchTerm: '',
-      userId: '',
-      from: '',
-      to: '',
-      operationType: '',
-    };
-    setFilters(clearedFilters);
-    setQuery(prev => ({
-      pageNumber: 1,
-      pageSize: prev.pageSize,
-    }));
-  };
+  // Manual filter handlers removed in favor of SearchAndFilter
 
   const handleViewDetails = (log: AuditLogDto) => {
     setSelectedLog(log);
@@ -198,94 +195,35 @@ const AdminAuditLogs = () => {
         </div>
       </div>
 
-      {/* الفلاتر */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              البحث
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <SearchIcon />
-              </div>
-              <input
-                type="text"
-                value={filters.searchTerm}
-                onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                placeholder="البحث في السجلات..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              معرف المستخدم
-            </label>
-            <input
-              type="text"
-              value={filters.userId}
-              onChange={(e) => setFilters(prev => ({ ...prev, userId: e.target.value }))}
-              placeholder="معرف المستخدم"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              من تاريخ
-            </label>
-            <input
-              type="date"
-              value={filters.from}
-              onChange={(e) => setFilters(prev => ({ ...prev, from: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              إلى تاريخ
-            </label>
-            <input
-              type="date"
-              value={filters.to}
-              onChange={(e) => setFilters(prev => ({ ...prev, to: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              نوع العملية
-            </label>
-            <input
-              type="text"
-              value={filters.operationType}
-              onChange={(e) => setFilters(prev => ({ ...prev, operationType: e.target.value }))}
-              placeholder="نوع العملية"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={handleSearch}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <FilterIcon />
-            تطبيق الفلاتر
-          </button>
-          <button
-            onClick={handleClearFilters}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            مسح الفلاتر
-          </button>
-        </div>
-      </div>
+      <SearchAndFilter
+        searchPlaceholder="البحث في سجلات التدقيق..."
+        searchValue={searchTerm}
+        onSearchChange={(value) => {
+          setSearchTerm(value);
+          setQuery((prev) => ({ ...prev, pageNumber: 1, searchTerm: value }));
+        }}
+        filters={filterOptions}
+        filterValues={filterValues}
+        onFilterChange={(key, value) => {
+          setFilterValues((prev) => ({ ...prev, [key]: value }));
+          setQuery((prev) => ({ ...prev, pageNumber: 1, [key]: value }));
+        }}
+        onReset={() => {
+          setSearchTerm('');
+          setFilterValues({ userId: '', from: '', to: '', operationType: '' });
+          setQuery((prev) => ({
+            ...prev,
+            pageNumber: 1,
+            searchTerm: undefined,
+            userId: undefined,
+            from: undefined,
+            to: undefined,
+            operationType: undefined,
+          }));
+        }}
+        showAdvanced={showAdvancedFilters}
+        onToggleAdvanced={() => setShowAdvancedFilters((prev) => !prev)}
+      />
 
       {/* الجدول */}
       <div className="bg-white rounded-lg shadow">
@@ -294,9 +232,9 @@ const AdminAuditLogs = () => {
           columns={columns}
           loading={isLoading}
           pagination={{
-            current: query.pageNumber || 1,
-            total: data?.totalPages || 1,
-            pageSize: query.pageSize || 20,
+            current: data?.pageNumber ?? query.pageNumber ?? 1,
+            total: data?.totalCount ?? 0,
+            pageSize: data?.pageSize ?? query.pageSize ?? 20,
             onChange: (page, size) => setQuery(prev => ({ ...prev, pageNumber: page, pageSize: size })),
           }}
           onRowClick={() => {}}
