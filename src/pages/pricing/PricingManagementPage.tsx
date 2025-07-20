@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import DateRangeCalendar from '../../components/common/DateRangeCalendar';
+import PriceDisplay from '../../components/display/PriceDisplay';
 import { AvailabilityAndPricingService } from '../../services/availability.services';
 import { format } from 'date-fns';
 import type { CreatePricingRequest, UnitManagementData, PriceType } from '../../types/availability_types';
@@ -25,6 +26,9 @@ const PricingManagementPage: React.FC = () => {
   const [priceAmount, setPriceAmount] = useState<string>('');
   const [percentageChange, setPercentageChange] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+  // Currency selection
+  const currencyOptions = ['SAR','USD','EUR','AED','QAR','KWD','BHD','OMR','YER'];
+  const [currency, setCurrency] = useState<string>(currencyOptions[0]);
 
   // Feedback
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -58,13 +62,14 @@ const PricingManagementPage: React.FC = () => {
       priceAmount: Number(priceAmount),
       pricingTier: 'custom',
       percentageChange: percentageChange ? Number(percentageChange) : undefined,
+      currency,
       description: notes || undefined,
     };
     setSubmitting(true);
     createPricing.mutate(req, {
       onSettled: () => setSubmitting(false)
     });
-  }, [unitId, dateRange, priceType, priceAmount, percentageChange, notes, createPricing]);
+  }, [unitId, dateRange, priceType, priceAmount, percentageChange, notes, createPricing, currency]);
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
@@ -84,6 +89,18 @@ const PricingManagementPage: React.FC = () => {
               >
                 <option value="base">أساسي</option>
                 <option value="custom">مخصص</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-1 font-medium">العملة</label>
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="w-full border rounded px-2 py-1"
+              >
+                {currencyOptions.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
             <div>

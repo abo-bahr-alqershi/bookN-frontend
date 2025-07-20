@@ -109,6 +109,8 @@ export interface CreatePricingRequest {
   minPrice?: number;
   maxPrice?: number;
   description?: string;
+  // Currency code for pricing rule
+  currency?: string;
   overrideConflicts?: boolean;
 }
 
