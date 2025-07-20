@@ -422,6 +422,22 @@ const AdminUnits = () => {
   // Table actions
   const tableActions = [
     {
+      label: 'إدارة الإتاحة',
+      icon: '📅',
+      color: 'green' as const,
+      onClick: (unit: UnitDto) => {
+        navigate(`/admin/units/${unit.id}/availability`, { state: { unitName: unit.name } });
+      }
+    },
+    {
+      label: 'إدارة التسعير',
+      icon: '💰',
+      color: 'orange' as const,
+      onClick: (unit: UnitDto) => {
+        navigate(`/admin/units/${unit.id}/pricing`, { state: { unitName: unit.name } });
+      }
+    },
+    {
       label: 'عرض التفاصيل',
       icon: '👁️',
       color: 'blue' as const,

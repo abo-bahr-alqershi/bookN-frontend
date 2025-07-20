@@ -231,6 +231,8 @@ const AdminProperties = () => {
     },
   ];
 
+  // Navigation handlers for availability and pricing management
+
   // Table columns
   const columns: Column<PropertyDto>[] = [
     {
@@ -421,27 +423,30 @@ const AdminProperties = () => {
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => handleViewDetails(property)}
-              className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
-            >
-              👁️ عرض التفاصيل
-            </button>
-            <button
-              onClick={() => handleEdit(property)}
-              className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
-            >
-              ✏️ تعديل
-            </button>
-            {!property.isApproved && (
+          <div className="space-y-2 mt-4">
+            <div className="flex gap-2">
               <button
-                onClick={() => handleApprove(property)}
-                className="flex-1 px-3 py-2 text-sm bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+                onClick={() => handleViewDetails(property)}
+                className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
               >
-                ✅ موافقة
+                👁️ عرض التفاصيل
               </button>
-            )}
+              <button
+                onClick={() => handleEdit(property)}
+                className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                ✏️ تعديل
+              </button>
+              {!property.isApproved && (
+                <button
+                  onClick={() => handleApprove(property)}
+                  className="flex-1 px-3 py-2 text-sm bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+                >
+                  ✅ موافقة
+                </button>
+              )}
+            </div>
+            
           </div>
         </div>
       </div>
@@ -547,7 +552,7 @@ const AdminProperties = () => {
           mobileCardSubtitle={(record) => `${record.typeName} - ${record.city}`}
           mobileCardImage={(record) => {
             const mainImage = record.images?.find(img => img.isMain);
-            return mainImage ? mainImage.imageUrl : (record.images?.[0]?.imageUrl || '');
+            return mainImage ? mainImage.url : (record.images?.[0]?.url || '');
           }}
         />
       )}

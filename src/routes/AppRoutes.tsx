@@ -28,6 +28,8 @@ import PropertyImageGallery from '../pages/admin/PropertyImageGallery';
 import UnitImageGallery from '../pages/admin/UnitImageGallery';
 import UserDetails from '../pages/admin/UserDetails';
 import AdminPropertyServices from '../pages/admin/AdminPropertyServices';
+import AvailabilityManagementPage from '../pages/availability/AvailabilityManagementPage';
+import PricingManagementPage from '../pages/pricing/PricingManagementPage';
 
 // Property Owner Pages
 import PropertyOwnerDashboard from '../pages/property/PropertyOwnerDashboard';
@@ -64,6 +66,9 @@ const AppRoutes = () => {
         <Route path="payments" element={<AdminPayments />} />
         <Route path="amenities" element={<AdminAmenities />} />
         <Route path="property-services" element={<AdminPropertyServices />} />
+        {/* ربط إدارة الإتاحة والتسعير على مستوى الوحدة */}
+        <Route path="units/:unitId/availability" element={<AvailabilityManagementPage />} />
+        <Route path="units/:unitId/pricing" element={<PricingManagementPage />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="notifications" element={<AdminNotifications />} />
         <Route path="reports" element={<AdminReports />} />

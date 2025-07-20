@@ -470,6 +470,14 @@ export function useChat(chatService: ChatService) {
     const handleConversationCreated = (conversation: ChatConversation) => {
       setConversations(prev => [conversation, ...prev]);
     };
+    // Handle conversation updated (e.g., archived/unarchived)
+    const handleConversationUpdated = (updatedConversation: ChatConversation) => {
+      setConversations(prev =>
+        prev.map(conv =>
+          conv.conversation_id === updatedConversation.conversation_id ? updatedConversation : conv
+        )
+      );
+    };
 
     const handleReactionAdded = (data: { message_id: string, reaction: any }) => {
       setMessages(prev => 
@@ -498,6 +506,7 @@ export function useChat(chatService: ChatService) {
     chatService.ws.on('typing_indicator', handleTypingIndicator);
     chatService.ws.on('user_status_changed', handleUserStatusChanged);
     chatService.ws.on('conversation_created', handleConversationCreated);
+    chatService.ws.on('conversation_updated', handleConversationUpdated);
     chatService.ws.on('reaction_added', handleReactionAdded);
     chatService.ws.on('reaction_removed', handleReactionRemoved);
 
@@ -509,6 +518,7 @@ export function useChat(chatService: ChatService) {
       chatService.ws.off('typing_indicator', handleTypingIndicator);
       chatService.ws.off('user_status_changed', handleUserStatusChanged);
       chatService.ws.off('conversation_created', handleConversationCreated);
+      chatService.ws.off('conversation_updated', handleConversationUpdated);
       chatService.ws.off('reaction_added', handleReactionAdded);
       chatService.ws.off('reaction_removed', handleReactionRemoved);
     };

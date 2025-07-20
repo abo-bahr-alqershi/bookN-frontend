@@ -4,6 +4,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './components/ui/NotificationProvider';
 import AppRoutes from './routes/AppRoutes';
 import './App.css';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,13 +20,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider>
-          <NotificationProvider>
-            <div dir="rtl" className="min-h-screen">
-              <AppRoutes />
-            </div>
-          </NotificationProvider>
-        </AuthProvider>
+        <ThemeProvider theme={theme}>
+          <AuthProvider>
+            <NotificationProvider>
+              <div dir="rtl" className="min-h-screen">
+                <AppRoutes />
+              </div>
+            </NotificationProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

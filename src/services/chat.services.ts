@@ -26,7 +26,7 @@ import type {
   MessageStatus,
   TypingIndicator,
   ConnectionStatus
-} from '../types/chat_types';
+} from '../types/chat.types';
 
 /**
  * خدمة التواصل مع API الشات
@@ -648,32 +648,42 @@ export class ChatWebSocketService {
    * معالجة الرسائل الواردة
    */
   private handleMessage(message: any): void {
-    const { type, data } = message;
+    // New envelope: { event_type, data }
+    const { event_type, data } = message;
+    const type = event_type;
     
     switch (type) {
       case 'new_message':
-        this.emit('new_message', data);
+        // data: { conversation_id, message }
+        this.emit('new_message', data.message);
         break;
       case 'message_updated':
-        this.emit('message_updated', data);
+        // data: { conversation_id, message }
+        this.emit('message_updated', data.message);
         break;
       case 'message_deleted':
+        // data: { conversation_id, message_id }
         this.emit('message_deleted', data);
         break;
       case 'typing_indicator':
+        // data: TypingIndicator
         this.emit('typing_indicator', data);
         break;
       case 'user_status_changed':
+        // data: { user_id, status, timestamp }
         this.emit('user_status_changed', data);
         break;
       case 'conversation_created':
-        this.emit('conversation_created', data);
+        // data: { conversation }
+        this.emit('conversation_created', data.conversation);
         break;
       case 'reaction_added':
-        this.emit('reaction_added', data);
+        // data: { message_id, reaction }
+        this.emit('reaction_added', { message_id: data.message_id, reaction: data.reaction });
         break;
       case 'reaction_removed':
-        this.emit('reaction_removed', data);
+        // data: { message_id, reaction_id }
+        this.emit('reaction_removed', { message_id: data.message_id, reaction_id: data.reaction_id });
         break;
       default:
         console.log('نوع رسالة غير معروف:', type);
