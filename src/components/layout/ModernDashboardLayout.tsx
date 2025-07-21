@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AttachMoney as AttachMoneyIcon } from '@mui/icons-material';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { useAdminStatistics } from '../../hooks/useAdminStatistics';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -36,6 +37,8 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
 
   const isAdmin = user.role === 'Admin';
   const isPropertyOwner = user.role === 'Owner';
+  // جلب احصائيات لوحة التحكم
+  const { data: stats } = useAdminStatistics();
 
   const adminMenuItems: MenuItem[] = [
     // الرئيسية
@@ -58,7 +61,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
         </svg>
       ),
-      badge: '24'
+      badge: stats ? stats.unverifiedUsers.toString() : '0'
     },
     // إدارة العملات
     {
@@ -74,7 +77,8 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
-      )
+      ),
+      badge: stats ? stats.unapprovedProperties.toString() : '0'
     },
     {
       path: '/admin/property-types',
@@ -144,7 +148,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      badge: '12'
+      badge: stats ? stats.unconfirmedBookings.toString() : '0'
     },
     {
       path: '/admin/payments',
@@ -174,7 +178,7 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5-5V9a6 6 0 10-12 0v3l-5 5h5m7 0v1a3 3 0 01-6 0v-1m6 0H9" />
         </svg>
       ),
-      badge: '5'
+      badge: stats ? stats.unreadNotifications.toString() : '0'
     },
     
     // ادارة البلاغات

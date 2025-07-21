@@ -3,6 +3,7 @@ import { useAdminReviews } from '../../hooks/useAdminReviews';
 import { useAdminProperties } from '../../hooks/useAdminProperties';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
+import { isProfane, getProfanityScore, PROFANITY_THRESHOLD } from '../../utils/profanityFilter';
 import { timeAgo } from '../../utils/timeAgo';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
@@ -293,13 +294,32 @@ const AdminReviews = () => {
     {
       key: 'comment',
       title: 'التعليق',
-      render: (value: string) => (
-        <div className="max-w-xs">
-          <p className="text-sm text-gray-900 truncate" title={value}>
-            {value.length > 50 ? `${value.substring(0, 50)}...` : value}
-          </p>
-        </div>
-      ),
+      render: (value: string) => {
+        const tokens = value.split(/(\s+)/);
+        return (
+          <div className="max-w-xs" title={value}>
+            <p className="text-sm text-gray-900">
+              {tokens.map((t, i) => {
+                const score = getProfanityScore(t);
+                if (score >= PROFANITY_THRESHOLD) {
+                  // Normalize score between 0 and 1
+                  const norm = (score - PROFANITY_THRESHOLD) / (1 - PROFANITY_THRESHOLD);
+                  // Gradient from orange (#FDBA74) to red (#DC2626)
+                  const r = Math.round(253 + (220 - 253) * norm);
+                  const g = Math.round(186 + (38 - 186) * norm);
+                  const b = Math.round(116 + (38 - 116) * norm);
+                  return (
+                    <span key={i} style={{ color: `rgb(${r},${g},${b})`, fontWeight: 'bold' }}>
+                      {t}
+                    </span>
+                  );
+                }
+                return <span key={i}>{t}</span>;
+              })}
+            </p>
+          </div>
+        );
+      },
     },
     {
       key: 'images',
@@ -538,7 +558,23 @@ const AdminReviews = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">تعليق العميل</label>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-900">{selectedReview.comment}</p>
+                <p className="text-gray-900">
+                  {selectedReview.comment.split(/(\s+)/).map((t, i) => {
+                    const score = getProfanityScore(t);
+                    if (score >= PROFANITY_THRESHOLD) {
+                      const norm = (score - PROFANITY_THRESHOLD) / (1 - PROFANITY_THRESHOLD);
+                      const r = Math.round(253 + (220 - 253) * norm);
+                      const g = Math.round(186 + (38 - 186) * norm);
+                      const b = Math.round(116 + (38 - 116) * norm);
+                      return (
+                        <span key={i} style={{ color: `rgb(${r},${g},${b})`, fontWeight: 'bold' }}>
+                          {t}
+                        </span>
+                      );
+                    }
+                    return <span key={i}>{t}</span>;
+                  })}
+                </p>
               </div>
             </div>
 

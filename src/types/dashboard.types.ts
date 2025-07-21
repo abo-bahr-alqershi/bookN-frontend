@@ -398,4 +398,11 @@ export interface GetCustomerCohortAnalysisQuery {
 }
 
 
-export type { PropertyDto }; 
+export type { PropertyDto };
+
+export interface DashboardStatsDto {
+  unverifiedUsers: number;
+  unapprovedProperties: number;
+  unconfirmedBookings: number;
+  unreadNotifications: number;
+} 
