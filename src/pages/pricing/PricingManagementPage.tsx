@@ -107,7 +107,7 @@ const PricingManagementPage: React.FC = () => {
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <h2 className="text-lg font-semibold mb-2">تفاصيل التسعير للفترة المحددة</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-1">
+            <div className="sm:col-span-2">
               <label className="block mb-1 font-medium">المبلغ والعملة</label>
               <CurrencyInput
                 value={priceAmount ? Number(priceAmount) : 0}

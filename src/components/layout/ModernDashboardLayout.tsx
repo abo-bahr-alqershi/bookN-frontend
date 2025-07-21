@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AttachMoney as AttachMoneyIcon } from '@mui/icons-material';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 
@@ -59,7 +60,12 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
       ),
       badge: '24'
     },
-    
+    // إدارة العملات
+    {
+      path: '/admin/inputs',
+      label: 'إدارة المدخلات',
+      icon: <AttachMoneyIcon className="w-5 h-5" />
+    },
     // إدارة الكيانات
     {
       path: '/admin/properties',

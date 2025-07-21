@@ -36,6 +36,12 @@ export interface UnitTypeFieldDto {
   groupId: string;
   /** يحدد ما إذا كان الحقل مخصص للوحدات */
   isForUnits: boolean;
+  /** هل يظهر في الكروت؟ */
+  showInCards: boolean;
+  /** هل الحقل فلترة أساسية؟ */
+  isPrimaryFilter: boolean;
+  /** أولوية الترتيب */
+  priority: number;
 }
 
 /**
@@ -90,6 +96,12 @@ export interface CreateUnitTypeFieldCommand {
   isForUnits: boolean;
   /** معرف المجموعة (اختياري) */
   groupId?: string;
+  /** هل يظهر في الكروت؟ */
+  showInCards: boolean;
+  /** هل الحقل فلترة أساسية؟ */
+  isPrimaryFilter: boolean;
+  /** أولوية الترتيب */
+  priority: number;
 }
 
 /**
@@ -122,6 +134,12 @@ export interface UpdateUnitTypeFieldCommand {
   isForUnits?: boolean;
   /** مجموعة الحقول المرتبطة (اختياري) */
   groupId?: string;
+  /** هل يظهر في الكروت؟ */
+  showInCards?: boolean;
+  /** هل الحقل فلترة أساسية؟ */
+  isPrimaryFilter?: boolean;
+  /** أولوية الترتيب */
+  priority?: number;
 }
 
 /**

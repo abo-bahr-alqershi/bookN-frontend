@@ -30,6 +30,7 @@ import UserDetails from '../pages/admin/UserDetails';
 import AdminPropertyServices from '../pages/admin/AdminPropertyServices';
 import AvailabilityManagementPage from '../pages/availability/AvailabilityManagementPage';
 import PricingManagementPage from '../pages/pricing/PricingManagementPage';
+import InputManagementPage from '../pages/admin/InputManagementPage';
 
 // Property Owner Pages
 import PropertyOwnerDashboard from '../pages/property/PropertyOwnerDashboard';
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
+        <Route path="inputs" element={<InputManagementPage />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="users/:userId" element={<UserDetails />} />

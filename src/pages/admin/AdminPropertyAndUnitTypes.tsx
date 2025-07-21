@@ -8,6 +8,7 @@ import type { UnitTypeDto, CreateUnitTypeCommand, UpdateUnitTypeCommand } from '
 import type { UnitTypeFieldDto } from '../../types/unit-type-field.types';
 import type { FieldGroupDto, CreateFieldGroupCommand, UpdateFieldGroupCommand } from '../../types/field-group.types';
 import type { CreateUnitTypeFieldCommand, UpdateUnitTypeFieldCommand } from '../../types/unit-type-field.types';
+import TagInput from '../../components/inputs/TagInput';
 import { useNotificationContext } from '../../components/ui/NotificationProvider';
 
 const AdminPropertyAndUnitTypes = () => {
@@ -54,14 +55,17 @@ const AdminPropertyAndUnitTypes = () => {
     fieldName: '',
     displayName: '',
     description: '',
-    fieldOptions: {},
+    fieldOptions: { options: [] },
     validationRules: {},
     isRequired: false,
     isSearchable: false,
     isPublic: true,
     sortOrder: 0,
     category: '',
-    isForUnits: true
+    isForUnits: true,
+    showInCards: false,
+    isPrimaryFilter: false,
+    priority: 0
   });
 
   // Search and filter states
@@ -155,14 +159,17 @@ const AdminPropertyAndUnitTypes = () => {
       fieldName: '',
       displayName: '',
       description: '',
-      fieldOptions: {},
+      fieldOptions: { options: [] },
       validationRules: {},
       isRequired: false,
       isSearchable: false,
       isPublic: true,
       sortOrder: unitTypeFields.length,
       category: '',
-      isForUnits: true
+      isForUnits: true,
+      showInCards: false,
+      isPrimaryFilter: false,
+      priority: 0
     });
   };
 
@@ -779,6 +786,9 @@ const AdminPropertyAndUnitTypes = () => {
                                     sortOrder: field.sortOrder,
                                     category: field.category,
                                     isForUnits: field.isForUnits,
+                                    showInCards: field.showInCards,
+                                    isPrimaryFilter: field.isPrimaryFilter,
+                                    priority: field.priority,
                                     groupId: field.groupId
                                   });
                                   setSelectedField(field);
@@ -850,6 +860,9 @@ const AdminPropertyAndUnitTypes = () => {
                                       sortOrder: field.sortOrder,
                                       category: field.category,
                                       isForUnits: field.isForUnits,
+                                      showInCards: field.showInCards,
+                                      isPrimaryFilter: field.isPrimaryFilter,
+                                      priority: field.priority,
                                       groupId: field.groupId
                                     });
                                     setSelectedField(field);
@@ -1304,6 +1317,24 @@ const AdminPropertyAndUnitTypes = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
+                {/* Input for options when field type is select or multiselect */}
+                {(fieldForm.fieldTypeId === 'select' || fieldForm.fieldTypeId === 'multiselect') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      خيارات {fieldForm.fieldTypeId === 'select' ? 'القائمة المنسدلة' : 'التحديد المتعدد'}
+                    </label>
+                    <TagInput
+                      value={((fieldForm.fieldOptions as any).options || []).join(',')}
+                      onChange={(val) => setFieldForm(prev => ({
+                        ...prev,
+                        fieldOptions: { options: val.split(',').map(s => s.trim()).filter(Boolean) }
+                      }))}
+                      placeholder="أدخل خيار واضغط Enter أو استخدم الفاصلة للفصل"
+                      className="w-full"
+                    />
+                  </div>
+                )}
+                {/* Checkbox grid for field settings */}
                 <div className="grid grid-cols-2 gap-4">
                   <label className="flex items-center">
                     <input
