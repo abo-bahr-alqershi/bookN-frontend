@@ -3,6 +3,7 @@ import { useAdminReviews } from '../../hooks/useAdminReviews';
 import { useAdminProperties } from '../../hooks/useAdminProperties';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
 import DataTable, { type Column } from '../../components/common/DataTable';
+import { timeAgo } from '../../utils/timeAgo';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
 import PropertySelector from '../../components/selectors/PropertySelector';
@@ -322,7 +323,7 @@ const AdminReviews = () => {
       sortable: true,
       render: (value: string) => (
         <span className="text-sm text-gray-500">
-          {new Date(value).toLocaleDateString('ar-SA')}
+          {new Date(value).toLocaleDateString('ar-SA')} <span className="text-xs text-gray-400">({timeAgo(value)})</span>
         </span>
       ),
     },
