@@ -25,6 +25,8 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
   
   // استخدام AuthContext للحصول على بيانات المستخدم الحقيقية
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
+  // جلب احصائيات لوحة التحكم
+  const { data: stats } = useAdminStatistics();
 
   // انتظر انتهاء فحص المصادقة قبل المتابعة
   if (isLoading) {
@@ -37,8 +39,6 @@ const ModernDashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => 
 
   const isAdmin = user.role === 'Admin';
   const isPropertyOwner = user.role === 'Owner';
-  // جلب احصائيات لوحة التحكم
-  const { data: stats } = useAdminStatistics();
 
   const adminMenuItems: MenuItem[] = [
     // الرئيسية

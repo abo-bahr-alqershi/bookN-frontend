@@ -8,5 +8,6 @@ export function useAdminStatistics() {
     queryFn: fetchDashboardStats,
     staleTime: 60 * 1000, // cache for 1 minute
     refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 } 

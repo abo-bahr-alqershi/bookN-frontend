@@ -1,9 +1,10 @@
-import axios from 'axios';
+import apiClient from './api.service';
 import type { DashboardStatsDto } from '../types/dashboard.types';
 
-const API_URL = '/api/admin/dashboard';
-
+/**
+ * جلب إحصائيات لوحة التحكم من الخادم
+ */
 export async function fetchDashboardStats(): Promise<DashboardStatsDto> {
-  const response = await axios.get<DashboardStatsDto>(`${API_URL}/stats`);
-  return response.data;
+  const { data } = await apiClient.get<DashboardStatsDto>('/api/admin/dashboard/stats');
+  return data;
 } 
