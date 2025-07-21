@@ -256,22 +256,19 @@ const AdminReviews = () => {
   // Table columns
   const columns: Column<ReviewDto>[] = [
     {
-      key: 'id',
-      title: 'معرف التقييم',
+      key: 'propertyName',
+      title: 'الكيان',
       sortable: true,
       render: (value: string) => (
-        <span className="font-mono text-sm text-gray-600">
-          {value.substring(0, 8)}...
-        </span>
+        <span className="text-sm text-gray-900">{value}</span>
       ),
     },
     {
-      key: 'bookingId',
-      title: 'معرف الحجز',
+      key: 'userName',
+      title: 'المستخدم',
+      sortable: true,
       render: (value: string) => (
-        <span className="font-mono text-sm text-gray-600">
-          {value.substring(0, 8)}...
-        </span>
+        <span className="text-sm text-gray-900">{value}</span>
       ),
     },
     {

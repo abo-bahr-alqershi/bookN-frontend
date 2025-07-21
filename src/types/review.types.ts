@@ -30,6 +30,10 @@ export type ImageCategory = {
 export interface ReviewDto {
   id: string;
   bookingId: string;
+  /** اسم الكيان */
+  propertyName: string;
+  /** اسم المستخدم الذي قام بالتقييم */
+  userName: string;
   cleanliness: number;
   service: number;
   location: number;
