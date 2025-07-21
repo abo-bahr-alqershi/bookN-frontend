@@ -476,7 +476,7 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
                   fullWidth
                   InputProps={{
                     startAdornment: <InputAdornment position="start"><AttachMoneyIcon /></InputAdornment>,
-                    endAdornment: <InputAdornment position="end">ر.س</InputAdornment>
+                    endAdornment: <InputAdornment position="end">ر.ي</InputAdornment>
                   }}
                 />
               </ResponsiveGrid>
@@ -513,7 +513,7 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
                     onChange={(e) => setMinPrice(Number(e.target.value))}
                     fullWidth
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">ر.س</InputAdornment>
+                      endAdornment: <InputAdornment position="end">ر.ي</InputAdornment>
                     }}
                   />
                 </ResponsiveGrid>
@@ -526,7 +526,7 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
                     fullWidth
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">ر.س</InputAdornment>
+                      endAdornment: <InputAdornment position="end">ر.ي</InputAdornment>
                     }}
                   />
                 </ResponsiveGrid>

@@ -1,20 +1,44 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import DateRangeCalendar from '../../components/common/DateRangeCalendar';
 import PriceDisplay from '../../components/display/PriceDisplay';
 import { AvailabilityAndPricingService } from '../../services/availability.services';
 import { format } from 'date-fns';
-import type { CreatePricingRequest, UnitManagementData, PriceType } from '../../types/availability_types';
+import type { CreatePricingRequest, UnitManagementData } from '../../types/availability_types';
+import CurrencyInput from '../../components/inputs/CurrencyInput';
+import { useCurrencies } from '../../hooks/useCurrencies';
 
 const PricingManagementPage: React.FC = () => {
   const { unitId } = useParams<{ unitId: string }>();
   const queryClient = useQueryClient();
 
-  // Fetch unit data
+  // State to track visible calendar month range
+  const [calendarRange, setCalendarRange] = useState<{ start: Date; end: Date }>(() => {
+    const nowDate = new Date();
+    return {
+      start: new Date(nowDate.getFullYear(), nowDate.getMonth(), 1),
+      end: new Date(nowDate.getFullYear(), nowDate.getMonth() + 1, 0),
+    };
+  });
+  const handleMonthChange = useCallback((range: { start: Date; end: Date }) => {
+    setCalendarRange(range);
+  }, []);
+
+  // Fetch unit data for current calendar range
   const { data: unitData, isLoading, error } = useQuery<UnitManagementData, Error>({
-    queryKey: ['unit-management', unitId!],
-    queryFn: () => AvailabilityAndPricingService.management.getUnitManagementData(unitId!),
+    queryKey: [
+      'unit-management',
+      unitId!,
+      format(calendarRange.start, 'yyyy-MM-dd'),
+      format(calendarRange.end, 'yyyy-MM-dd'),
+    ],
+    queryFn: () =>
+      AvailabilityAndPricingService.management.getUnitManagementData(
+        unitId!,
+        format(calendarRange.start, 'yyyy-MM-dd'),
+        format(calendarRange.end, 'yyyy-MM-dd')
+      ),
     enabled: !!unitId,
   });
 
@@ -22,13 +46,18 @@ const PricingManagementPage: React.FC = () => {
   const [dateRange, setDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
 
   // Form fields
-  const [priceType, setPriceType] = useState<PriceType>('base');
   const [priceAmount, setPriceAmount] = useState<string>('');
-  const [percentageChange, setPercentageChange] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
-  // Currency selection
-  const currencyOptions = ['SAR','USD','EUR','AED','QAR','KWD','BHD','OMR','YER'];
-  const [currency, setCurrency] = useState<string>(currencyOptions[0]);
+  // Currency selection via server
+  const { currencies, loading: currenciesLoading } = useCurrencies();
+  const currencyOptions = currenciesLoading ? [] : currencies.map(c => c.code);
+  const [currency, setCurrency] = useState<string>('');
+  useEffect(() => {
+    if (!currenciesLoading && currencyOptions.length > 0) {
+      const defaultCurr = currencies.find(c => c.isDefault)?.code || currencyOptions[0];
+      setCurrency(defaultCurr);
+    }
+  }, [currenciesLoading, currencies]);
 
   // Feedback
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -42,7 +71,7 @@ const PricingManagementPage: React.FC = () => {
       setMessage({ text: 'تم حفظ قاعدة التسعير بنجاح', type: 'success' });
       // reset form
       setDateRange({ start: null, end: null });
-      setPriceAmount(''); setPercentageChange(''); setNotes('');
+      setPriceAmount(''); setNotes('');
     },
     onError: (err: any) => {
       setMessage({ text: err.message || 'حدث خطأ أثناء الحفظ', type: 'error' });
@@ -56,12 +85,10 @@ const PricingManagementPage: React.FC = () => {
     }
     const req: CreatePricingRequest = {
       unitId: unitId!,
-      priceType,
       startDate: format(dateRange.start, 'yyyy-MM-dd'),
       endDate: format(dateRange.end, 'yyyy-MM-dd'),
       priceAmount: Number(priceAmount),
       pricingTier: 'custom',
-      percentageChange: percentageChange ? Number(percentageChange) : undefined,
       currency,
       description: notes || undefined,
     };
@@ -69,7 +96,7 @@ const PricingManagementPage: React.FC = () => {
     createPricing.mutate(req, {
       onSettled: () => setSubmitting(false)
     });
-  }, [unitId, dateRange, priceType, priceAmount, percentageChange, notes, createPricing, currency]);
+  }, [unitId, dateRange, priceAmount, notes, createPricing, currency]);
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
@@ -80,57 +107,18 @@ const PricingManagementPage: React.FC = () => {
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <h2 className="text-lg font-semibold mb-2">تفاصيل التسعير للفترة المحددة</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-1 font-medium">نوع السعر</label>
-              <select
-                value={priceType}
-                onChange={e => setPriceType(e.target.value as PriceType)}
-                className="w-full border rounded px-2 py-1"
-              >
-                <option value="base">أساسي</option>
-                <option value="custom">مخصص</option>
-              </select>
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">العملة</label>
-              <select
-                value={currency}
-                onChange={e => setCurrency(e.target.value)}
-                className="w-full border rounded px-2 py-1"
-              >
-                {currencyOptions.map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">المبلغ</label>
-              <input
-                type="number"
-                value={priceAmount}
-                onChange={e => setPriceAmount(e.target.value)}
-                className="w-full border rounded px-2 py-1"
+            <div className="sm:col-span-1">
+              <label className="block mb-1 font-medium">المبلغ والعملة</label>
+              <CurrencyInput
+                value={priceAmount ? Number(priceAmount) : 0}
+                currency={currency}
+                onValueChange={(amount, curr) => {
+                  setPriceAmount(amount.toString());
+                  setCurrency(curr);
+                }}
+                supportedCurrencies={currencyOptions}
+                className="w-full"
                 placeholder="أدخل المبلغ"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">نسبة التغيير (%)</label>
-              <input
-                type="number"
-                value={percentageChange}
-                onChange={e => setPercentageChange(e.target.value)}
-                className="w-full border rounded px-2 py-1"
-                placeholder="مثلاً 10 أو -5"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block mb-1 font-medium">ملاحظات</label>
-              <textarea
-                rows={3}
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                className="w-full border rounded px-2 py-1"
-                placeholder="أدخل أي ملاحظات إضافية"
               />
             </div>
             <div className="sm:col-span-2 text-right">
@@ -150,6 +138,7 @@ const PricingManagementPage: React.FC = () => {
       <DateRangeCalendar
         units={unitData ? [unitData] : []}
         onDateSelect={setDateRange}
+        onMonthChange={handleMonthChange}
       />
 
       {/* Loading & Error */}

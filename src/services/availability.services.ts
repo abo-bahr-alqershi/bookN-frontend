@@ -416,9 +416,13 @@ export class ManagementDataService {
   }
 
   // الحصول على بيانات وحدة محددة
-  static async getUnitManagementData(unitId: string): Promise<UnitManagementData> {
+  static async getUnitManagementData(unitId: string, startDate?: string, endDate?: string): Promise<UnitManagementData> {
     try {
-      const response = await api.get(`/api/management/unit/${unitId}`);
+      const params = new URLSearchParams();
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      const query = params.toString() ? `?${params.toString()}` : '';
+      const response = await api.get(`/api/management/unit/${unitId}${query}`);
       return response.data.data;
     } catch (error) {
       console.error('خطأ في الحصول على بيانات الوحدة:', error);

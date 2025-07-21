@@ -454,7 +454,7 @@ const AvailabilityGrid: React.FC<AvailabilityGridProps> = ({
                           mt: 1
                         }}
                       >
-                        {unit.unit.basePrice} ر.س / ليلة
+                        {unit.unit.basePrice} ر.ي / ليلة
                       </Typography>
                     </Box>
 

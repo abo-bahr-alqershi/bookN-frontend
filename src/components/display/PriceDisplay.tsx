@@ -26,6 +26,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
 }) => {
   // معلومات العملات
   const currencyInfo = {
+    YER: { symbol: 'ر.ي', name: 'ريال يمني', flag: '🇾🇪', decimals: 2 },
     SAR: { symbol: 'ر.س', name: 'ريال سعودي', flag: '🇸🇦', decimals: 2 },
     USD: { symbol: '$', name: 'دولار أمريكي', flag: '🇺🇸', decimals: 2 },
     EUR: { symbol: '€', name: 'يورو', flag: '🇪🇺', decimals: 2 },
@@ -33,8 +34,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
     QAR: { symbol: 'ر.ق', name: 'ريال قطري', flag: '🇶🇦', decimals: 2 },
     KWD: { symbol: 'د.ك', name: 'دينار كويتي', flag: '🇰🇼', decimals: 3 },
     BHD: { symbol: 'د.ب', name: 'دينار بحريني', flag: '🇧🇭', decimals: 3 },
-    OMR: { symbol: 'ر.ع', name: 'ريال عماني', flag: '🇴🇲', decimals: 3 },
-    YER: { symbol: 'ر.ي', name: 'ريال يمني', flag: '🇾🇪', decimals: 2 }
+    OMR: { symbol: 'ر.ع', name: 'ريال عماني', flag: '🇴🇲', decimals: 3 }
   };
 
   const getCurrencyInfo = () => currencyInfo[price.currency] || currencyInfo.SAR;

@@ -7,15 +7,40 @@ import type { AvailabilityStatus, UnavailabilityReason, CreateAvailabilityReques
 import { AvailabilityAndPricingService } from '../../services/availability.services';
 import { format } from 'date-fns';
 
+// Component declaration and setup
 const AvailabilityManagementPage: React.FC = () => {
   const { unitId } = useParams<{ unitId: string }>();
   const queryClient = useQueryClient();
-  // جلب بيانات توفر وتسعير الوحدة المفردة
+
+  // State to track the visible calendar month range
+  const [calendarRange, setCalendarRange] = useState<{ start: Date; end: Date }>(() => {
+    const nowDate = new Date();
+    return {
+      start: new Date(nowDate.getFullYear(), nowDate.getMonth(), 1),
+      end: new Date(nowDate.getFullYear(), nowDate.getMonth() + 1, 0),
+    };
+  });
+  const handleMonthChange = useCallback((range: { start: Date; end: Date }) => {
+    setCalendarRange(range);
+  }, []);
+
+  // Fetch unit data for current calendar range
   const { data: unitData, isLoading, error } = useQuery<UnitManagementData, Error>({
-    queryKey: ['unit-management', unitId!],
-    queryFn: () => AvailabilityAndPricingService.management.getUnitManagementData(unitId!),
+    queryKey: [
+      'unit-management',
+      unitId!,
+      format(calendarRange.start, 'yyyy-MM-dd'),
+      format(calendarRange.end, 'yyyy-MM-dd')
+    ],
+    queryFn: () =>
+      AvailabilityAndPricingService.management.getUnitManagementData(
+        unitId!,
+        format(calendarRange.start, 'yyyy-MM-dd'),
+        format(calendarRange.end, 'yyyy-MM-dd')
+      ),
     enabled: !!unitId,
   });
+
   // دالة إنشاء التوفر
   const createMutation = useMutation<UnitAvailability, Error, CreateAvailabilityRequest>({
     mutationFn: (request) => AvailabilityAndPricingService.availability.createAvailability(request),
@@ -83,7 +108,7 @@ const AvailabilityManagementPage: React.FC = () => {
   }, [dateRange, status, reason, notes, unitId, queryClient]);
 
   return (
-    <Box sx={{ p: 3 }} dir="rtl">
+    <Box sx={{ p: 3 }} dir="rtl" className="p-4 max-w-3xl mx-auto">
       <Typography variant="h4" gutterBottom>إدارة إتاحة الوحدة</Typography>
       {/* Form Card: shown after selecting date range */}
       {showForm && (
@@ -121,7 +146,7 @@ const AvailabilityManagementPage: React.FC = () => {
                   <option value="blocked">محجوب</option>
                 </select>
               </div>
-              {status === 'unavailable' && (
+              {/* {status === 'unavailable' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">سبب عدم الإتاحة *</label>
                   <select
@@ -136,7 +161,7 @@ const AvailabilityManagementPage: React.FC = () => {
                     <option value="other">أخرى</option>
                   </select>
                 </div>
-              )}
+              )} */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
                 <textarea
@@ -156,7 +181,7 @@ const AvailabilityManagementPage: React.FC = () => {
                   </ul>
                 </div>
               )}
-              <div className="md:col-span-2">
+              <div className="md:col-span-1">
                 <button
                   onClick={handleConfirm}
                   disabled={loading}
@@ -174,6 +199,7 @@ const AvailabilityManagementPage: React.FC = () => {
         units={unitData ? [unitData] : []}
         onDateSelect={setDateRange}
         selectedDateRange={dateRange}
+        onMonthChange={handleMonthChange}
       />
 
       {loading && (

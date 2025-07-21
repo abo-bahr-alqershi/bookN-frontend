@@ -55,6 +55,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
   // معلومات العملات
   const currencyInfo = {
+    YER: { symbol: 'ر.ي', name: 'ريال يمني', decimals: 2, flag: '🇾🇪' },
     SAR: { symbol: 'ر.س', name: 'ريال سعودي', decimals: 2, flag: '🇸🇦' },
     USD: { symbol: '$', name: 'دولار أمريكي', decimals: 2, flag: '🇺🇸' },
     EUR: { symbol: '€', name: 'يورو', decimals: 2, flag: '🇪🇺' },
@@ -62,8 +63,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     QAR: { symbol: 'ر.ق', name: 'ريال قطري', decimals: 2, flag: '🇶🇦' },
     KWD: { symbol: 'د.ك', name: 'دينار كويتي', decimals: 3, flag: '🇰🇼' },
     BHD: { symbol: 'د.ب', name: 'دينار بحريني', decimals: 3, flag: '🇧🇭' },
-    OMR: { symbol: 'ر.ع', name: 'ريال عماني', decimals: 3, flag: '🇴🇲' },
-    YER: { symbol: 'ر.ي', name: 'ريال يمني', decimals: 2, flag: '🇾🇪' }
+    OMR: { symbol: 'ر.ع', name: 'ريال عماني', decimals: 3, flag: '🇴🇲' }
   };
 
   const getCurrentCurrencyInfo = () => currencyInfo[selectedCurrency] || currencyInfo.SAR;

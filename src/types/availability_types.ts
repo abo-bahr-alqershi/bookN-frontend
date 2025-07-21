@@ -52,6 +52,8 @@ export interface PricingRule {
   minPrice?: number;
   maxPrice?: number;
   description?: string;
+  // Currency of the pricing rule
+  currency: string;
   isActive: boolean;
   createdBy: string;
   createdAt: Date;
@@ -98,19 +100,18 @@ export interface UpdateAvailabilityRequest extends CreateAvailabilityRequest {
 // طلب إنشاء/تحديث التسعير
 export interface CreatePricingRequest {
   unitId: string;
-  priceType: PriceType;
   startDate: string;
   endDate: string;
   startTime?: string;
   endTime?: string;
   priceAmount: number;
   pricingTier: PricingTier;
-  percentageChange?: number;
+  percentageChange?: number; // kept optional for API compatibility
   minPrice?: number;
   maxPrice?: number;
   description?: string;
-  // Currency code for pricing rule
-  currency?: string;
+  // Currency code for the pricing rule
+  currency: string;
   overrideConflicts?: boolean;
 }
 
@@ -200,6 +201,8 @@ export interface UnitManagementData {
     reason?: string;
     pricingTier?: PricingTier;
     currentPrice?: number;
+    /** Currency code for this calendar entry */
+    currency?: string;
   }[];
 }
 

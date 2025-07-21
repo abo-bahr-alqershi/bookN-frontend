@@ -275,6 +275,7 @@ const ControlBar = styled(Box)(({ theme }) => ({
 interface DateRangeCalendarProps {
   units: UnitManagementData[];
   onDateSelect?: (dates: { start: Date | null; end: Date | null }) => void;
+  onMonthChange?: (range: { start: Date; end: Date }) => void;
   onUnitClick?: (unit: UnitManagementData, date: Date) => void;
   selectedDateRange?: { start: Date | null; end: Date | null };
   mode?: 'availability' | 'pricing';
@@ -357,6 +358,7 @@ const getPricingColor = (tier: PricingTier): string => {
 const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
   units = [],
   onDateSelect,
+  onMonthChange,
   onUnitClick,
   selectedDateRange,
   mode: modeProp,
@@ -387,6 +389,13 @@ const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [animationKey, setAnimationKey] = useState(0);
+
+  // Notify parent when the displayed month changes
+  useEffect(() => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    onMonthChange?.({ start, end });
+  }, [currentMonth, onMonthChange]);
 
   // تأثيرات جانبية
   useEffect(() => {
@@ -542,7 +551,9 @@ const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
           ...unit,
           dayStatus: availabilityCalendar?.status || 'available',
           dayPricingTier: availabilityCalendar?.pricingTier || 'normal',
-          dayPrice: availabilityCalendar?.currentPrice || unit.unit.basePrice
+          dayPrice: availabilityCalendar?.currentPrice || unit.unit.basePrice,
+          // Add dynamic currency from calendar entry
+          dayCurrency: availabilityCalendar?.currency,
         };
       }),
       hasBookings: units.some(unit => 
@@ -821,7 +832,7 @@ const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
                               return (
                                 <Tooltip 
                                   key={unit.unit.unitId}
-                                  title={`${unitData.dayPrice} ر.س - ${unitData.dayStatus}`}
+                                  title={`${unitData.dayPrice} ${unitData.dayCurrency}`}
                                   placement="top"
                                 >
                                   <Box 
@@ -847,7 +858,7 @@ const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
                                       variant="caption" 
                                       sx={{ fontSize: '0.65rem', fontWeight: isActiveUnit ? 600 : 400, color: isActiveUnit ? color : 'text.secondary' }}
                                     >
-                                      {unitData.dayPrice} ر.س
+                                      {unitData.dayPrice} {unitData.dayCurrency}
                                     </Typography>
                                   </Box>
                                 </Tooltip>
@@ -865,7 +876,7 @@ const DateRangeCalendar: React.FC<DateRangeCalendarProps> = ({
                               variant="body2" 
                               sx={{ fontWeight: 500, color: 'text.primary' }}
                             >
-                              {dayData.units[0]?.dayPrice} ر.س
+                              {dayData.units[0]?.dayPrice} {dayData.units[0]?.dayCurrency}
                             </Typography>
                           </Box>
                         )
