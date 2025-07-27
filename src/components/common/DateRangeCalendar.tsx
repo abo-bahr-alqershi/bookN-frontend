@@ -60,7 +60,6 @@ import {
   isWeekend
 } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import ResponsiveGrid from './ResponsiveGrid';
 import type { 
   UnitManagementData, 
   AvailabilityStatus,

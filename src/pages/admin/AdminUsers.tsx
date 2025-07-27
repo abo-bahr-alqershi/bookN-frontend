@@ -5,7 +5,6 @@ import DataTable, { type Column } from '../../components/common/DataTable';
 import SearchAndFilter, { type FilterOption } from '../../components/common/SearchAndFilter';
 import Modal from '../../components/common/Modal';
 import ImageUpload from '../../components/inputs/ImageUpload';
-import { AdminUsersService } from '../../services/admin-users.service';
 import type { UserDto, CreateUserCommand, UpdateUserCommand, GetAllUsersQuery } from '../../types/user.types';
 import type { UserRole } from '../../types/role.types';
 

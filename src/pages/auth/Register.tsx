@@ -4,9 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { PropertyUsersService } from '../../services/property-users.service';
 import { PropertyTypesService } from '../../services/property-types.service';
 import type { RegisterPropertyOwnerCommand } from '../../types/user.types';
-import ActionButton from '../../components/ui/ActionButton';
 import { useNotificationContext } from '../../components/ui/NotificationProvider';
-import { Card } from '../../components/ui';
 import LocationSelector from '../../components/selectors/LocationSelector';
 import PublicRoute from '../../components/auth/PublicRoute';
 

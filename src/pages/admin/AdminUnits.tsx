@@ -16,7 +16,6 @@ import DynamicFieldsForm from '../../components/forms/DynamicFieldsForm';
 import ImageUpload from '../../components/inputs/ImageUpload';
 import CurrencyInput from '../../components/inputs/CurrencyInput';
 import TagInput from '../../components/inputs/TagInput';
-import { AdminUnitsService } from '../../services/admin-units.service';
 import type { 
   UnitDto, 
   CreateUnitCommand, 
