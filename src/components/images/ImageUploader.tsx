@@ -9,7 +9,6 @@ import { useImages } from '../../hooks/useImages';
 import type { UploadImageRequest, ImageCategory, UploadProgress } from '../../types/image.types';
 import ActionButton from '../ui/ActionButton';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import StatusBadge from '../ui/StatusBadge';
 import { useUXHelpers } from '../../hooks/useUXHelpers';
 import { useNotifications } from '../../stores/appStore';
 

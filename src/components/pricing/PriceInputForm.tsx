@@ -213,7 +213,7 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
   const [endTime, setEndTime] = useState<Date | null>(
     initialValues?.endTime ? new Date(`1970-01-01T${initialValues.endTime}`) : null
   );
-  const [priceType, setPriceType] = useState<PriceType>(initialValues?.priceType || 'base');
+  const [priceType, setPriceType] = useState<PriceType>('base');
   const [priceAmount, setPriceAmount] = useState<number>(initialValues?.priceAmount || 0);
   const [percentageChange, setPercentageChange] = useState<number>(initialValues?.percentageChange || 0);
   const [usePriceAmount, setUsePriceAmount] = useState<boolean>(true);
@@ -305,7 +305,6 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
 
     const requestData: CreatePricingRequest = {
       unitId: selectedUnits[0],
-      priceType,
       startDate: format(startDate, 'yyyy-MM-dd'),
       endDate: format(endDate, 'yyyy-MM-dd'),
       startTime: startTime ? startTime.toISOString().split('T')[1].substring(0,5) : undefined,
@@ -315,7 +314,8 @@ const PriceInputForm: React.FC<PriceInputFormProps> = ({
       percentageChange: !usePriceAmount && percentageChange !== 0 ? percentageChange : undefined,
       minPrice: minPrice > 0 ? minPrice : undefined,
       maxPrice: maxPrice > 0 ? maxPrice : undefined,
-      description: description || undefined
+      description: description || undefined,
+      currency: 'USD'
     };
 
     onSubmit(requestData);

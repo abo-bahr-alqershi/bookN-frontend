@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AttachMoney as AttachMoneyIcon } from '@mui/icons-material';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useAdminStatistics } from '../../hooks/useAdminStatistics';
+import { AttachMoney as AttachMoneyIcon } from '@mui/icons-material';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

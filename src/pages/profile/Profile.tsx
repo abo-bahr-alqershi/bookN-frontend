@@ -5,7 +5,6 @@ import { CommonAuthService } from '../../services/common-auth.service';
 import type { UpdateUserCommand, UpdateUserProfilePictureCommand, UpdateUserSettingsCommand } from '../../types/user.types';
 import type { ChangePasswordCommand } from '../../types/auth.types';
 import ActionButton from '../../components/ui/ActionButton';
-import { Card } from '../../components/ui/Card';
 import ImageUpload from '../../components/ui/ImageUpload';
 import { useNotifications } from '../../hooks/useNotifications';
 
