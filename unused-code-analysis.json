@@ -1,0 +1,940 @@
+{
+  "timestamp": "2025-07-27T02:30:31.543Z",
+  "summary": {
+    "unusedHooks": 32,
+    "unusedServices": 42,
+    "unusedTypes": 98,
+    "unusedComponents": 12,
+    "totalFiles": 238
+  },
+  "details": {
+    "unusedHooks": [
+      {
+        "name": "ReportActionCommand",
+        "file": "/workspace/src/hooks/useAdminReports.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useReport",
+        "file": "/workspace/src/hooks/useAdminReports.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useReportsByProperty",
+        "file": "/workspace/src/hooks/useAdminReports.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useReportsByUser",
+        "file": "/workspace/src/hooks/useAdminReports.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useAvailability",
+        "file": "/workspace/src/hooks/useAvailability.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useBookingConflicts",
+        "file": "/workspace/src/hooks/useAvailability.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useDateRange",
+        "file": "/workspace/src/hooks/useAvailability.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useValidation",
+        "file": "/workspace/src/hooks/useAvailability.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useAvailabilityStatistics",
+        "file": "/workspace/src/hooks/useAvailability.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useBookingDetails",
+        "file": "/workspace/src/hooks/useBookingDetails.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChat",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useTypingIndicator",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatSearch",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatUsers",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatSettings",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useFileUpload",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useConnectionStatus",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useUnreadMessages",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatStatistics",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useMessageDrafts",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatNotifications",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useChatComplete",
+        "file": "/workspace/src/hooks/useChat.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useImageSearch",
+        "file": "/workspace/src/hooks/useImages.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useImage",
+        "file": "/workspace/src/hooks/useImages.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useImageHistory",
+        "file": "/workspace/src/hooks/useImages.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useRouting",
+        "file": "/workspace/src/hooks/useMaps.ts",
+        "type": "hook"
+      },
+      {
+        "name": "useMutationWithNotifications",
+        "file": "/workspace/src/hooks/useMutationWithNotifications.ts",
+        "type": "hook"
+      },
+      {
+        "name": "usePricing",
+        "file": "/workspace/src/hooks/usePricing.ts",
+        "type": "hook"
+      },
+      {
+        "name": "usePriceAnalysis",
+        "file": "/workspace/src/hooks/usePricing.ts",
+        "type": "hook"
+      },
+      {
+        "name": "usePriceComparison",
+        "file": "/workspace/src/hooks/usePricing.ts",
+        "type": "hook"
+      },
+      {
+        "name": "usePriceOptimization",
+        "file": "/workspace/src/hooks/usePricing.ts",
+        "type": "hook"
+      },
+      {
+        "name": "usePricingStatistics",
+        "file": "/workspace/src/hooks/usePricing.ts",
+        "type": "hook"
+      }
+    ],
+    "unusedServices": [
+      {
+        "name": "AdminDashboardService",
+        "file": "/workspace/src/services/admin-dashboard.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminFilterAnalyticsService",
+        "file": "/workspace/src/services/admin-filter-analytics.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminNotificationsService",
+        "file": "/workspace/src/services/admin-notifications.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminPropertyImagesService",
+        "file": "/workspace/src/services/admin-property-images.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminPropertyPoliciesService",
+        "file": "/workspace/src/services/admin-property-policies.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminRolesService",
+        "file": "/workspace/src/services/admin-roles.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminSearchAnalyticsService",
+        "file": "/workspace/src/services/admin-search-analytics.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminSearchFiltersService",
+        "file": "/workspace/src/services/admin-search-filters.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminSearchLogsService",
+        "file": "/workspace/src/services/admin-search-logs.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminStaffService",
+        "file": "/workspace/src/services/admin-staff.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminUnitFieldValuesService",
+        "file": "/workspace/src/services/admin-unit-field-values.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminUploadImageResponse",
+        "file": "/workspace/src/services/admin-upload-image.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AdminUploadImageService",
+        "file": "/workspace/src/services/admin-upload-image.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "AvailabilityService",
+        "file": "/workspace/src/services/availability.services.ts",
+        "type": "service"
+      },
+      {
+        "name": "PricingService",
+        "file": "/workspace/src/services/availability.services.ts",
+        "type": "service"
+      },
+      {
+        "name": "BookingValidationService",
+        "file": "/workspace/src/services/availability.services.ts",
+        "type": "service"
+      },
+      {
+        "name": "ConflictResolutionService",
+        "file": "/workspace/src/services/availability.services.ts",
+        "type": "service"
+      },
+      {
+        "name": "ManagementDataService",
+        "file": "/workspace/src/services/availability.services.ts",
+        "type": "service"
+      },
+      {
+        "name": "CommonNotificationsService",
+        "file": "/workspace/src/services/common-notifications.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "CommonPropertiesService",
+        "file": "/workspace/src/services/common-properties.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "CommonSearchService",
+        "file": "/workspace/src/services/common-search.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyAmenitiesService",
+        "file": "/workspace/src/services/property-amenities.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyAuditLogsService",
+        "file": "/workspace/src/services/property-audit-logs.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyBookingsService",
+        "file": "/workspace/src/services/property-bookings.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyDashboardService",
+        "file": "/workspace/src/services/property-dashboard.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyFieldGroupsService",
+        "file": "/workspace/src/services/property-field-groups.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyImagesService",
+        "file": "/workspace/src/services/property-images.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyNotificationsService",
+        "file": "/workspace/src/services/property-notifications.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyPaymentsService",
+        "file": "/workspace/src/services/property-payments.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyPropertiesService",
+        "file": "/workspace/src/services/property-properties.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyPropertyTypesService",
+        "file": "/workspace/src/services/property-property-types.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyReviewsService",
+        "file": "/workspace/src/services/property-reviews.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertySearchFiltersService",
+        "file": "/workspace/src/services/property-search-filters.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyServicesService",
+        "file": "/workspace/src/services/property-services.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyStaffService",
+        "file": "/workspace/src/services/property-staff.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUnitFieldValuesService",
+        "file": "/workspace/src/services/property-unit-field-values.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUnitTypeFieldsService",
+        "file": "/workspace/src/services/property-unit-type-fields.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUnitTypesService",
+        "file": "/workspace/src/services/property-unit-types.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUnitsService",
+        "file": "/workspace/src/services/property-units.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUploadImageResponse",
+        "file": "/workspace/src/services/property-upload-image.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "PropertyUploadImageService",
+        "file": "/workspace/src/services/property-upload-image.service.ts",
+        "type": "service"
+      },
+      {
+        "name": "SystemSettingsService",
+        "file": "/workspace/src/services/system-settings.service.ts",
+        "type": "service"
+      }
+    ],
+    "unusedTypes": [
+      {
+        "name": "ActivityLogDto",
+        "file": "/workspace/src/types/activity-log.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "AddressDto",
+        "file": "/workspace/src/types/address.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "TargetType",
+        "file": "/workspace/src/types/admin-action.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ActionType",
+        "file": "/workspace/src/types/admin-action.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "AdminActionDto",
+        "file": "/workspace/src/types/admin-action.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DeleteAmenityCommand",
+        "file": "/workspace/src/types/amenity.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ConflictResolutionAction",
+        "file": "/workspace/src/types/availability_types.ts",
+        "type": "type"
+      },
+      {
+        "name": "BaseUnit",
+        "file": "/workspace/src/types/availability_types.ts",
+        "type": "type"
+      },
+      {
+        "name": "LoadingState",
+        "file": "/workspace/src/types/availability_types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UIState",
+        "file": "/workspace/src/types/availability_types.ts",
+        "type": "type"
+      },
+      {
+        "name": "AvailabilityAndPricingTypes",
+        "file": "/workspace/src/types/availability_types.ts",
+        "type": "type"
+      },
+      {
+        "name": "BookingReportItemDto",
+        "file": "/workspace/src/types/booking.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UserStatus",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MessageAttachment",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "LocationData",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MessageReaction",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ChatErrorType",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ConversationListProps",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MessageListProps",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MessageInputProps",
+        "file": "/workspace/src/types/chat.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PagedResultDto",
+        "file": "/workspace/src/types/common.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PaginationDto",
+        "file": "/workspace/src/types/common.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "BaseDto",
+        "file": "/workspace/src/types/common.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ContactDto",
+        "file": "/workspace/src/types/contact.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DateRangeDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ExportResultDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ExportMetadataDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ExportSecurityDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "StatisticsPeriodDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PeriodType",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ChangeDirection",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "CustomerDashboardDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "GetCustomerDashboardQuery",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DashboardType",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ReportFormat",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "CustomerReportItemDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "OccupancyReportItemDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "RevenueReportItemDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "CategoricalDataDto",
+        "file": "/workspace/src/types/dashboard.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "GroupOrderDto",
+        "file": "/workspace/src/types/field-group.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "GroupOrderDto",
+        "file": "/workspace/src/types/field-group.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FilterValueCountDto",
+        "file": "/workspace/src/types/filter-analytics.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ProcessingStatus",
+        "file": "/workspace/src/types/image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ImageThumbnails",
+        "file": "/workspace/src/types/image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MapItem",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "RouteStep",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MarkerStyle",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MapEvent",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MapConfiguration",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "MapStats",
+        "file": "/workspace/src/types/map.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PaymentDetailsDto",
+        "file": "/workspace/src/types/payment.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PolicyType",
+        "file": "/workspace/src/types/policy.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ImageStatus",
+        "file": "/workspace/src/types/property-image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PriceRangeDto",
+        "file": "/workspace/src/types/property-search.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PropertySearchItemDto",
+        "file": "/workspace/src/types/property-search.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PropertySearchResultDto",
+        "file": "/workspace/src/types/property-search.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "SearchFilterCriteriaDto",
+        "file": "/workspace/src/types/property-search.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "SearchStatisticsDto",
+        "file": "/workspace/src/types/property-search.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DeletePropertyTypeCommand",
+        "file": "/workspace/src/types/property-type.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DestinationDto",
+        "file": "/workspace/src/types/property.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "PropertyPolicyDto",
+        "file": "/workspace/src/types/property.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UnitDynamicFieldValueDto",
+        "file": "/workspace/src/types/property.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "SearchCountByDayDto",
+        "file": "/workspace/src/types/search-analytics.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "CreateServiceCommand",
+        "file": "/workspace/src/types/service.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UpdateServiceCommand",
+        "file": "/workspace/src/types/service.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "DeleteServiceCommand",
+        "file": "/workspace/src/types/service.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "StaffPosition",
+        "file": "/workspace/src/types/staff.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldOrderDto",
+        "file": "/workspace/src/types/unit-type-field.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldGroupAssignmentDto",
+        "file": "/workspace/src/types/unit-type-field.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "CreateUnitDto",
+        "file": "/workspace/src/types/unit.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "GetUnitPriceQuery",
+        "file": "/workspace/src/types/unit.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "GetUnitDetailsQuery",
+        "file": "/workspace/src/types/unit.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UnitAvailabilityDto",
+        "file": "/workspace/src/types/unit.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UnitEditDto",
+        "file": "/workspace/src/types/unit.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FileUploadRequest",
+        "file": "/workspace/src/types/upload-image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UploadedFileDto",
+        "file": "/workspace/src/types/upload-image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ProcessedImageResult",
+        "file": "/workspace/src/types/upload-image.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UserLifetimeStatsDto",
+        "file": "/workspace/src/types/user.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "UpdateUserFavoritesCommand",
+        "file": "/workspace/src/types/user.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "LoyaltyProgressDto",
+        "file": "/workspace/src/types/user.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "OwnerRegistrationResultDto",
+        "file": "/workspace/src/types/user.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationWarningDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldValidationWarningType",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationRecommendationDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "RecommendationType",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "RecommendationPriority",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationStatisticsDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationSettingsDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationScope",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationResult",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ValidationErrorDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldValidationErrorType",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ErrorSeverity",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "QualityTrend",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "ProblematicFieldDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldValueStatisticsDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldValidationSummaryDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      },
+      {
+        "name": "FieldValidationReportDto",
+        "file": "/workspace/src/types/validation.types.ts",
+        "type": "type"
+      }
+    ],
+    "unusedComponents": [
+      {
+        "name": "AuthGuard",
+        "file": "/workspace/src/components/auth/AuthGuard.tsx",
+        "type": "component"
+      },
+      {
+        "name": "ProtectedRoute",
+        "file": "/workspace/src/components/auth/ProtectedRoute.tsx",
+        "type": "component"
+      },
+      {
+        "name": "AvailabilityGrid",
+        "file": "/workspace/src/components/availability/AvailabilityGrid.tsx",
+        "type": "component"
+      },
+      {
+        "name": "ConflictWarningModal",
+        "file": "/workspace/src/components/availability/ConflictWarningModal.tsx",
+        "type": "component"
+      },
+      {
+        "name": "useErrorHandler",
+        "file": "/workspace/src/components/common/ErrorBoundary.tsx",
+        "type": "component"
+      },
+      {
+        "name": "ErrorFallback",
+        "file": "/workspace/src/components/common/ErrorBoundary.tsx",
+        "type": "component"
+      },
+      {
+        "name": "ErrorBoundary",
+        "file": "/workspace/src/components/common/ErrorBoundary.tsx",
+        "type": "component"
+      },
+      {
+        "name": "ImageTextOverlay",
+        "file": "/workspace/src/components/images/ImageTextOverlay.tsx",
+        "type": "component"
+      },
+      {
+        "name": "DashboardLayout",
+        "file": "/workspace/src/components/layout/DashboardLayout.tsx",
+        "type": "component"
+      },
+      {
+        "name": "MainLayout",
+        "file": "/workspace/src/components/layout/MainLayout.tsx",
+        "type": "component"
+      },
+      {
+        "name": "PriceInputForm",
+        "file": "/workspace/src/components/pricing/PriceInputForm.tsx",
+        "type": "component"
+      },
+      {
+        "name": "PricingGrid",
+        "file": "/workspace/src/components/pricing/PricingGrid.tsx",
+        "type": "component"
+      }
+    ]
+  }
+}
